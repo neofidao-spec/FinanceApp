@@ -1,0 +1,2 @@
+-keep class com.financeapp.** { *; }
+-keepclassmembers class com.financeapp.** { *; }
