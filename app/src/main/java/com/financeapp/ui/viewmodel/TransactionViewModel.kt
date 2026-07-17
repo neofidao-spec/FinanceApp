@@ -34,7 +34,9 @@ data class TransactionUiState(
     val activeFilter: TransactionFilter? = null,
     val PAGE_SIZE: Int = 50,
     val visibleCount: Int = 50,
-    val hasMore: Boolean = true
+    val hasMore: Boolean = true,
+    val deletedTransactionId: Long? = null,
+    val deletedTransaction: TransactionWithCategory? = null
 )
 
 @HiltViewModel
@@ -49,10 +51,24 @@ class TransactionViewModel @Inject constructor(
     init {
         loadTransactions()
         loadCategories()
-        // Search debounce: apply filters only after 300ms idle
+        // Search debounce: apply FTS search only after 300ms idle
         viewModelScope.launch {
-            _searchFlow.debounce(300).collectLatest {
-                applyFilters()
+            _searchFlow.debounce(300).collectLatest { query ->
+                if (query.isNotBlank()) {
+                    // Use FTS4 for full-text search
+                    try {
+                        transactionRepository.searchTransactions(query).collectLatest { results ->
+                            val state = _uiState.value
+                            _uiState.value = state.copy(filteredTransactions = results)
+                            applyFiltersFromFts(results)
+                        }
+                    } catch (_: Exception) {
+                        // Fallback to client-side filter if FTS fails
+                        applyFilters()
+                    }
+                } else {
+                    applyFilters()
+                }
             }
         }
     }
@@ -138,7 +154,7 @@ class TransactionViewModel @Inject constructor(
         val state = _uiState.value
         var result = state.transactions
 
-        // Apply search filter
+        // Apply search filter (client-side fallback)
         if (state.searchQuery.isNotBlank()) {
             val query = state.searchQuery.lowercase()
             result = result.filter { txn ->
@@ -161,6 +177,36 @@ class TransactionViewModel @Inject constructor(
         }
 
         // Apply amount range filter
+        state.activeFilter?.minAmount?.let { min ->
+            result = result.filter { it.transaction.amount >= min }
+        }
+        state.activeFilter?.maxAmount?.let { max ->
+            result = result.filter { it.transaction.amount <= max }
+        }
+
+        _uiState.value = state.copy(
+            filteredTransactions = result,
+            visibleCount = minOf(state.PAGE_SIZE, result.size),
+            hasMore = result.size > state.PAGE_SIZE
+        )
+    }
+
+    /**
+     * Apply type/date/amount filters on FTS results (search already done by FTS4).
+     */
+    private fun applyFiltersFromFts(ftsResults: List<TransactionWithCategory>) {
+        val state = _uiState.value
+        var result = ftsResults
+
+        state.activeFilter?.type?.let { type ->
+            result = result.filter { it.transaction.type == type }
+        }
+        state.activeFilter?.startDate?.let { start ->
+            result = result.filter { it.transaction.date >= start }
+        }
+        state.activeFilter?.endDate?.let { end ->
+            result = result.filter { it.transaction.date <= end }
+        }
         state.activeFilter?.minAmount?.let { min ->
             result = result.filter { it.transaction.amount >= min }
         }
@@ -214,6 +260,46 @@ class TransactionViewModel @Inject constructor(
             try {
                 transactionRepository.deleteTransaction(transaction)
                 _uiState.value = _uiState.value.copy(successMessage = "Transaksi berhasil dihapus")
+                clearMessages()
+            } catch (e: Exception) {
+                _uiState.value = _uiState.value.copy(errorMessage = e.message)
+            }
+        }
+    }
+
+    /** Swipe-to-delete: save for undo, then remove from DB */
+    fun swipeDeleteTransaction(txn: TransactionWithCategory) {
+        viewModelScope.launch {
+            try {
+                val state = _uiState.value
+                _uiState.value = state.copy(
+                    deletedTransactionId = txn.transaction.id,
+                    deletedTransaction = txn
+                )
+                transactionRepository.deleteTransaction(txn.transaction)
+                // Auto-clear undo state after 4 seconds
+                kotlinx.coroutines.delay(4000)
+                _uiState.value = _uiState.value.copy(
+                    deletedTransactionId = null,
+                    deletedTransaction = null
+                )
+            } catch (e: Exception) {
+                _uiState.value = _uiState.value.copy(errorMessage = e.message)
+            }
+        }
+    }
+
+    /** Undo swipe delete — re-insert the saved transaction */
+    fun undoDelete() {
+        val txn = _uiState.value.deletedTransaction ?: return
+        viewModelScope.launch {
+            try {
+                transactionRepository.addTransaction(txn.transaction)
+                _uiState.value = _uiState.value.copy(
+                    deletedTransactionId = null,
+                    deletedTransaction = null,
+                    successMessage = "Penghapusan dibatalkan"
+                )
                 clearMessages()
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(errorMessage = e.message)

@@ -4,6 +4,7 @@ import com.financeapp.data.database.AccountDao
 import com.financeapp.data.database.AchievementDao
 import com.financeapp.data.database.CategoryDao
 import com.financeapp.data.database.TransactionDao
+import com.financeapp.data.database.TransactionFtsDao
 import com.financeapp.data.database.UserProgressDao
 import com.financeapp.data.database.DailyQuestDao
 import com.financeapp.data.database.ChallengeDao
@@ -25,8 +26,11 @@ object RepositoryModule {
 
     @Provides
     @Singleton
-    fun provideTransactionRepository(transactionDao: TransactionDao): TransactionRepository {
-        return TransactionRepository(transactionDao)
+    fun provideTransactionRepository(
+        transactionDao: TransactionDao,
+        transactionFtsDao: TransactionFtsDao
+    ): TransactionRepository {
+        return TransactionRepository(transactionDao, transactionFtsDao)
     }
 
     @Provides

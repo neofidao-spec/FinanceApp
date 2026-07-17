@@ -1,17 +1,27 @@
 package com.financeapp.data.repository
 
 import com.financeapp.data.database.TransactionDao
+import com.financeapp.data.database.TransactionFtsDao
 import com.financeapp.data.model.Transaction
 import com.financeapp.data.model.TransactionType
 import com.financeapp.data.model.TransactionWithCategory
 import kotlinx.coroutines.flow.Flow
 import java.time.LocalDateTime
 
-class TransactionRepository(private val dao: TransactionDao) {
+class TransactionRepository(
+    private val dao: TransactionDao,
+    private val ftsDao: TransactionFtsDao? = null
+) {
     fun getAllTransactions(): Flow<List<TransactionWithCategory>> = dao.getAllWithCategory()
 
     fun getTransactionsByType(type: TransactionType): Flow<List<TransactionWithCategory>> =
         dao.getByType(type)
+
+    /** FTS4 full-text search on transaction descriptions. Falls back to LIKE if FTS unavailable. */
+    fun searchTransactions(query: String): Flow<List<TransactionWithCategory>> {
+        val ftsQuery = "$query*"
+        return ftsDao?.search(ftsQuery) ?: dao.getAllWithCategory()
+    }
 
     suspend fun addTransaction(transaction: Transaction): Long = dao.insert(transaction)
 

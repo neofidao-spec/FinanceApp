@@ -12,6 +12,7 @@ import com.financeapp.data.model.Budget
 import com.financeapp.data.model.Account
 import com.financeapp.data.model.Category
 import com.financeapp.data.model.Transaction
+import com.financeapp.data.model.TransactionFts
 import com.financeapp.data.model.UserProgress
 import com.financeapp.data.model.DailyQuest
 import com.financeapp.data.model.Challenge
@@ -19,8 +20,9 @@ import com.financeapp.data.model.XpHistory
 
 @Database(
     entities = [Transaction::class, Category::class, Budget::class, Account::class, Achievement::class,
-               UserProgress::class, DailyQuest::class, Challenge::class, XpHistory::class],
-    version = 7,
+               UserProgress::class, DailyQuest::class, Challenge::class, XpHistory::class,
+               TransactionFts::class],
+    version = 8,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -34,6 +36,7 @@ abstract class FinanceDatabase : RoomDatabase() {
     abstract fun dailyQuestDao(): DailyQuestDao
     abstract fun challengeDao(): ChallengeDao
     abstract fun xpHistoryDao(): XpHistoryDao
+    abstract fun transactionFtsDao(): TransactionFtsDao
 
     companion object {
         @Volatile
@@ -158,6 +161,48 @@ abstract class FinanceDatabase : RoomDatabase() {
             }
         }
 
+        internal val MIGRATION_7_8 = object : Migration(7, 8) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                // FTS4 virtual table for full-text search on transaction descriptions
+                database.execSQL("""
+                    CREATE VIRTUAL TABLE IF NOT EXISTS `transactions_fts` USING FTS4(
+                        `description`,
+                        content='transactions',
+                        content_rowid='id'
+                    )
+                """)
+                // Populate FTS index from existing transactions
+                database.execSQL("""
+                    INSERT INTO transactions_fts(rowid, description)
+                    SELECT id, description FROM transactions
+                """)
+                // Triggers to keep FTS index in sync
+                database.execSQL("""
+                    CREATE TRIGGER IF NOT EXISTS room_fts_auto_update_transactions_insert
+                    AFTER INSERT ON transactions BEGIN
+                        INSERT INTO transactions_fts(rowid, description)
+                        VALUES (new.id, new.description);
+                    END
+                """)
+                database.execSQL("""
+                    CREATE TRIGGER IF NOT EXISTS room_fts_auto_update_transactions_delete
+                    AFTER DELETE ON transactions BEGIN
+                        INSERT INTO transactions_fts(transactions_fts, rowid, description)
+                        VALUES('delete', old.id, old.description);
+                    END
+                """)
+                database.execSQL("""
+                    CREATE TRIGGER IF NOT EXISTS room_fts_auto_update_transactions_update
+                    AFTER UPDATE ON transactions BEGIN
+                        INSERT INTO transactions_fts(transactions_fts, rowid, description)
+                        VALUES('delete', old.id, old.description);
+                        INSERT INTO transactions_fts(rowid, description)
+                        VALUES (new.id, new.description);
+                    END
+                """)
+            }
+        }
+
         fun getInstance(context: Context): FinanceDatabase {
             return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
@@ -171,7 +216,8 @@ abstract class FinanceDatabase : RoomDatabase() {
                         MIGRATION_3_4,
                         MIGRATION_4_5,
                         MIGRATION_5_6,
-                    MIGRATION_6_7
+                        MIGRATION_6_7,
+                        MIGRATION_7_8
                     )
                     .build()
                 INSTANCE = instance
