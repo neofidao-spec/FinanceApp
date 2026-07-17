@@ -98,7 +98,7 @@ fun DonutChart(
 
                 segments.forEach { segment ->
                     val sweepAngle = if (total > 0) {
-                        (segment.value / total) * 360f * animatedProgress
+                        ((segment.value / total) * 360f * animatedProgress).toFloat()
                     } else 0f
 
                     drawArc(
