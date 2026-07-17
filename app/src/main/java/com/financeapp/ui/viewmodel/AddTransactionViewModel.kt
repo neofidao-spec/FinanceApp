@@ -113,8 +113,7 @@ class AddTransactionViewModel @Inject constructor(
         val isValid = state.amount.isNotEmpty() &&
                 state.amount.toDoubleOrNull() != null &&
                 state.amount.toDouble() > 0 &&
-                state.selectedCategory != null &&
-                state.description.isNotEmpty()
+                state.selectedCategory != null
 
         _uiState.value = _uiState.value.copy(isFormValid = isValid)
     }
@@ -130,7 +129,7 @@ class AddTransactionViewModel @Inject constructor(
                     amount = _uiState.value.amount.toDouble(),
                     type = _uiState.value.transactionType,
                     categoryId = _uiState.value.selectedCategory!!.id,
-                    description = _uiState.value.description,
+                    description = _uiState.value.description.ifEmpty { _uiState.value.selectedCategory?.name ?: "Transaksi" },
                     date = _uiState.value.selectedDate,
                     accountId = _uiState.value.selectedAccountId
                 )

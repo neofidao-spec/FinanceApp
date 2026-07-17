@@ -53,6 +53,7 @@ fun AddTransactionScreen(
     uiState.successMessage?.let {
         LaunchedEffect(it) {
             snackbarHostState.showSnackbar(it)
+            kotlinx.coroutines.delay(1000)
             onNavigateBack()
         }
     }

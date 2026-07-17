@@ -67,6 +67,8 @@ class DashboardViewModel @Inject constructor(
         viewModelScope.launch {
             transactionRepository.getAllTransactions().collect { transactions ->
                 updateDashboardStats(transactions)
+                loadDashboardData()
+                loadMonthlyTrend()
             }
         }
     }
