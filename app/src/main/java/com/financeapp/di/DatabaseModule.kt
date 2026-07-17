@@ -44,8 +44,8 @@ object DatabaseModule {
                     val defaults = DefaultCategories.getDefault()
                     defaults.forEach { category ->
                         db.execSQL(
-                            "INSERT INTO categories (id, name, icon, type, color) VALUES (?, ?, ?, ?, ?)",
-                            arrayOf(category.id, category.name, category.icon, category.type.name, category.color)
+                            "INSERT INTO categories (id, name, icon, iconName, type, color) VALUES (?, ?, ?, ?, ?, ?)",
+                            arrayOf(category.id, category.name, category.icon, category.iconName, category.type.name, category.color)
                         )
                     }
                     // Insert default accounts
