@@ -67,7 +67,7 @@
 | CsvExporter utility | ✅ | `util/CsvExporter.kt` |
 | SettingsScreen | ✅ | Dark mode toggle, export CSV, tech info |
 
-### Phase 6: Gamification ⚠️ PARTIAL (60%)
+### Phase 6: Gamification ⚠️ PARTIAL (75%)
 | Task | Status | Catatan |
 |------|--------|---------|
 | Achievement entity + DAO + Repository | ✅ | 9 default achievements (4 kategori) |
@@ -80,10 +80,10 @@
 | Streak tracker (daily counter + freeze) | ✅ | Auto-freeze + earn freeze per 7 streak days |
 | Daily/weekly/monthly quest system | ✅ | `fa47973` — DailyQuest + Challenge entities + generators |
 | Challenge system | ✅ | Weekly + Monthly generators |
-| Health Score ring UI | ❌ BELUM | Belum di-display di Dashboard |
 | XP bar + level badge UI | ✅ | `f7ab798` — `LevelCard.kt` di dashboard |
 | Streak counter UI | ✅ | `f7ab798` — `StreakCard.kt` di dashboard |
-| Daily Quests UI di dashboard | ❌ BELUM | |
+| Daily Quests UI di dashboard | ✅ | `902117b` — `DailyQuestCard.kt` + dashboard integration |
+| Transaction → gamification wiring | ✅ | `902117b` — AddTransactionVM triggers XP + streak |
 | Profile page / GamificationScreen | ❌ BELUM | |
 | AchievementGallery screen | ❌ BELUM | |
 
@@ -206,9 +206,9 @@ com.financeapp/
 ### ~~URGENT: Fix Regression~~ ✅ DONE
 1. ~~Fix DatabaseModule.kt~~ — Commit `b2aba4e`
 
-### HIGH: Gamification UI (Phase 6.3)
-2. **Daily Quests UI di dashboard** — Card dengan daily quest checklist
-3. **Wiring transaction recording → XP + streak** — Panggil `GamificationViewModel.onTransactionRecorded()` dari AddTransactionScreen
+### ~~HIGH: Gamification UI (Phase 6.3)~~ ✅ DONE
+2. ~~Daily Quests UI di dashboard~~ — Commit `902117b`
+3. ~~Wiring transaction recording → XP + streak~~ — Commit `902117b`
 
 ### MEDIUM: Gamification Screen (Phase 6.4)
 4. **GamificationScreen** — Quest list, challenge progress, XP history, badge gallery
@@ -247,7 +247,7 @@ Setelah setiap task:
 | Master Plan Phase 3 (Transaction UX) | ⚠️ 60% |
 | Master Plan Phase 4 (Multi-Account) | ⚠️ 50% |
 | Master Plan Phase 5 (Onboarding) | ✅ SELESAI |
-| Master Plan Phase 6 (Gamification) | ⚠️ 60% |
+| Master Plan Phase 6 (Gamification) | ⚠️ 75% |
 | Master Plan Phase 7 (Polish) | ⚠️ 40% |
 | Production Ready | ❌ Perlu gamification UI |
 
