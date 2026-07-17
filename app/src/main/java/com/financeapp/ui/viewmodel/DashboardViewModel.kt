@@ -74,14 +74,6 @@ class DashboardViewModel @Inject constructor(
         }
     }
 
-    private fun observeBudgets() {
-        viewModelScope.launch {
-            budgetRepository.getActiveBudgets().collect {
-                loadBudgetSummaries()
-        observeBudgets()
-            }
-        }
-    }
 
     private fun loadDashboardData() {
         viewModelScope.launch {
@@ -187,7 +179,7 @@ class DashboardViewModel @Inject constructor(
         _uiState.value = _uiState.value.copy(selectedMonth = month)
         loadDashboardData()
         loadBudgetSummaries()
-        observeBudgets()
+
     }
 
     fun retry() {
@@ -195,7 +187,7 @@ class DashboardViewModel @Inject constructor(
         loadDashboardData()
         loadMonthlyTrend()
         loadBudgetSummaries()
-        observeBudgets()
+
         loadHealthScore()
     }
 
