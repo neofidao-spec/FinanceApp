@@ -166,14 +166,13 @@ com.financeapp/
 
 ---
 
-## BUG KRITIS YANG DITEMUKAN
+## BUG KRITIS — SUDAH DIPERBAIKI
 
-### REGRESSION: DatabaseModule.kt masih punya `.fallbackToDestructiveMigration()`
+### ~~REGRESSION: DatabaseModule.kt masih punya `.fallbackToDestructiveMigration()`~~ ✅ FIXED
 - **File:** `di/DatabaseModule.kt:38`
-- **Issue:** Hilt module create database dengan destructive migration
-- **Impact:** SEMUA DATA HILANG saat app update (schema version berubah)
-- **Seharusnya:** Menggunakan migrations dari `FinanceDatabase.kt` (MIGRATION_1_2 s/d 5_6)
-- **Status:** ⚠️ HARUS DIPERBAIKI SEBELUM PRODUCTION
+- **Impact:** Data user hilang saat app update
+- **Fix:** Ganti `.fallbackToDestructiveMigration()` dengan `.addMigrations(MIGRATION_1_2 s/d 5_6)`
+- **Commit:** `b2aba4e`
 
 ---
 
@@ -199,8 +198,8 @@ com.financeapp/
 
 ## TASK SELANJUTNYA (Diurutkan Prioritas)
 
-### URGENT: Fix Regression
-1. **Fix DatabaseModule.kt** — Hapus `.fallbackToDestructiveMigration()`, gunakan migrations dari FinanceDatabase
+### ~~URGENT: Fix Regression~~ ✅ DONE
+1. ~~Fix DatabaseModule.kt~~ — Commit `b2aba4e`
 
 ### HIGH: Gamification Foundation (Phase 6.1)
 2. **UserProgress entity** — Tabel baru: totalXp, currentLevel, bestStreak, currentStreak, streakFreezes, lastActivityDate, healthScore
