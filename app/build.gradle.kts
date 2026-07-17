@@ -67,9 +67,6 @@ dependencies {
     kapt("androidx.room:room-compiler:2.6.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
     
-    // Chart Library
-    implementation("com.github.AAChartModel:AAChartCore-release:7.0.14")
-    
     // Testing
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
