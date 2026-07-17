@@ -8,7 +8,7 @@ object FormatterUtil {
     private val dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")
 
     fun formatCurrency(amount: Double): String {
-        return "Rp ${'$'}{String.format("%,.0f", amount)}"
+        return "Rp ${String.format("%,.0f", amount)}"
     }
 
     fun formatDate(date: LocalDateTime): String {

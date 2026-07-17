@@ -106,7 +106,7 @@ fun DashboardScreen(viewModel: DashboardViewModel) {
                 Text(expense.category.icon, fontSize = 24.sp, modifier = Modifier.padding(end = 12.dp))
                 Column(modifier = Modifier.weight(1f)) {
                     Text(expense.category.name, fontWeight = FontWeight.Bold)
-                    Text("${'$'}{String.format("%.1f", expense.percentage)}%", fontSize = 12.sp)
+                    Text("${String.format("%.1f", expense.percentage)}%", fontSize = 12.sp)
                 }
                 Text(FormatterUtil.formatCurrency(expense.total), fontWeight = FontWeight.Bold)
             }
