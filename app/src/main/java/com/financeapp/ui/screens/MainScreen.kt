@@ -19,13 +19,17 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import com.financeapp.ui.navigation.NavigationRoutes
+import com.financeapp.ui.viewmodel.BudgetViewModel
 import com.financeapp.ui.viewmodel.DashboardViewModel
+import com.financeapp.ui.viewmodel.ReportViewModel
 import com.financeapp.ui.viewmodel.TransactionViewModel
 
 @Composable
 fun MainScreen(
     dashboardViewModel: DashboardViewModel,
     transactionViewModel: TransactionViewModel,
+    reportViewModel: ReportViewModel,
+    budgetViewModel: BudgetViewModel,
     navController: NavHostController
 ) {
     var selectedTab by remember { mutableIntStateOf(0) }
@@ -52,10 +56,16 @@ fun MainScreen(
                     onClick = { selectedTab = 2 }
                 )
                 NavigationBarItem(
-                    icon = { Text("⚙️") },
-                    label = { Text("Pengaturan") },
+                    icon = { Text("💰") },
+                    label = { Text("Budget") },
                     selected = selectedTab == 3,
                     onClick = { selectedTab = 3 }
+                )
+                NavigationBarItem(
+                    icon = { Text("⚙️") },
+                    label = { Text("Pengaturan") },
+                    selected = selectedTab == 4,
+                    onClick = { selectedTab = 4 }
                 )
             }
         },
@@ -77,15 +87,16 @@ fun MainScreen(
                 .padding(innerPadding)
         ) {
             when (selectedTab) {
-                0 -> DashboardScreen(dashboardViewModel)
+                0 -> DashboardScreen(viewModel = dashboardViewModel)
                 1 -> TransactionListScreen(
                     viewModel = transactionViewModel,
-                    onTransactionClick = { transactionId ->
-                        navController.navigate("edit_transaction/$transactionId")
+                    onTransactionClick = { id ->
+                        navController.navigate("edit_transaction/$id")
                     }
                 )
-                2 -> ReportScreen()
-                3 -> SettingsScreen()
+                2 -> ReportScreen(viewModel = reportViewModel)
+                3 -> BudgetScreen(viewModel = budgetViewModel)
+                4 -> SettingsScreen()
             }
         }
     }

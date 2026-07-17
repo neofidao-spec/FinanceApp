@@ -7,5 +7,6 @@ sealed class NavigationRoutes {
     data object AddTransaction : NavigationRoutes()
     data object EditTransaction : NavigationRoutes()
     data object Reports : NavigationRoutes()
+    data object Budget : NavigationRoutes()
     data object Settings : NavigationRoutes()
 }

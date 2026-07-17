@@ -5,18 +5,20 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import com.financeapp.data.model.Budget
 import com.financeapp.data.model.Category
 import com.financeapp.data.model.Transaction
 
 @Database(
-    entities = [Transaction::class, Category::class],
-    version = 1,
+    entities = [Transaction::class, Category::class, Budget::class],
+    version = 2,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
 abstract class FinanceDatabase : RoomDatabase() {
     abstract fun transactionDao(): TransactionDao
     abstract fun categoryDao(): CategoryDao
+    abstract fun budgetDao(): BudgetDao
 
     companion object {
         @Volatile
@@ -28,7 +30,7 @@ abstract class FinanceDatabase : RoomDatabase() {
                     context.applicationContext,
                     FinanceDatabase::class.java,
                     "finance_database"
-                ).build()
+                ).fallbackToDestructiveMigration().build()
                 INSTANCE = instance
                 instance
             }
