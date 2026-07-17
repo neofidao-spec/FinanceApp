@@ -93,10 +93,11 @@
 | Accessibility labels | ✅ | Semua Icon sudah punya contentDescription |
 | Keyboard dismiss on submit | ✅ | AddTransaction, EditTransaction |
 | Dark mode wired ke theme | ✅ | AppPreferences.isDarkMode → FinanceAppTheme |
-| Screen transition animations | ❌ BELUM | |
+| Screen transition animations | ✅ | `a52da5a` — Fade + slide transitions via NavHost |
 | Micro-interactions (spring, haptic) | ❌ BELUM | |
-| Confetti/celebration animations | ❌ BELUM | |
-| Shimmer/skeleton loading | ❌ BELUM | |
+| Health Score ring UI | ✅ | `a52da5a` — Animated Canvas ring with spring |
+| Confetti/celebration animations | ✅ | `a52da5a` — ConfettiAnimation particle burst |
+| Shimmer/skeleton loading | ✅ | `a52da5a` — ShimmerComponents (BalanceCard + TransactionItem) |
 
 ---
 
@@ -221,9 +222,12 @@ com.financeapp/
 8. ~~Recurring Transaction entity + DAO~~ — Commit `69464b3`
 9. ~~Recurring auto-add (WorkManager)~~ — Commit `69464b3`
 
-### LOW: Polish (Phase 7 remaining)
-9. **Screen transition animations** — NavHost custom enter/exit transitions
-10. **Health Score ring UI** — Animated ring di dashboard
+### LOW: Polish (Phase 7 remaining) — ⚠️ 75%
+9. ~~Screen transition animations~~ — Commit `a52da5a`
+10. ~~Health Score ring UI~~ — Commit `a52da5a`
+11. ~~Shimmer/skeleton loading~~ — Commit `a52da5a`
+12. ~~Confetti/celebration animations~~ — Commit `a52da5a`
+13. **Micro-interactions (spring, haptic)** — Haptic feedback on button press & swipe
 
 ---
 
@@ -253,8 +257,8 @@ Setelah setiap task:
 | Master Plan Phase 4 (Multi-Account) | ✅ SELESAI |
 | Master Plan Phase 5 (Onboarding) | ✅ SELESAI |
 | Master Plan Phase 6 (Gamification) | ✅ SELESAI |
-| Master Plan Phase 7 (Polish) | ⚠️ 40% |
-| Production Ready | ❌ Perlu gamification UI |
+| Master Plan Phase 7 (Polish) | ⚠️ 75% |
+| Production Ready | ⚠️ 75% — Perlu perbaikan minor |
 
 ---
 
