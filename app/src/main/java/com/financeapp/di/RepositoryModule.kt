@@ -4,7 +4,9 @@ import com.financeapp.data.database.BudgetDao
 import com.financeapp.data.database.CategoryDao
 import com.financeapp.data.database.TransactionDao
 import com.financeapp.data.database.AccountDao
+import com.financeapp.data.database.AchievementDao
 import com.financeapp.data.repository.AccountRepository
+import com.financeapp.data.repository.AchievementRepository
 import com.financeapp.data.repository.BudgetRepository
 import com.financeapp.data.repository.CategoryRepository
 import com.financeapp.data.repository.TransactionRepository
@@ -44,5 +46,11 @@ object RepositoryModule {
     @Singleton
     fun provideAccountRepository(accountDao: AccountDao): AccountRepository {
         return AccountRepository(accountDao)
+    }
+
+    @Provides
+    @Singleton
+    fun provideAchievementRepository(achievementDao: AchievementDao): AchievementRepository {
+        return AchievementRepository(achievementDao)
     }
 }

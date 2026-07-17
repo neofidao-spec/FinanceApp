@@ -9,6 +9,7 @@ import com.financeapp.data.database.CategoryDao
 import com.financeapp.data.database.Converters
 import com.financeapp.data.database.FinanceDatabase
 import com.financeapp.data.database.AccountDao
+import com.financeapp.data.database.AchievementDao
 import com.financeapp.data.database.TransactionDao
 import com.financeapp.data.model.Category
 import com.financeapp.data.model.DefaultCategories
@@ -77,5 +78,10 @@ object DatabaseModule {
     @Provides
     fun provideAccountDao(database: FinanceDatabase): AccountDao {
         return database.accountDao()
+    }
+
+    @Provides
+    fun provideAchievementDao(database: FinanceDatabase): AchievementDao {
+        return database.achievementDao()
     }
 }
