@@ -2,9 +2,11 @@ package com.financeapp.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.financeapp.data.model.BudgetWithCategory
 import com.financeapp.data.model.CategorySummary
 import com.financeapp.data.model.TransactionType
 import com.financeapp.data.model.TransactionWithCategory
+import com.financeapp.data.repository.BudgetRepository
 import com.financeapp.data.repository.CategoryRepository
 import com.financeapp.data.repository.TransactionRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -12,9 +14,15 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import java.time.LocalDateTime
 import java.time.YearMonth
+import java.time.format.DateTimeFormatter
 import javax.inject.Inject
+ */
+data class MonthlyTrendData(
+    val month: String,
+    val income: Double,
+    val expense: Double
+)
 
 data class DashboardUiState(
     val balance: Double = 0.0,
@@ -22,6 +30,10 @@ data class DashboardUiState(
     val totalExpense: Double = 0.0,
     val recentTransactions: List<TransactionWithCategory> = emptyList(),
     val topExpenses: List<CategorySummary> = emptyList(),
+    val categoryBreakdown: List<CategorySummary> = emptyList(),
+    val monthlyTrend: List<MonthlyTrendData> = emptyList(),
+    val spendingRate: Float = 0f,
+    val budgetSummaries: List<BudgetWithCategory> = emptyList(),
     val isLoading: Boolean = true,
     val selectedMonth: YearMonth = YearMonth.now(),
     val errorMessage: String? = null
@@ -30,7 +42,8 @@ data class DashboardUiState(
 @HiltViewModel
 class DashboardViewModel @Inject constructor(
     private val transactionRepository: TransactionRepository,
-    private val categoryRepository: CategoryRepository
+    private val categoryRepository: CategoryRepository,
+    private val budgetRepository: BudgetRepository
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(DashboardUiState())
     val uiState: StateFlow<DashboardUiState> = _uiState.asStateFlow()
@@ -38,6 +51,8 @@ class DashboardViewModel @Inject constructor(
     init {
         loadDashboardData()
         observeTransactions()
+        loadMonthlyTrend()
+        loadBudgetSummaries()
     }
 
     private fun observeTransactions() {
@@ -57,11 +72,13 @@ class DashboardViewModel @Inject constructor(
 
                 val income = transactionRepository.getTotalIncome(startDate, endDate)
                 val expense = transactionRepository.getTotalExpense(startDate, endDate)
+                val rate = if (income > 0) (expense / income).toFloat() else 0f
 
                 _uiState.value = _uiState.value.copy(
                     totalIncome = income,
                     totalExpense = expense,
                     balance = income - expense,
+                    spendingRate = rate,
                     isLoading = false
                 )
             } catch (e: Exception) {
@@ -98,12 +115,64 @@ class DashboardViewModel @Inject constructor(
 
         _uiState.value = _uiState.value.copy(
             recentTransactions = recent,
-            topExpenses = topExpenses
+            topExpenses = topExpenses,
+            categoryBreakdown = topExpenses
         )
+    }
+
+    private fun loadMonthlyTrend() {
+        viewModelScope.launch {
+            try {
+                val monthFormatter = DateTimeFormatter.ofPattern("MMM")
+                val trendData = mutableListOf<MonthlyTrendData>()
+                val currentMonth = YearMonth.now()
+
+                // Load last 6 months of data
+                for (i in 5 downTo 0) {
+                    val month = currentMonth.minusMonths(i.toLong())
+                    val startDate = month.atDay(1).atStartOfDay()
+                    val endDate = month.atEndOfMonth().atTime(23, 59, 59)
+
+                    val income = transactionRepository.getTotalIncome(startDate, endDate)
+                    val expense = transactionRepository.getTotalExpense(startDate, endDate)
+
+                    trendData.add(
+                        MonthlyTrendData(
+                            month = month.atDay(1).format(monthFormatter),
+                            income = income,
+                            expense = expense
+                        )
+                    )
+                }
+
+                _uiState.value = _uiState.value.copy(monthlyTrend = trendData)
+            } catch (e: Exception) {
+                // Silently fail for trend data
+            }
+        }
+    }
+
+    private fun loadBudgetSummaries() {
+        viewModelScope.launch {
+            try {
+                val summary = budgetRepository.getBudgetSummary(_uiState.value.selectedMonth)
+                _uiState.value = _uiState.value.copy(budgetSummaries = summary.budgets)
+            } catch (e: Exception) {
+                // Silently fail for budget summaries
+            }
+        }
     }
 
     fun selectMonth(month: YearMonth) {
         _uiState.value = _uiState.value.copy(selectedMonth = month)
         loadDashboardData()
+        loadBudgetSummaries()
+    }
+
+    fun retry() {
+        _uiState.value = _uiState.value.copy(isLoading = true, errorMessage = null)
+        loadDashboardData()
+        loadMonthlyTrend()
+        loadBudgetSummaries()
     }
 }
