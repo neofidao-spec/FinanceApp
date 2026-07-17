@@ -33,63 +33,63 @@ object DefaultAchievements {
         Achievement(
             name = "Pencatat Pemula",
             description = "Catat 5 transaksi",
-            icon = "📝",
+            icon = "edit_note",
             category = AchievementCategory.TRANSACTIONS.name,
             targetValue = 5
         ),
         Achievement(
             name = "Pencatat Setia",
             description = "Catat 30 transaksi",
-            icon = "📖",
+            icon = "menu_book",
             category = AchievementCategory.TRANSACTIONS.name,
             targetValue = 30
         ),
         Achievement(
             name = "Master Transaksi",
             description = "Catat 100 transaksi",
-            icon = "🏆",
+            icon = "military_tech",
             category = AchievementCategory.TRANSACTIONS.name,
             targetValue = 100
         ),
         Achievement(
             name = "Hemat Mingguan",
             description = "Tidak overspend selama 1 minggu",
-            icon = "💰",
+            icon = "savings",
             category = AchievementCategory.BUDGET.name,
             targetValue = 7
         ),
         Achievement(
             name = "Budget Master",
             description = "Di bawah budget selama 3 bulan",
-            icon = "👑",
+            icon = "workspace_premium",
             category = AchievementCategory.BUDGET.name,
             targetValue = 3
         ),
         Achievement(
             name = "First Save",
             description = "Dapatkan pemasukan pertama",
-            icon = "🌱",
+            icon = "eco",
             category = AchievementCategory.SAVINGS.name,
             targetValue = 1
         ),
         Achievement(
             name = "Jutawan",
             description = "Saldo mencapai Rp 1.000.000",
-            icon = "💎",
+            icon = "diamond",
             category = AchievementCategory.SAVINGS.name,
             targetValue = 1000000
         ),
         Achievement(
             name = "Konsisten 7 Hari",
             description = "Catat transaksi 7 hari berturut-turut",
-            icon = "🔥",
+            icon = "local_fire_department",
             category = AchievementCategory.CONSISTENCY.name,
             targetValue = 7
         ),
         Achievement(
             name = "Konsisten 30 Hari",
             description = "Catat transaksi 30 hari berturut-turut",
-            icon = "⚡",
+            icon = "bolt",
             category = AchievementCategory.CONSISTENCY.name,
             targetValue = 30
         )

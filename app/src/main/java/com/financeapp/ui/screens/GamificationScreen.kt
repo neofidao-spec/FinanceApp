@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -26,6 +27,7 @@ import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.TrendingUp
+import androidx.compose.material.icons.filled.WorkspacePremium
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -34,15 +36,18 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -56,9 +61,10 @@ import com.financeapp.data.model.Challenge
 import com.financeapp.data.model.DefaultAchievements
 import com.financeapp.data.model.XpHistory
 import com.financeapp.data.model.XpSource
+import com.financeapp.ui.components.AchievementBadge
 import com.financeapp.ui.components.LevelCard
 import com.financeapp.ui.components.StreakCard
-import com.financeapp.ui.viewmodel.GamificationUiState
+import com.financeapp.ui.components.resolveAchievementIcon
 import com.financeapp.ui.viewmodel.GamificationViewModel
 import com.financeapp.ui.utils.FormatterUtil
 import java.time.format.DateTimeFormatter
@@ -69,7 +75,6 @@ fun GamificationScreen(
 ) {
     val state by viewModel.uiState.collectAsState()
 
-    // Loading state
     if (state.isLoading && state.userProgress == null) {
         Box(
             modifier = Modifier.fillMaxSize().padding(32.dp),
@@ -80,7 +85,6 @@ fun GamificationScreen(
         return
     }
 
-    // Error state
     if (state.errorMessage != null && state.userProgress == null) {
         Box(
             modifier = Modifier.fillMaxSize().padding(32.dp),
@@ -94,11 +98,7 @@ fun GamificationScreen(
                     tint = MaterialTheme.colorScheme.error
                 )
                 Spacer(modifier = Modifier.height(16.dp))
-                Text(
-                    text = state.errorMessage,
-                    style = MaterialTheme.typography.bodyLarge,
-                    textAlign = TextAlign.Center
-                )
+                Text(state.errorMessage, style = MaterialTheme.typography.bodyLarge, textAlign = TextAlign.Center)
                 Spacer(modifier = Modifier.height(16.dp))
                 Button(
                     onClick = { },
@@ -112,6 +112,51 @@ fun GamificationScreen(
         return
     }
 
+    var selectedTabIndex by remember { mutableIntStateOf(0) }
+    val tabs = listOf("Profil", "Prestasi")
+
+    Column(modifier = Modifier.fillMaxSize()) {
+        // Title
+        Text(
+            text = "Profil & Prestasi",
+            style = MaterialTheme.typography.headlineSmall,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 8.dp)
+        )
+
+        // Tab bar
+        TabRow(
+            selectedTabIndex = selectedTabIndex,
+            modifier = Modifier.padding(horizontal = 16.dp),
+            containerColor = MaterialTheme.colorScheme.surface,
+            contentColor = MaterialTheme.colorScheme.primary
+        ) {
+            tabs.forEachIndexed { index, title ->
+                Tab(
+                    selected = selectedTabIndex == index,
+                    onClick = { selectedTabIndex = index },
+                    text = {
+                        Text(
+                            text = title,
+                            fontWeight = if (selectedTabIndex == index) FontWeight.Bold else FontWeight.Normal
+                        )
+                    }
+                )
+            }
+        }
+
+        when (selectedTabIndex) {
+            0 -> ProfileTab(state = state, viewModel = viewModel)
+            1 -> AchievementTab(state = state)
+        }
+    }
+}
+
+@Composable
+private fun ProfileTab(
+    state: com.financeapp.ui.viewmodel.GamificationUiState,
+    viewModel: GamificationViewModel
+) {
     val dateFormatter = remember { DateTimeFormatter.ofPattern("dd MMM HH:mm") }
 
     LazyColumn(
@@ -121,15 +166,6 @@ fun GamificationScreen(
         contentPadding = PaddingValues(vertical = 16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        // Title
-        item {
-            Text(
-                text = "Profil & Prestasi",
-                style = MaterialTheme.typography.headlineSmall,
-                fontWeight = FontWeight.Bold
-            )
-        }
-
         // 1. Level + Streak cards
         state.userProgress?.let { progress ->
             item {
@@ -155,43 +191,29 @@ fun GamificationScreen(
         // 2. Stats summary
         state.userProgress?.let { progress ->
             item {
-                StatsSummaryCard(
-                    totalTransactions = progress.totalTransactions,
-                    totalXpEarned = progress.totalXp,
-                    bestStreak = progress.bestStreak
-                )
+                StatCard(progress.totalTransactions, progress.totalXp, progress.bestStreak)
             }
         }
 
         // 3. Active Challenges
         if (state.activeChallenges.isNotEmpty()) {
-            item {
-                SectionTitle(title = "Tantangan Aktif")
-            }
+            item { SectionTitle("Tantangan Aktif") }
             state.activeChallenges.forEach { challenge ->
-                item {
-                    ChallengeCard(challenge = challenge)
-                }
+                item { ChallengeCard(challenge = challenge) }
             }
         }
 
-        // 4. Completed Challenges (max 3)
+        // 4. Completed Challenges
         if (state.completedChallenges.isNotEmpty()) {
-            item {
-                SectionTitle(title = "Tantangan Terselesaikan")
-            }
+            item { SectionTitle("Tantangan Terselesaikan") }
             state.completedChallenges.take(3).forEach { challenge ->
-                item {
-                    ChallengeCard(challenge = challenge)
-                }
+                item { ChallengeCard(challenge = challenge) }
             }
         }
 
         // 5. XP History
         if (state.recentXpHistory.isNotEmpty()) {
-            item {
-                SectionTitle(title = "Riwayat XP")
-            }
+            item { SectionTitle("Riwayat XP") }
             item {
                 Card(
                     modifier = Modifier.fillMaxWidth(),
@@ -200,12 +222,103 @@ fun GamificationScreen(
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         state.recentXpHistory.forEach { xp ->
-                            XpHistoryItem(xp = xp, dateFormatter = dateFormatter)
+                            XpHistoryRow(xp = xp, dateFormatter = dateFormatter)
                             if (xp != state.recentXpHistory.last()) {
                                 Spacer(modifier = Modifier.height(10.dp))
                             }
                         }
                     }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun AchievementTab(state: com.financeapp.ui.viewmodel.GamificationUiState) {
+    val achievements = state.achievements
+    val unlockedCount = achievements.count { it.isUnlocked }
+    val totalCount = achievements.size
+
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+        contentPadding = PaddingValues(vertical = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        // Summary header
+        item {
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(16.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
+                )
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(20.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.EmojiEvents,
+                        contentDescription = null,
+                        tint = Color(0xFFFF8F00),
+                        modifier = Modifier.size(48.dp)
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = "$unlockedCount / $totalCount",
+                        style = MaterialTheme.typography.headlineMedium,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        text = "Pencapaian Terbuka",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
+                    LinearProgressIndicator(
+                        progress = { if (totalCount > 0) unlockedCount.toFloat() / totalCount else 0f },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(8.dp)
+                            .clip(RoundedCornerShape(4.dp)),
+                        trackColor = MaterialTheme.colorScheme.surfaceVariant,
+                        strokeCap = StrokeCap.Round
+                    )
+                }
+            }
+        }
+
+        if (achievements.isEmpty()) {
+            item {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(32.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "Belum ada pencapaian",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
+        }
+
+        // Group & display by category
+        val groupedByCategory = achievements.groupBy { it.category }
+        groupedByCategory.forEach { (category, categoryAchievements) ->
+            item {
+                SectionTitle(title = category)
+            }
+            categoryAchievements.forEach { achievement ->
+                item {
+                    AchievementBadge(achievement = achievement)
                 }
             }
         }
@@ -223,11 +336,7 @@ private fun SectionTitle(title: String) {
 }
 
 @Composable
-private fun StatsSummaryCard(
-    totalTransactions: Int,
-    totalXpEarned: Int,
-    bestStreak: Int
-) {
+private fun StatCard(totalTransactions: Int, totalXpEarned: Int, bestStreak: Int) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
@@ -239,35 +348,15 @@ private fun StatsSummaryCard(
             modifier = Modifier.fillMaxWidth().padding(16.dp),
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
-            StatItem(
-                icon = Icons.Filled.CheckCircle,
-                value = "$totalTransactions",
-                label = "Transaksi",
-                color = Color(0xFF2E7D32)
-            )
-            StatItem(
-                icon = Icons.Filled.Star,
-                value = "$totalXpEarned",
-                label = "Total XP",
-                color = Color(0xFFFF8F00)
-            )
-            StatItem(
-                icon = Icons.Filled.LocalFireDepartment,
-                value = "$bestStreak",
-                label = "Best Streak",
-                color = Color(0xFFE65100)
-            )
+            StatItem(Icons.Filled.CheckCircle, "$totalTransactions", "Transaksi", Color(0xFF2E7D32))
+            StatItem(Icons.Filled.Star, "$totalXpEarned", "Total XP", Color(0xFFFF8F00))
+            StatItem(Icons.Filled.LocalFireDepartment, "$bestStreak", "Best Streak", Color(0xFFE65100))
         }
     }
 }
 
 @Composable
-private fun StatItem(
-    icon: ImageVector,
-    value: String,
-    label: String,
-    color: Color
-) {
+private fun StatItem(icon: ImageVector, value: String, label: String, color: Color) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Box(
             modifier = Modifier
@@ -289,7 +378,6 @@ private fun ChallengeCard(challenge: Challenge) {
         (challenge.currentProgress.toFloat() / challenge.targetValue).coerceIn(0f, 1f)
     else 0f
 
-    // Determine challenge type color
     val typeColor = when {
         challenge.challengeType.contains("weekly", ignoreCase = true) -> Color(0xFF1565C0)
         challenge.challengeType.contains("monthly", ignoreCase = true) -> Color(0xFF7B1FA2)
@@ -303,7 +391,6 @@ private fun ChallengeCard(challenge: Challenge) {
     ) {
         Column(modifier = Modifier.padding(14.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                // Type badge
                 Text(
                     text = challenge.challengeType,
                     fontSize = 10.sp,
@@ -323,17 +410,9 @@ private fun ChallengeCard(challenge: Challenge) {
                     )
                 }
             }
-
             Spacer(modifier = Modifier.height(8.dp))
-
-            Text(
-                text = challenge.name,
-                fontSize = 14.sp,
-                fontWeight = FontWeight.SemiBold
-            )
-
+            Text(text = challenge.name, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
             Spacer(modifier = Modifier.height(6.dp))
-
             LinearProgressIndicator(
                 progress = progress,
                 modifier = Modifier
@@ -344,9 +423,7 @@ private fun ChallengeCard(challenge: Challenge) {
                 trackColor = MaterialTheme.colorScheme.surfaceVariant,
                 strokeCap = StrokeCap.Round
             )
-
             Spacer(modifier = Modifier.height(4.dp))
-
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
@@ -363,8 +440,6 @@ private fun ChallengeCard(challenge: Challenge) {
                     color = Color(0xFFFF8F00)
                 )
             }
-
-            // Deadline
             if (challenge.deadline != null && !challenge.isCompleted) {
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
@@ -378,7 +453,7 @@ private fun ChallengeCard(challenge: Challenge) {
 }
 
 @Composable
-private fun XpHistoryItem(xp: XpHistory, dateFormatter: DateTimeFormatter) {
+private fun XpHistoryRow(xp: XpHistory, dateFormatter: DateTimeFormatter) {
     val sourceLabel = when (xp.source) {
         XpSource.TRANSACTION -> "Mencatat Transaksi"
         XpSource.STREAK_BONUS -> "Streak Bonus"

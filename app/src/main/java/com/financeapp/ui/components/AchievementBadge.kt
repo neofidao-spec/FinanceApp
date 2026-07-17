@@ -1,13 +1,29 @@
 package com.financeapp.ui.components
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Bolt
+import androidx.compose.material.icons.filled.Diamond
+import androidx.compose.material.icons.filled.Eco
+import androidx.compose.material.icons.filled.EditNote
+import androidx.compose.material.icons.filled.LocalFireDepartment
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.MenuBook
+import androidx.compose.material.icons.filled.MilitaryTech
+import androidx.compose.material.icons.filled.Savings
+import androidx.compose.material.icons.filled.WorkspacePremium
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.LinearProgressIndicator
@@ -18,12 +34,24 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.financeapp.data.model.Achievement
-import com.financeapp.data.model.AchievementCategory
+
+fun resolveAchievementIcon(iconName: String): ImageVector = when (iconName) {
+    "edit_note" -> Icons.Filled.EditNote
+    "menu_book" -> Icons.Filled.MenuBook
+    "military_tech" -> Icons.Filled.MilitaryTech
+    "savings" -> Icons.Filled.Savings
+    "workspace_premium" -> Icons.Filled.WorkspacePremium
+    "eco" -> Icons.Filled.Eco
+    "diamond" -> Icons.Filled.Diamond
+    "local_fire_department" -> Icons.Filled.LocalFireDepartment
+    "bolt" -> Icons.Filled.Bolt
+    else -> Icons.Filled.WorkspacePremium
+}
 
 @Composable
 fun AchievementBadge(
@@ -50,11 +78,26 @@ fun AchievementBadge(
             verticalAlignment = Alignment.CenterVertically
         ) {
             // Icon
-            Text(
-                text = if (isUnlocked) achievement.icon else "🔒",
-                fontSize = 32.sp,
-                modifier = Modifier.padding(end = 12.dp)
-            )
+            Box(
+                modifier = Modifier
+                    .size(44.dp)
+                    .background(
+                        if (isUnlocked) MaterialTheme.colorScheme.primary.copy(alpha = 0.12f)
+                        else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f),
+                        CircleShape
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = if (isUnlocked) resolveAchievementIcon(achievement.icon) else Icons.Filled.Lock,
+                    contentDescription = achievement.name,
+                    tint = if (isUnlocked) MaterialTheme.colorScheme.primary
+                    else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
+                    modifier = Modifier.size(22.dp)
+                )
+            }
+
+            Spacer(modifier = Modifier.width(12.dp))
 
             // Content
             Column(modifier = Modifier.weight(1f)) {
@@ -95,45 +138,13 @@ fun AchievementBadge(
                     )
                 } else {
                     Text(
-                        text = "✅ Terbuka",
+                        text = "Terbuka",
                         fontSize = 10.sp,
                         color = Color(0xFF4CAF50),
                         fontWeight = FontWeight.Medium
                     )
                 }
             }
-        }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun AchievementBadgePreview() {
-    MaterialTheme {
-        Column(modifier = Modifier.padding(16.dp)) {
-            AchievementBadge(
-                achievement = Achievement(
-                    name = "Pencatat Pemula",
-                    description = "Catat 5 transaksi",
-                    icon = "📝",
-                    category = AchievementCategory.TRANSACTIONS.name,
-                    targetValue = 5,
-                    currentValue = 3,
-                    isUnlocked = false
-                )
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            AchievementBadge(
-                achievement = Achievement(
-                    name = "First Save",
-                    description = "Dapatkan pemasukan pertama",
-                    icon = "🌱",
-                    category = AchievementCategory.SAVINGS.name,
-                    targetValue = 1,
-                    currentValue = 1,
-                    isUnlocked = true
-                )
-            )
         }
     }
 }

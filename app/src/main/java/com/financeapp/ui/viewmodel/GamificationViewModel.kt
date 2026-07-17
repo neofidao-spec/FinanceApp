@@ -6,6 +6,8 @@ import com.financeapp.data.model.Challenge
 import com.financeapp.data.model.DailyQuest
 import com.financeapp.data.model.UserProgress
 import com.financeapp.data.model.XpHistory
+import com.financeapp.data.model.XpSource
+import com.financeapp.data.repository.AchievementRepository
 import com.financeapp.data.repository.GamificationRepository
 import com.financeapp.domain.GamificationUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -24,6 +26,7 @@ data class GamificationUiState(
     val dailyQuests: List<DailyQuest> = emptyList(),
     val activeChallenges: List<Challenge> = emptyList(),
     val completedChallenges: List<Challenge> = emptyList(),
+    val achievements: List<com.financeapp.data.model.Achievement> = emptyList(),
     val recentXpHistory: List<XpHistory> = emptyList(),
     val isLoading: Boolean = true,
     val errorMessage: String? = null
@@ -32,7 +35,8 @@ data class GamificationUiState(
 @HiltViewModel
 class GamificationViewModel @Inject constructor(
     private val repository: GamificationRepository,
-    private val gamificationUseCase: GamificationUseCase
+    private val gamificationUseCase: GamificationUseCase,
+    private val achievementRepository: AchievementRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(GamificationUiState())
@@ -68,14 +72,16 @@ class GamificationViewModel @Inject constructor(
                     repository.getDailyQuests(today),
                     repository.getActiveChallenges(),
                     repository.getCompletedChallenges(),
-                    repository.getRecentXpHistory(20)
-                ) { progress, quests, activeChallenges, completedChallenges, xpHistory ->
+                    repository.getRecentXpHistory(20),
+                    achievementRepository.getAllAchievements()
+                ) { progress, quests, activeChallenges, completedChallenges, xpHistory, achievements ->
                     GamificationUiState(
                         userProgress = progress,
                         dailyQuests = quests,
                         activeChallenges = activeChallenges,
                         completedChallenges = completedChallenges,
                         recentXpHistory = xpHistory,
+                        achievements = achievements,
                         isLoading = false
                     )
                 }.collectLatest { state ->
