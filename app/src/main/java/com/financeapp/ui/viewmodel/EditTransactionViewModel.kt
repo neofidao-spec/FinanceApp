@@ -100,7 +100,7 @@ class EditTransactionViewModel @Inject constructor(
                     )
                 }
             } catch (e: Exception) {
-                // Silent fail - account selector will just be empty
+                _uiState.value = _uiState.value.copy(errorMessage = "Gagal memuat akun: ${e.message}")
             }
         }
     }

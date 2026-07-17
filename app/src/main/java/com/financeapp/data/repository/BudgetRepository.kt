@@ -81,7 +81,7 @@ class BudgetRepository @Inject constructor(
                 budgetHealth = health
             )
         } catch (e: Exception) {
-            BudgetSummary()
+            throw RuntimeException("Gagal memuat ringkasan budget: ${e.message}", e)
         }
     }
 }

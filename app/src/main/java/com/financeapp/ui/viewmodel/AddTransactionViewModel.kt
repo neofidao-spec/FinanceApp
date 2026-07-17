@@ -71,7 +71,7 @@ class AddTransactionViewModel @Inject constructor(
                     )
                 }
             } catch (e: Exception) {
-                // Silent fail
+                _uiState.value = _uiState.value.copy(errorMessage = "Gagal memuat akun: ${e.message}")
             }
         }
     }
@@ -127,11 +127,13 @@ class AddTransactionViewModel @Inject constructor(
             try {
                 _uiState.value = _uiState.value.copy(isLoading = true)
 
+                val category = _uiState.value.selectedCategory
+                    ?: throw IllegalStateException("Kategori harus dipilih")
                 val transaction = Transaction(
                     amount = _uiState.value.amount.toDouble(),
                     type = _uiState.value.transactionType,
-                    categoryId = _uiState.value.selectedCategory!!.id,
-                    description = _uiState.value.description.ifEmpty { _uiState.value.selectedCategory?.name ?: "Transaksi" },
+                    categoryId = category.id,
+                    description = _uiState.value.description.ifEmpty { category.name },
                     date = _uiState.value.selectedDate,
                     accountId = _uiState.value.selectedAccountId
                 )
