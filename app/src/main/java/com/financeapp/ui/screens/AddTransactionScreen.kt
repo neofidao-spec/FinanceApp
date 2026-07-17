@@ -1,5 +1,6 @@
 package com.financeapp.ui.screens
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -13,21 +14,22 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SegmentedButton
-import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -48,7 +50,7 @@ fun AddTransactionScreen(
     val snackbarHostState = remember { SnackbarHostState() }
 
     uiState.successMessage?.let {
-        androidx.compose.runtime.LaunchedEffect(it) {
+        LaunchedEffect(it) {
             snackbarHostState.showSnackbar(it)
             onNavigateBack()
         }
@@ -74,40 +76,66 @@ fun AddTransactionScreen(
                 .padding(16.dp)
                 .verticalScroll(rememberScrollState())
         ) {
-            Text("Tipe Transaksi", fontWeight = FontWeight.Bold, modifier = Modifier.padding(bottom = 8.dp))
-            SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
-                TransactionType.values().forEachIndexed { index, type ->
-                    SegmentedButton(
-                        selected = uiState.transactionType == type,
-                        onClick = { viewModel.switchTransactionType(type) },
-                        label = { Text(if (type == TransactionType.INCOME) "Pemasukan" else "Pengeluaran") },
-                        modifier = Modifier.weight(1f)
-                    )
-                }
+            // Transaction type selector
+            Text("Tipe Transaksi", fontWeight = FontWeight.Bold)
+            Spacer(modifier = Modifier.height(8.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                FilterChip(
+                    selected = uiState.transactionType == TransactionType.EXPENSE,
+                    onClick = { viewModel.switchTransactionType(TransactionType.EXPENSE) },
+                    label = { Text("Pengeluaran") },
+                    colors = FilterChipDefaults.filterChipColors(
+                        selectedContainerColor = Color(0xFFF44336).copy(alpha = 0.15f),
+                        selectedLabelColor = Color(0xFFF44336)
+                    ),
+                    modifier = Modifier.weight(1f)
+                )
+                FilterChip(
+                    selected = uiState.transactionType == TransactionType.INCOME,
+                    onClick = { viewModel.switchTransactionType(TransactionType.INCOME) },
+                    label = { Text("Pemasukan") },
+                    colors = FilterChipDefaults.filterChipColors(
+                        selectedContainerColor = Color(0xFF4CAF50).copy(alpha = 0.15f),
+                        selectedLabelColor = Color(0xFF4CAF50)
+                    ),
+                    modifier = Modifier.weight(1f)
+                )
             }
 
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
+            // Amount input
             AmountInput(
                 value = uiState.amount,
-                onValueChange = { viewModel.updateAmount(it) }
+                onValueChange = { viewModel.updateAmount(it) },
+                label = "Jumlah"
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
-
+            // Description
             OutlinedTextField(
                 value = uiState.description,
                 onValueChange = { viewModel.updateDescription(it) },
-                label = { Text("Keterangan") },
+                label = { Text("Deskripsi") },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 8.dp),
-                minLines = 2,
-                maxLines = 3
+                singleLine = true
+            )
+
+            // Category selector
+            val filteredCategories = uiState.categories.filter { it.type == uiState.transactionType }
+            CategorySelector(
+                categories = filteredCategories,
+                selectedCategory = uiState.selectedCategory,
+                onCategorySelected = { viewModel.selectCategory(it) }
             )
 
             Spacer(modifier = Modifier.height(8.dp))
 
+            // Date picker
             DatePickerField(
                 value = uiState.selectedDate,
                 onDateSelected = { viewModel.updateDate(it) }
@@ -115,30 +143,24 @@ fun AddTransactionScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            CategorySelector(
-                categories = uiState.categories.filter { it.type == uiState.transactionType },
-                selectedCategory = uiState.selectedCategory,
-                onCategorySelected = { viewModel.selectCategory(it) }
-            )
-
-            Spacer(modifier = Modifier.height(24.dp))
-
+            // Error message
             uiState.errorMessage?.let {
-                Text(it, color = Color.Red, modifier = Modifier.padding(bottom = 12.dp))
+                Text(it, color = Color.Red, modifier = Modifier.padding(bottom = 8.dp))
             }
 
+            // Save button
             Button(
-                onClick = { viewModel.submitTransaction() },
+                onClick = { viewModel.saveTransaction() },
+                modifier = Modifier.fillMaxWidth(),
                 enabled = uiState.isFormValid && !uiState.isLoading,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(48.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = if (uiState.transactionType == TransactionType.INCOME) Color.Green else Color.Red,
-                    disabledContainerColor = Color.Gray
+                    containerColor = MaterialTheme.colorScheme.primary
                 )
             ) {
-                Text(if (uiState.isLoading) "Loading..." else "Simpan Transaksi", color = Color.White)
+                Text(
+                    if (uiState.isLoading) "Menyimpan..." else "Simpan",
+                    modifier = Modifier.padding(vertical = 8.dp)
+                )
             }
         }
     }
