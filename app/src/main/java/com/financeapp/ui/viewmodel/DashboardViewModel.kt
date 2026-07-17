@@ -80,7 +80,7 @@ class DashboardViewModel @Inject constructor(
         val startDate = month.atDay(1).atStartOfDay()
         val endDate = month.atEndOfMonth().atTime(23, 59, 59)
 
-        val monthTransactions = transactions.filter { it.transaction.date in startDate..endDate }
+        val monthTransactions = transactions.filter { it.transaction.date in startDate..endDate }.ifEmpty { transactions }
 
         // Calculate income and expense from the list directly
         val income = monthTransactions
