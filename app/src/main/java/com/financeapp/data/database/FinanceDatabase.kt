@@ -11,7 +11,7 @@ import com.financeapp.data.model.Transaction
 
 @Database(
     entities = [Transaction::class, Category::class, Budget::class],
-    version = 2,
+    version = 3,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
