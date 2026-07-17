@@ -5,7 +5,6 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
-import androidx.room.Transaction
 import com.financeapp.data.model.Category
 import com.financeapp.data.model.Transaction
 import com.financeapp.data.model.TransactionType
@@ -27,11 +26,11 @@ interface TransactionDao {
     @Query("SELECT * FROM transactions WHERE id = :id")
     suspend fun getById(id: Long): Transaction?
 
-    @Transaction
+    @androidx.room.Transaction
     @Query("SELECT * FROM transactions ORDER BY date DESC")
     fun getAllWithCategory(): Flow<List<TransactionWithCategory>>
 
-    @Transaction
+    @androidx.room.Transaction
     @Query("SELECT * FROM transactions WHERE type = :type ORDER BY date DESC")
     fun getByType(type: TransactionType): Flow<List<TransactionWithCategory>>
 

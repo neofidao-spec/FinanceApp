@@ -4,10 +4,8 @@ import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
-import androidx.room.Transaction
 import androidx.room.Update
 import com.financeapp.data.model.Budget
-import com.financeapp.data.model.BudgetWithCategory
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -24,7 +22,7 @@ interface BudgetDao {
     @Query("SELECT * FROM budgets WHERE id = :id")
     suspend fun getById(id: Long): Budget?
 
-    @Transaction
+    @androidx.room.Transaction
     @Query("SELECT * FROM budgets WHERE isActive = 1 ORDER BY createdAt DESC")
     fun getActiveBudgets(): Flow<List<Budget>>
 
