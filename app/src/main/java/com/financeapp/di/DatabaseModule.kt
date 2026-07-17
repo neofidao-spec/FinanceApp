@@ -11,6 +11,10 @@ import com.financeapp.data.database.FinanceDatabase
 import com.financeapp.data.database.AccountDao
 import com.financeapp.data.database.AchievementDao
 import com.financeapp.data.database.TransactionDao
+import com.financeapp.data.database.UserProgressDao
+import com.financeapp.data.database.DailyQuestDao
+import com.financeapp.data.database.ChallengeDao
+import com.financeapp.data.database.XpHistoryDao
 import com.financeapp.data.model.Category
 import com.financeapp.data.model.DefaultAchievements
 import com.financeapp.data.model.DefaultCategories
@@ -40,7 +44,8 @@ object DatabaseModule {
             FinanceDatabase.MIGRATION_2_3,
             FinanceDatabase.MIGRATION_3_4,
             FinanceDatabase.MIGRATION_4_5,
-            FinanceDatabase.MIGRATION_5_6
+            FinanceDatabase.MIGRATION_5_6,
+            FinanceDatabase.MIGRATION_6_7
         )
         .addCallback(object : RoomDatabase.Callback() {
             override fun onCreate(db: SupportSQLiteDatabase) {
@@ -98,5 +103,25 @@ object DatabaseModule {
     @Provides
     fun provideAchievementDao(database: FinanceDatabase): AchievementDao {
         return database.achievementDao()
+    }
+
+    @Provides
+    fun provideUserProgressDao(database: FinanceDatabase): UserProgressDao {
+        return database.userProgressDao()
+    }
+
+    @Provides
+    fun provideDailyQuestDao(database: FinanceDatabase): DailyQuestDao {
+        return database.dailyQuestDao()
+    }
+
+    @Provides
+    fun provideChallengeDao(database: FinanceDatabase): ChallengeDao {
+        return database.challengeDao()
+    }
+
+    @Provides
+    fun provideXpHistoryDao(database: FinanceDatabase): XpHistoryDao {
+        return database.xpHistoryDao()
     }
 }

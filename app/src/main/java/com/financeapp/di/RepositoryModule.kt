@@ -4,9 +4,14 @@ import com.financeapp.data.database.AccountDao
 import com.financeapp.data.database.AchievementDao
 import com.financeapp.data.database.CategoryDao
 import com.financeapp.data.database.TransactionDao
+import com.financeapp.data.database.UserProgressDao
+import com.financeapp.data.database.DailyQuestDao
+import com.financeapp.data.database.ChallengeDao
+import com.financeapp.data.database.XpHistoryDao
 import com.financeapp.data.repository.AccountRepository
 import com.financeapp.data.repository.AchievementRepository
 import com.financeapp.data.repository.CategoryRepository
+import com.financeapp.data.repository.GamificationRepository
 import com.financeapp.data.repository.TransactionRepository
 import dagger.Module
 import dagger.Provides
@@ -40,5 +45,16 @@ object RepositoryModule {
     @Singleton
     fun provideAchievementRepository(achievementDao: AchievementDao): AchievementRepository {
         return AchievementRepository(achievementDao)
+    }
+
+    @Provides
+    @Singleton
+    fun provideGamificationRepository(
+        userProgressDao: UserProgressDao,
+        dailyQuestDao: DailyQuestDao,
+        challengeDao: ChallengeDao,
+        xpHistoryDao: XpHistoryDao
+    ): GamificationRepository {
+        return GamificationRepository(userProgressDao, dailyQuestDao, challengeDao, xpHistoryDao)
     }
 }

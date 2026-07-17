@@ -12,10 +12,15 @@ import com.financeapp.data.model.Budget
 import com.financeapp.data.model.Account
 import com.financeapp.data.model.Category
 import com.financeapp.data.model.Transaction
+import com.financeapp.data.model.UserProgress
+import com.financeapp.data.model.DailyQuest
+import com.financeapp.data.model.Challenge
+import com.financeapp.data.model.XpHistory
 
 @Database(
-    entities = [Transaction::class, Category::class, Budget::class, Account::class, Achievement::class],
-    version = 6,
+    entities = [Transaction::class, Category::class, Budget::class, Account::class, Achievement::class,
+               UserProgress::class, DailyQuest::class, Challenge::class, XpHistory::class],
+    version = 7,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -25,6 +30,10 @@ abstract class FinanceDatabase : RoomDatabase() {
     abstract fun budgetDao(): BudgetDao
     abstract fun accountDao(): AccountDao
     abstract fun achievementDao(): AchievementDao
+    abstract fun userProgressDao(): UserProgressDao
+    abstract fun dailyQuestDao(): DailyQuestDao
+    abstract fun challengeDao(): ChallengeDao
+    abstract fun xpHistoryDao(): XpHistoryDao
 
     companion object {
         @Volatile
@@ -93,6 +102,62 @@ abstract class FinanceDatabase : RoomDatabase() {
             }
         }
 
+        internal val MIGRATION_6_7 = object : Migration(6, 7) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                // Gamification tables
+                database.execSQL("""
+                    CREATE TABLE IF NOT EXISTS user_progress (
+                        id INTEGER PRIMARY KEY NOT NULL,
+                        totalXp INTEGER NOT NULL DEFAULT 0,
+                        currentLevel INTEGER NOT NULL DEFAULT 1,
+                        bestStreak INTEGER NOT NULL DEFAULT 0,
+                        currentStreak INTEGER NOT NULL DEFAULT 0,
+                        streakFreezes INTEGER NOT NULL DEFAULT 1,
+                        lastActivityDate TEXT,
+                        healthScore REAL NOT NULL DEFAULT 0.0,
+                        updatedAt TEXT NOT NULL
+                    )
+                """)
+                database.execSQL("""
+                    CREATE TABLE IF NOT EXISTS daily_quests (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                        name TEXT NOT NULL,
+                        description TEXT NOT NULL,
+                        xpReward INTEGER NOT NULL,
+                        questType TEXT NOT NULL,
+                        targetValue INTEGER NOT NULL,
+                        currentValue INTEGER NOT NULL DEFAULT 0,
+                        isCompleted INTEGER NOT NULL DEFAULT 0,
+                        questDate TEXT NOT NULL
+                    )
+                """)
+                database.execSQL("""
+                    CREATE TABLE IF NOT EXISTS challenges (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                        name TEXT NOT NULL,
+                        description TEXT NOT NULL,
+                        xpReward INTEGER NOT NULL,
+                        challengeType TEXT NOT NULL,
+                        startDate TEXT NOT NULL,
+                        endDate TEXT NOT NULL,
+                        targetType TEXT NOT NULL,
+                        targetValue INTEGER NOT NULL,
+                        currentValue INTEGER NOT NULL DEFAULT 0,
+                        isCompleted INTEGER NOT NULL DEFAULT 0
+                    )
+                """)
+                database.execSQL("""
+                    CREATE TABLE IF NOT EXISTS xp_history (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                        amount INTEGER NOT NULL,
+                        source TEXT NOT NULL,
+                        description TEXT NOT NULL,
+                        createdAt TEXT NOT NULL
+                    )
+                """)
+            }
+        }
+
         fun getInstance(context: Context): FinanceDatabase {
             return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
@@ -105,7 +170,8 @@ abstract class FinanceDatabase : RoomDatabase() {
                         MIGRATION_2_3,
                         MIGRATION_3_4,
                         MIGRATION_4_5,
-                        MIGRATION_5_6
+                        MIGRATION_5_6,
+                    MIGRATION_6_7
                     )
                     .build()
                 INSTANCE = instance

@@ -1,0 +1,141 @@
+package com.financeapp.ui.viewmodel
+
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.financeapp.data.model.Challenge
+import com.financeapp.data.model.DailyQuest
+import com.financeapp.data.model.UserProgress
+import com.financeapp.data.model.XpHistory
+import com.financeapp.data.repository.GamificationRepository
+import com.financeapp.domain.GamificationUseCase
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.launch
+import java.time.LocalDate
+import java.time.LocalDateTime
+import javax.inject.Inject
+
+data class GamificationUiState(
+    val userProgress: UserProgress? = null,
+    val dailyQuests: List<DailyQuest> = emptyList(),
+    val activeChallenges: List<Challenge> = emptyList(),
+    val completedChallenges: List<Challenge> = emptyList(),
+    val recentXpHistory: List<XpHistory> = emptyList(),
+    val isLoading: Boolean = true,
+    val errorMessage: String? = null
+)
+
+@HiltViewModel
+class GamificationViewModel @Inject constructor(
+    private val repository: GamificationRepository,
+    private val gamificationUseCase: GamificationUseCase
+) : ViewModel() {
+
+    private val _uiState = MutableStateFlow(GamificationUiState())
+    val uiState: StateFlow<GamificationUiState> = _uiState.asStateFlow()
+
+    init {
+        initializeGamification()
+        observeGamificationData()
+    }
+
+    private fun initializeGamification() {
+        viewModelScope.launch {
+            try {
+                gamificationUseCase.initializeIfNeeded()
+                // Generate today's quests if not present
+                val today = LocalDate.now()
+                val existingQuests = repository.getDailyQuestsOnce(today)
+                if (existingQuests.isEmpty()) {
+                    repository.saveDailyQuests(DailyQuest.generateForDate(today))
+                }
+            } catch (e: Exception) {
+                _uiState.value = _uiState.value.copy(errorMessage = e.message)
+            }
+        }
+    }
+
+    private fun observeGamificationData() {
+        viewModelScope.launch {
+            try {
+                val today = LocalDate.now()
+                combine(
+                    repository.getUserProgress(),
+                    repository.getDailyQuests(today),
+                    repository.getActiveChallenges(),
+                    repository.getCompletedChallenges(),
+                    repository.getRecentXpHistory(20)
+                ) { progress, quests, activeChallenges, completedChallenges, xpHistory ->
+                    GamificationUiState(
+                        userProgress = progress,
+                        dailyQuests = quests,
+                        activeChallenges = activeChallenges,
+                        completedChallenges = completedChallenges,
+                        recentXpHistory = xpHistory,
+                        isLoading = false
+                    )
+                }.collectLatest { state ->
+                    _uiState.value = state
+                }
+            } catch (e: Exception) {
+                _uiState.value = _uiState.value.copy(
+                    errorMessage = e.message,
+                    isLoading = false
+                )
+            }
+        }
+    }
+
+    // ===================== PUBLIC ACTIONS =====================
+
+    /** Call when user records a transaction */
+    fun onTransactionRecorded() {
+        viewModelScope.launch {
+            gamificationUseCase.onTransactionRecorded()
+            val (streak, best) = gamificationUseCase.updateStreak()
+            gamificationUseCase.checkStreakMilestone(streak)
+        }
+    }
+
+    /** Call when user logs in daily */
+    fun onDailyLogin() {
+        viewModelScope.launch {
+            gamificationUseCase.onDailyLogin()
+            gamificationUseCase.updateStreak()
+        }
+    }
+
+    /** Call when budget adherence is confirmed for the day */
+    fun onBudgetAdhered() {
+        viewModelScope.launch {
+            gamificationUseCase.onBudgetAdhered()
+        }
+    }
+
+    /** Mark a quest as completed */
+    fun completeQuest(quest: DailyQuest) {
+        viewModelScope.launch {
+            repository.updateQuestProgress(quest.id, quest.targetValue, true)
+            gamificationUseCase.onQuestCompleted(quest.name, quest.xpReward)
+        }
+    }
+
+    /** Mark a challenge as completed */
+    fun completeChallenge(challenge: Challenge) {
+        viewModelScope.launch {
+            repository.updateChallengeProgress(challenge.id, challenge.targetValue, true)
+            gamificationUseCase.onChallengeCompleted(challenge.name, challenge.xpReward)
+        }
+    }
+
+    /** Use a streak freeze */
+    fun useFreeze() {
+        viewModelScope.launch {
+            gamificationUseCase.useFreeze()
+        }
+    }
+}
