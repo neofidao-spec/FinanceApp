@@ -1,28 +1,52 @@
 package com.financeapp.ui.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.financeapp.data.preferences.AppPreferences
 import com.financeapp.ui.screens.AddTransactionScreen
 import com.financeapp.ui.screens.BudgetScreen
 import com.financeapp.ui.screens.EditTransactionScreen
 import com.financeapp.ui.screens.MainScreen
+import com.financeapp.ui.screens.OnboardingScreen
+import com.financeapp.ui.screens.OnboardingViewModel
 import com.financeapp.ui.viewmodel.AddTransactionViewModel
 import com.financeapp.ui.viewmodel.BudgetViewModel
 import com.financeapp.ui.viewmodel.EditTransactionViewModel
 
 @Composable
 fun AppNavigation(
-    navController: NavHostController
+    navController: NavHostController,
+    appPreferences: AppPreferences
 ) {
+    val isOnboardingCompleted by appPreferences.isOnboardingCompleted.collectAsState(initial = false)
+
     NavHost(
         navController = navController,
-        startDestination = NavigationRoutes.Main::class.simpleName ?: "Main"
+        startDestination = if (isOnboardingCompleted) {
+            NavigationRoutes.Main::class.simpleName ?: "Main"
+        } else {
+            "Onboarding"
+        }
     ) {
+        composable("Onboarding") {
+            val viewModel: OnboardingViewModel = hiltViewModel()
+            OnboardingScreen(
+                onFinish = {
+                    navController.navigate(NavigationRoutes.Main::class.simpleName ?: "Main") {
+                        popUpTo("Onboarding") { inclusive = true }
+                    }
+                },
+                viewModel = viewModel
+            )
+        }
+
         composable(NavigationRoutes.Main::class.simpleName ?: "Main") {
             MainScreen(navController = navController)
         }

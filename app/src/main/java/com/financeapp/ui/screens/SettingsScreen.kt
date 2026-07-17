@@ -1,5 +1,6 @@
 package com.financeapp.ui.screens
 
+import android.content.Intent
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -16,18 +17,25 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.financeapp.ui.viewmodel.SettingsViewModel
 
 @Composable
 fun SettingsScreen(
-    isDarkMode: Boolean = false,
-    onToggleDarkMode: (Boolean) -> Unit = {}
+    viewModel: SettingsViewModel = hiltViewModel()
 ) {
+    val uiState by viewModel.uiState.collectAsState()
+    val context = LocalContext.current
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -37,7 +45,7 @@ fun SettingsScreen(
         Text("Pengaturan", fontWeight = FontWeight.Bold, fontSize = 24.sp)
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Appearance section
+        // Section 1: Tampilan
         Text("Tampilan", fontWeight = FontWeight.Bold, fontSize = 14.sp, color = Color.Gray)
         Spacer(modifier = Modifier.height(8.dp))
 
@@ -52,8 +60,8 @@ fun SettingsScreen(
                         Text("Gunakan tema gelap", fontSize = 12.sp, color = Color.Gray)
                     }
                     Switch(
-                        checked = isDarkMode,
-                        onCheckedChange = onToggleDarkMode
+                        checked = uiState.isDarkMode,
+                        onCheckedChange = { viewModel.toggleDarkMode(it) }
                     )
                 }
             }
@@ -61,12 +69,71 @@ fun SettingsScreen(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Data section
+        // Section 2: Akun
+        Text("Akun", fontWeight = FontWeight.Bold, fontSize = 14.sp, color = Color.Gray)
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Card(modifier = Modifier.fillMaxWidth()) {
+            Column(modifier = Modifier.padding(16.dp)) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text("Jumlah Akun", fontWeight = FontWeight.Medium)
+                        Text("${uiState.accountCount} akun terdaftar", fontSize = 12.sp, color = Color.Gray)
+                    }
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+                Divider()
+                Spacer(modifier = Modifier.height(8.dp))
+                Text("Kelola Akun", fontWeight = FontWeight.Medium)
+                Text("Atur akun Cash, Bank, E-Wallet", fontSize = 12.sp, color = Color.Gray)
+            }
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        // Section 3: Data
         Text("Data", fontWeight = FontWeight.Bold, fontSize = 14.sp, color = Color.Gray)
         Spacer(modifier = Modifier.height(8.dp))
 
         Card(modifier = Modifier.fillMaxWidth()) {
             Column(modifier = Modifier.padding(16.dp)) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text("Total Transaksi", fontWeight = FontWeight.Medium)
+                        Text("${uiState.transactionCount} transaksi tersimpan", fontSize = 12.sp, color = Color.Gray)
+                    }
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+                Divider()
+                Spacer(modifier = Modifier.height(8.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text("Export CSV", fontWeight = FontWeight.Medium)
+                        Text("Unduh data transaksi dalam format CSV", fontSize = 12.sp, color = Color.Gray)
+                    }
+                    androidx.compose.material3.TextButton(
+                        onClick = {
+                            val intent = viewModel.exportTransactions()
+                            if (intent != null) {
+                                context.startActivity(Intent.createChooser(intent, "Bagikan CSV"))
+                            }
+                        }
+                    ) {
+                        Text("Export")
+                    }
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+                Divider()
+                Spacer(modifier = Modifier.height(8.dp))
                 Text("Database", fontWeight = FontWeight.Medium)
                 Text("Room Database v2 - Offline storage", fontSize = 12.sp, color = Color.Gray)
                 Spacer(modifier = Modifier.height(8.dp))
@@ -79,7 +146,7 @@ fun SettingsScreen(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // About section
+        // Section 4: Tentang
         Text("Tentang", fontWeight = FontWeight.Bold, fontSize = 14.sp, color = Color.Gray)
         Spacer(modifier = Modifier.height(8.dp))
 
@@ -102,9 +169,8 @@ fun SettingsScreen(
             }
         }
 
-        Spacer(modifier = Modifier.height(32.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
-        // Tech stack info
         Card(modifier = Modifier.fillMaxWidth()) {
             Column(modifier = Modifier.padding(16.dp)) {
                 Text("Tech Stack", fontWeight = FontWeight.Medium, fontSize = 14.sp)
@@ -115,8 +181,12 @@ fun SettingsScreen(
                 TechItem("Room Database", "2.6.0")
                 TechItem("Navigation Compose", "2.7.5")
                 TechItem("Lifecycle ViewModel", "2.6.2")
+                TechItem("Hilt", "2.48")
+                TechItem("DataStore", "1.0.0")
             }
         }
+
+        Spacer(modifier = Modifier.height(32.dp))
     }
 }
 

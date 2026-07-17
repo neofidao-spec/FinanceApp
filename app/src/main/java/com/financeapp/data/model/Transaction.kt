@@ -26,7 +26,7 @@ data class Transaction(
     val categoryId: Long,
     val description: String,
     val date: LocalDateTime,
-    val createdAt: LocalDateTime = LocalDateTime.now()
+    val createdAt: LocalDateTime = LocalDateTime.now(),
     val accountId: Long = 1
 )
 
