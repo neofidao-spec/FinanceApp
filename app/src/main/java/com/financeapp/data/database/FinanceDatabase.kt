@@ -30,7 +30,7 @@ abstract class FinanceDatabase : RoomDatabase() {
         @Volatile
         private var INSTANCE: FinanceDatabase? = null
 
-        private val MIGRATION_1_2 = object : Migration(1, 2) {
+        internal val MIGRATION_1_2 = object : Migration(1, 2) {
             override fun migrate(database: SupportSQLiteDatabase) {
                 // Migration from v1 to v2 - add Budget table
                 database.execSQL("""
@@ -48,7 +48,7 @@ abstract class FinanceDatabase : RoomDatabase() {
             }
         }
 
-        private val MIGRATION_2_3 = object : Migration(2, 3) {
+        internal val MIGRATION_2_3 = object : Migration(2, 3) {
             override fun migrate(database: SupportSQLiteDatabase) {
                 // Migration from v2 to v3 - add Account table
                 database.execSQL("""
@@ -63,7 +63,7 @@ abstract class FinanceDatabase : RoomDatabase() {
             }
         }
 
-        private val MIGRATION_3_4 = object : Migration(3, 4) {
+        internal val MIGRATION_3_4 = object : Migration(3, 4) {
             override fun migrate(database: SupportSQLiteDatabase) {
                 // Migration from v3 to v4 - add Achievement table
                 database.execSQL("""
@@ -79,14 +79,14 @@ abstract class FinanceDatabase : RoomDatabase() {
             }
         }
 
-        private val MIGRATION_4_5 = object : Migration(4, 5) {
+        internal val MIGRATION_4_5 = object : Migration(4, 5) {
             override fun migrate(database: SupportSQLiteDatabase) {
                 // Migration from v4 to v5 - add accountId to transactions
                 database.execSQL("ALTER TABLE transactions ADD COLUMN accountId INTEGER DEFAULT 1")
             }
         }
 
-        private val MIGRATION_5_6 = object : Migration(5, 6) {
+        internal val MIGRATION_5_6 = object : Migration(5, 6) {
             override fun migrate(database: SupportSQLiteDatabase) {
                 // Migration from v5 to v6 - schema refinements
                 // This version keeps all existing data

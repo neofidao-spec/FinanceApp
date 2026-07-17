@@ -35,7 +35,13 @@ object DatabaseModule {
             FinanceDatabase::class.java,
             "finance_database"
         )
-        .fallbackToDestructiveMigration()
+        .addMigrations(
+            FinanceDatabase.MIGRATION_1_2,
+            FinanceDatabase.MIGRATION_2_3,
+            FinanceDatabase.MIGRATION_3_4,
+            FinanceDatabase.MIGRATION_4_5,
+            FinanceDatabase.MIGRATION_5_6
+        )
         .addCallback(object : RoomDatabase.Callback() {
             override fun onCreate(db: SupportSQLiteDatabase) {
                 super.onCreate(db)
