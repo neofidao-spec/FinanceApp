@@ -13,9 +13,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.time.YearMonth
 import javax.inject.Inject
@@ -45,7 +44,7 @@ class BudgetViewModel @Inject constructor(
     val uiState: StateFlow<BudgetUiState> = _uiState.asStateFlow()
 
     init {
-        // Single coroutine handles all initialization
+        // Single unified observer: react to transactions OR budgets changing
         viewModelScope.launch {
             try {
                 _uiState.value = _uiState.value.copy(isLoading = true)
@@ -54,27 +53,16 @@ class BudgetViewModel @Inject constructor(
                 val categories = categoryRepository.getAllCategories().first()
                 _uiState.value = _uiState.value.copy(categories = categories)
 
-                // Load budgets for current month
-                val summary = budgetRepository.getBudgetSummary(_uiState.value.selectedMonth)
-                _uiState.value = _uiState.value.copy(
-                    budgetSummary = summary,
-                    isLoading = false
-                )
-
-                // Observe budget changes in background
-
-                // Also refresh budget when transactions change
-                launch {
-                    transactionRepository.getAllTransactions().collect {
-                        val newSummary = budgetRepository.getBudgetSummary(_uiState.value.selectedMonth)
-                        _uiState.value = _uiState.value.copy(budgetSummary = newSummary)
-                    }
-                }
-                launch {
-                    budgetRepository.getActiveBudgets().collect {
-                        val newSummary = budgetRepository.getBudgetSummary(_uiState.value.selectedMonth)
-                        _uiState.value = _uiState.value.copy(budgetSummary = newSummary)
-                    }
+                // Refresh budget summaries when transactions or budgets change
+                combine(
+                    transactionRepository.getAllTransactions(),
+                    budgetRepository.getActiveBudgets()
+                ) { _, _ -> /* trigger */ }.collect {
+                    val summary = budgetRepository.getBudgetSummary(_uiState.value.selectedMonth)
+                    _uiState.value = _uiState.value.copy(
+                        budgetSummary = summary,
+                        isLoading = false
+                    )
                 }
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(

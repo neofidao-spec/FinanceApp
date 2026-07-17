@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 import javax.inject.Inject
@@ -39,10 +40,17 @@ class TransactionViewModel @Inject constructor(
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(TransactionUiState())
     val uiState: StateFlow<TransactionUiState> = _uiState.asStateFlow()
+    private val _searchFlow = MutableStateFlow("")
 
     init {
         loadTransactions()
         loadCategories()
+        // Search debounce: apply filters only after 300ms idle
+        viewModelScope.launch {
+            _searchFlow.debounce(300).collectLatest {
+                applyFilters()
+            }
+        }
     }
 
     private fun loadTransactions() {
@@ -78,8 +86,8 @@ class TransactionViewModel @Inject constructor(
     }
 
     fun updateSearchQuery(query: String) {
-        _uiState.value = _uiState.value.copy(searchQuery = query)
-        applyFilters()
+        _uiState.value = _uiState.value.copy(searchQuery = query, selectedFilter = null)
+        _searchFlow.value = query
     }
 
     fun applyFilter(filter: TransactionFilter) {
@@ -92,7 +100,10 @@ class TransactionViewModel @Inject constructor(
     }
 
     fun clearFilter() {
-        _uiState.value = _uiState.value.copy(activeFilter = null)
+        _uiState.value = _uiState.value.copy(
+            activeFilter = null,
+            selectedFilter = null
+        )
         applyFilters()
     }
 

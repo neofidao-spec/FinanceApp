@@ -32,6 +32,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -49,6 +50,7 @@ fun AddTransactionScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
+    val focusManager = LocalFocusManager.current
 
     uiState.successMessage?.let {
         LaunchedEffect(it) {
@@ -172,7 +174,10 @@ fun AddTransactionScreen(
 
             // Save button
             Button(
-                onClick = { viewModel.submitTransaction() },
+                onClick = {
+                    focusManager.clearFocus()
+                    viewModel.submitTransaction()
+                },
                 modifier = Modifier.fillMaxWidth(),
                 enabled = uiState.isFormValid && !uiState.isLoading,
                 colors = ButtonDefaults.buttonColors(

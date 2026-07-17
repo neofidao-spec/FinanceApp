@@ -14,6 +14,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.io.File
@@ -38,37 +39,21 @@ class SettingsViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            appPreferences.isDarkMode.collect { dark ->
-                _uiState.value = _uiState.value.copy(isDarkMode = dark)
-            }
-        }
-        loadStats()
-
-        // Auto-refresh when transactions change
-        viewModelScope.launch {
-            transactionRepository.getAllTransactions().collect {
-                loadStats()
-            }
-        }
-        // Auto-refresh when accounts change
-        viewModelScope.launch {
-            accountRepository.getAllAccounts().collect {
-                loadStats()
-            }
-        }
-    }
-
-    private fun loadStats() {
-        viewModelScope.launch {
-            try {
+            // Unified observer: dark mode preference + data changes
+            combine(
+                appPreferences.isDarkMode,
+                transactionRepository.getAllTransactions(),
+                accountRepository.getAllAccounts()
+            ) { dark, transactions, _ ->
                 val txCount = transactionRepository.getTransactionCount()
                 val accCount = accountRepository.getAccountCount()
-                _uiState.value = _uiState.value.copy(
+                SettingsUiState(
+                    isDarkMode = dark,
                     transactionCount = txCount,
                     accountCount = accCount
                 )
-            } catch (e: Exception) {
-                // Silent fail
+            }.collect { state ->
+                _uiState.value = state
             }
         }
     }

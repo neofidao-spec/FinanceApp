@@ -35,13 +35,21 @@ class ReportViewModel @Inject constructor(
     val uiState: StateFlow<ReportUiState> = _uiState.asStateFlow()
 
     init {
-        // Auto-refresh when transactions change
         viewModelScope.launch {
-            transactionRepository.getAllTransactions().collect {
+            try {
+                // Initial load
                 loadMonthlyReport()
+                // Auto-refresh when transactions change
+                transactionRepository.getAllTransactions().collect {
+                    loadMonthlyReport()
+                }
+            } catch (e: Exception) {
+                _uiState.value = _uiState.value.copy(
+                    errorMessage = e.message,
+                    isLoading = false
+                )
             }
         }
-        loadMonthlyReport()
     }
 
     fun loadMonthlyReport() {
