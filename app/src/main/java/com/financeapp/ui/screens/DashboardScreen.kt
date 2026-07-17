@@ -62,6 +62,7 @@ import com.financeapp.data.model.TransactionType
 import com.financeapp.data.model.TransactionWithCategory
 import com.financeapp.ui.components.AnimatedNumber
 import com.financeapp.ui.components.BudgetProgressRing
+import com.financeapp.ui.components.DailyQuestCard
 import com.financeapp.ui.components.DonutChart
 import com.financeapp.ui.components.DonutSegment
 import com.financeapp.ui.components.LevelCard
@@ -203,7 +204,14 @@ private fun DashboardContent(
             }
         }
 
-        // 4. Income/Expense Cards
+        // 4. Daily Quests
+        if (gamificationState.dailyQuests.isNotEmpty() && !gamificationState.isLoading) {
+            item {
+                DailyQuestCard(quests = gamificationState.dailyQuests)
+            }
+        }
+
+        // 5. Income/Expense Cards
         item {
             Row(
                 modifier = Modifier.fillMaxWidth(),

@@ -9,6 +9,7 @@ import com.financeapp.data.model.TransactionType
 import com.financeapp.data.repository.AccountRepository
 import com.financeapp.data.repository.CategoryRepository
 import com.financeapp.data.repository.TransactionRepository
+import com.financeapp.domain.GamificationUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -36,7 +37,8 @@ data class AddTransactionUiState(
 class AddTransactionViewModel @Inject constructor(
     private val transactionRepository: TransactionRepository,
     private val categoryRepository: CategoryRepository,
-    private val accountRepository: AccountRepository
+    private val accountRepository: AccountRepository,
+    private val gamificationUseCase: GamificationUseCase
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(AddTransactionUiState())
     val uiState: StateFlow<AddTransactionUiState> = _uiState.asStateFlow()
@@ -135,6 +137,14 @@ class AddTransactionViewModel @Inject constructor(
                 )
 
                 transactionRepository.addTransaction(transaction)
+
+                // Gamification: award XP, update streak, update quest progress
+                try {
+                    gamificationUseCase.onTransactionRecorded()
+                    gamificationUseCase.updateStreak()
+                } catch (_: Exception) {
+                    // Gamification failure is non-blocking
+                }
 
                 _uiState.value = _uiState.value.copy(
                     successMessage = "Transaksi berhasil ditambahkan",
