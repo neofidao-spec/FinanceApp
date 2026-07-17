@@ -17,13 +17,16 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavHostController
+import com.financeapp.ui.navigation.NavigationRoutes
 import com.financeapp.ui.viewmodel.DashboardViewModel
 import com.financeapp.ui.viewmodel.TransactionViewModel
 
 @Composable
 fun MainScreen(
     dashboardViewModel: DashboardViewModel,
-    transactionViewModel: TransactionViewModel
+    transactionViewModel: TransactionViewModel,
+    navController: NavHostController
 ) {
     var selectedTab by remember { mutableIntStateOf(0) }
 
@@ -58,7 +61,11 @@ fun MainScreen(
         },
         floatingActionButton = {
             if (selectedTab == 1) {
-                FloatingActionButton(onClick = { /* TODO: Open add transaction */ }) {
+                FloatingActionButton(
+                    onClick = {
+                        navController.navigate(NavigationRoutes.AddTransaction::class.simpleName ?: "AddTransaction")
+                    }
+                ) {
                     Icon(Icons.Filled.Add, contentDescription = "Tambah Transaksi")
                 }
             }
@@ -71,7 +78,12 @@ fun MainScreen(
         ) {
             when (selectedTab) {
                 0 -> DashboardScreen(dashboardViewModel)
-                1 -> TransactionListScreen(transactionViewModel)
+                1 -> TransactionListScreen(
+                    viewModel = transactionViewModel,
+                    onTransactionClick = { transactionId ->
+                        navController.navigate("edit_transaction/$transactionId")
+                    }
+                )
                 2 -> ReportScreen()
                 3 -> SettingsScreen()
             }

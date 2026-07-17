@@ -6,12 +6,14 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.ViewModelProvider
-import com.financeapp.ui.screens.MainScreen
+import androidx.navigation.compose.rememberNavController
+import com.financeapp.ui.navigation.AppNavigation
 import com.financeapp.ui.theme.FinanceAppTheme
+import com.financeapp.ui.viewmodel.AddTransactionViewModel
 import com.financeapp.ui.viewmodel.DashboardViewModel
+import com.financeapp.ui.viewmodel.EditTransactionViewModel
 import com.financeapp.ui.viewmodel.TransactionViewModel
 
 class MainActivity : ComponentActivity() {
@@ -19,6 +21,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         val app = application as FinanceApp
+        
         val dashboardViewModelFactory = object : ViewModelProvider.Factory {
             override fun <T : androidx.lifecycle.ViewModel> create(modelClass: Class<T>): T {
                 return DashboardViewModel(app.transactionRepository, app.categoryRepository) as T
@@ -31,8 +34,22 @@ class MainActivity : ComponentActivity() {
             }
         }
 
+        val addTransactionViewModelFactory = object : ViewModelProvider.Factory {
+            override fun <T : androidx.lifecycle.ViewModel> create(modelClass: Class<T>): T {
+                return AddTransactionViewModel(app.transactionRepository, app.categoryRepository) as T
+            }
+        }
+
+        val editTransactionViewModelFactory = object : ViewModelProvider.Factory {
+            override fun <T : androidx.lifecycle.ViewModel> create(modelClass: Class<T>): T {
+                return EditTransactionViewModel(app.transactionRepository, app.categoryRepository) as T
+            }
+        }
+
         val dashboardViewModel = ViewModelProvider(this, dashboardViewModelFactory)[DashboardViewModel::class.java]
         val transactionViewModel = ViewModelProvider(this, transactionViewModelFactory)[TransactionViewModel::class.java]
+        val addTransactionViewModel = ViewModelProvider(this, addTransactionViewModelFactory)[AddTransactionViewModel::class.java]
+        val editTransactionViewModel = ViewModelProvider(this, editTransactionViewModelFactory)[EditTransactionViewModel::class.java]
 
         setContent {
             FinanceAppTheme {
@@ -40,7 +57,14 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    MainScreen(dashboardViewModel, transactionViewModel)
+                    val navController = rememberNavController()
+                    AppNavigation(
+                        navController = navController,
+                        dashboardViewModel = dashboardViewModel,
+                        transactionViewModel = transactionViewModel,
+                        addTransactionViewModel = addTransactionViewModel,
+                        editTransactionViewModel = editTransactionViewModel
+                    )
                 }
             }
         }

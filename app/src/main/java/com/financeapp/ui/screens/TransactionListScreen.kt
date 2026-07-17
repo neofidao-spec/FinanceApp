@@ -25,11 +25,28 @@ import androidx.compose.ui.unit.sp
 import com.financeapp.ui.viewmodel.TransactionViewModel
 
 @Composable
-fun TransactionListScreen(viewModel: TransactionViewModel) {
+fun TransactionListScreen(
+    viewModel: TransactionViewModel,
+    onTransactionClick: (Long) -> Unit = {}
+) {
     val uiState by viewModel.uiState.collectAsState()
 
     if (uiState.isLoading) {
         CircularProgressIndicator()
+        return
+    }
+
+    if (uiState.transactions.isEmpty()) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(32.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text("Belum ada transaksi", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+            Spacer(modifier = Modifier.height(8.dp))
+            Text("Mulai dengan menambahkan transaksi baru", fontSize = 12.sp, color = Color.Gray)
+        }
         return
     }
 
@@ -39,7 +56,7 @@ fun TransactionListScreen(viewModel: TransactionViewModel) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 8.dp)
-                    .clickable { viewModel.selectTransaction(txn.transaction) }
+                    .clickable { onTransactionClick(txn.transaction.id) }
             ) {
                 Row(
                     modifier = Modifier
@@ -59,7 +76,7 @@ fun TransactionListScreen(viewModel: TransactionViewModel) {
                             color = if (txn.transaction.type.name == "INCOME") Color.Green else Color.Red
                         )
                         Text(
-                            txn.transaction.date.toString(),
+                            txn.transaction.date.format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy")),
                             fontSize = 12.sp,
                             color = Color.Gray
                         )
