@@ -65,6 +65,7 @@ import com.financeapp.ui.components.BudgetProgressRing
 import com.financeapp.ui.components.DailyQuestCard
 import com.financeapp.ui.components.DonutChart
 import com.financeapp.ui.components.DonutSegment
+import com.financeapp.ui.components.HealthScoreCard
 import com.financeapp.ui.components.LevelCard
 import com.financeapp.ui.components.MonthlyData
 import com.financeapp.ui.components.MonthlyTrendChart
@@ -415,97 +416,6 @@ private fun BalanceCard(
                     }
                 }
             }
-        }
-    }
-}
-
-@Composable
-private fun HealthScoreCard(
-    score: Int,
-    category: String,
-    description: String,
-    trend: com.financeapp.domain.HealthScore.Trend
-) {
-    val scoreColor = when {
-        score >= 80 -> Color(0xFF2E7D32)
-        score >= 60 -> Color(0xFF1565C0)
-        score >= 40 -> Color(0xFFE65100)
-        else -> Color(0xFFC62828)
-    }
-    
-    val trendIcon = when (trend) {
-        com.financeapp.domain.HealthScore.Trend.UP -> Icons.Filled.TrendingUp
-        com.financeapp.domain.HealthScore.Trend.DOWN -> Icons.Filled.TrendingDown
-        else -> Icons.Filled.TrendingUp
-    }
-    
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = scoreColor.copy(alpha = 0.1f)
-        )
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            // Score circle
-            Box(
-                modifier = Modifier
-                    .size(56.dp)
-                    .background(
-                        color = scoreColor.copy(alpha = 0.2f),
-                        shape = CircleShape
-                    ),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = "$score",
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = scoreColor
-                )
-            }
-            
-            Spacer(modifier = Modifier.width(16.dp))
-            
-            Column(modifier = Modifier.weight(1f)) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(
-                        text = "Kesehatan Keuangan",
-                        style = MaterialTheme.typography.titleSmall,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Icon(
-                        imageVector = trendIcon,
-                        contentDescription = if (trend == com.financeapp.domain.HealthScore.Trend.UP) "Meningkat" else "Menurun",
-                        tint = if (trend == com.financeapp.domain.HealthScore.Trend.UP) Color(0xFF2E7D32) else Color(0xFFC62828),
-                        modifier = Modifier.size(16.dp)
-                    )
-                }
-                Text(
-                    text = description,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-            
-            Text(
-                text = category,
-                fontSize = 12.sp,
-                fontWeight = FontWeight.Medium,
-                color = scoreColor,
-                modifier = Modifier
-                    .background(
-                        color = scoreColor.copy(alpha = 0.15f),
-                        shape = RoundedCornerShape(8.dp)
-                    )
-                    .padding(horizontal = 8.dp, vertical = 4.dp)
-            )
         }
     }
 }
