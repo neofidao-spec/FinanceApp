@@ -16,8 +16,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilterChip
-import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -120,19 +118,8 @@ fun EditTransactionScreen(
                 .padding(16.dp)
                 .verticalScroll(rememberScrollState())
         ) {
-            // Transaction type
-            Text("Tipe Transaksi", fontWeight = FontWeight.Bold)
-            Spacer(modifier = Modifier.height(8.dp))
-
-            FilterChip(
-                selected = uiState.transactionType == TransactionType.EXPENSE,
-                onClick = { viewModel.switchTransactionType(TransactionType.EXPENSE) },
-                label = { Text("Pengeluaran") },
-                colors = FilterChipDefaults.filterChipColors(
-                    selectedContainerColor = Color(0xFFF44336).copy(alpha = 0.15f),
-                    selectedLabelColor = Color(0xFFF44336)
-                )
-            )
+            // Transaction type (read-only)
+            Text("Tipe: ${if (uiState.transactionType == TransactionType.EXPENSE) "Pengeluaran" else "Pemasukan"}", fontWeight = FontWeight.Bold)
 
             Spacer(modifier = Modifier.height(16.dp))
 
