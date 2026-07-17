@@ -15,7 +15,6 @@ import com.financeapp.ui.screens.BudgetScreen
 import com.financeapp.ui.screens.EditTransactionScreen
 import com.financeapp.ui.screens.MainScreen
 import com.financeapp.ui.screens.OnboardingScreen
-import com.financeapp.ui.screens.OnboardingViewModel
 import com.financeapp.ui.viewmodel.AddTransactionViewModel
 import com.financeapp.ui.viewmodel.BudgetViewModel
 import com.financeapp.ui.viewmodel.EditTransactionViewModel
@@ -25,33 +24,25 @@ fun AppNavigation(
     navController: NavHostController,
     appPreferences: AppPreferences
 ) {
-    val isOnboardingCompleted by appPreferences.isOnboardingCompleted.collectAsState(initial = false)
-
     NavHost(
         navController = navController,
-        startDestination = if (isOnboardingCompleted) {
-            NavigationRoutes.Main::class.simpleName ?: "Main"
-        } else {
-            "Onboarding"
-        }
+        startDestination = "Main"
     ) {
         composable("Onboarding") {
-            val viewModel: OnboardingViewModel = hiltViewModel()
             OnboardingScreen(
                 onFinish = {
-                    navController.navigate(NavigationRoutes.Main::class.simpleName ?: "Main") {
+                    navController.navigate("Main") {
                         popUpTo("Onboarding") { inclusive = true }
                     }
-                },
-                viewModel = viewModel
+                }
             )
         }
 
-        composable(NavigationRoutes.Main::class.simpleName ?: "Main") {
+        composable("Main") {
             MainScreen(navController = navController)
         }
 
-        composable(NavigationRoutes.AddTransaction::class.simpleName ?: "AddTransaction") {
+        composable("AddTransaction") {
             val viewModel: AddTransactionViewModel = hiltViewModel()
             AddTransactionScreen(
                 viewModel = viewModel,
@@ -72,7 +63,7 @@ fun AppNavigation(
             )
         }
 
-        composable(NavigationRoutes.Budget::class.simpleName ?: "Budget") {
+        composable("Budget") {
             val viewModel: BudgetViewModel = hiltViewModel()
             BudgetScreen(viewModel = viewModel)
         }

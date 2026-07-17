@@ -1,3 +1,7 @@
+import androidx.compose.foundation.background
+import androidx.compose.foundation.shape.RoundedCornerShape
+import com.financeapp.ui.utils.FinanceIcons
+
 package com.financeapp.ui.screens
 
 import androidx.compose.foundation.clickable
@@ -199,11 +203,25 @@ private fun TransactionCard(
             verticalAlignment = Alignment.CenterVertically
         ) {
             // Category icon
-            Text(
-                text = transaction.category.icon,
-                fontSize = 28.sp,
-                modifier = Modifier.padding(end = 12.dp)
-            )
+            val icon = FinanceIcons.getIcon(transaction.category.name)
+            val iconColor = FinanceIcons.getColorFromHex(transaction.category.color)
+            Box(
+                modifier = Modifier
+                    .size(40.dp)
+                    .background(
+                        color = iconColor.copy(alpha = 0.15f),
+                        shape = RoundedCornerShape(10.dp)
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    tint = iconColor,
+                    modifier = Modifier.size(20.dp)
+                )
+            }
+            Spacer(modifier = Modifier.width(12.dp))
 
             // Category name + description
             Column(modifier = Modifier.weight(1f)) {
