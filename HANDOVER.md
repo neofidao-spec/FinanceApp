@@ -67,7 +67,7 @@
 | CsvExporter utility | ✅ | `util/CsvExporter.kt` |
 | SettingsScreen | ✅ | Dark mode toggle, export CSV, tech info |
 
-### Phase 6: Gamification ⚠️ PARTIAL (75%)
+### Phase 6: Gamification ⚠️ PARTIAL (85%)
 | Task | Status | Catatan |
 |------|--------|---------|
 | Achievement entity + DAO + Repository | ✅ | 9 default achievements (4 kategori) |
@@ -84,9 +84,8 @@
 | Streak counter UI | ✅ | `f7ab798` — `StreakCard.kt` di dashboard |
 | Daily Quests UI di dashboard | ✅ | `902117b` — `DailyQuestCard.kt` + dashboard integration |
 | Transaction → gamification wiring | ✅ | `902117b` — AddTransactionVM triggers XP + streak |
-| Profile page / GamificationScreen | ❌ BELUM | |
+| Profile page / GamificationScreen | ✅ | `cafdfa7` — Full screen + bottom nav 'Profil' tab |
 | AchievementGallery screen | ❌ BELUM | |
-
 ### Phase 7: Polish ⚠️ PARTIAL
 | Task | Status | Catatan |
 |------|--------|---------|
@@ -110,7 +109,7 @@
   UserProgress, DailyQuest, Challenge, XpHistory)
 - Hilt DI (DatabaseModule + RepositoryModule)
 - DataStore preferences
-- 8 screens, 8 viewmodels, 12+ reusable components
+- 9 screens (Dashboard, Transaction, Add/Edit, Report, Budget, Settings, Onboarding, Gamification), 9 viewmodels, 15+ reusable components
 
 ### Architecture
 ```
@@ -149,10 +148,11 @@ com.financeapp/
 │   └── preferences/
 │       └── AppPreferences.kt        — DataStore wrapper
 ├── ui/
-│   ├── screens/ (8)
+│   ├── screens/ (9)
 │   │   ├── DashboardScreen.kt, TransactionListScreen.kt, AddTransactionScreen.kt
 │   │   ├── EditTransactionScreen.kt, BudgetScreen.kt, ReportScreen.kt
-│   │   ├── SettingsScreen.kt, OnboardingScreen.kt
+│   │   ├── SettingsScreen.kt, OnboardingScreen.kt, GamificationScreen.kt
+│   │   ├── MainScreen.kt
 │   ├── viewmodel/ (9)
 │   │   ├── DashboardViewModel.kt, TransactionViewModel.kt, AddTransactionViewModel.kt
 │   │   ├── EditTransactionViewModel.kt, BudgetViewModel.kt, ReportViewModel.kt
@@ -210,8 +210,8 @@ com.financeapp/
 2. ~~Daily Quests UI di dashboard~~ — Commit `902117b`
 3. ~~Wiring transaction recording → XP + streak~~ — Commit `902117b`
 
-### MEDIUM: Gamification Screen (Phase 6.4)
-4. **GamificationScreen** — Quest list, challenge progress, XP history, badge gallery
+### ~~MEDIUM: Gamification Screen (Phase 6.4)~~ ✅ DONE
+4. ~~GamificationScreen~~ — Commit `cafdfa7`
 
 ### MEDIUM: Transaction UX (Phase 3 remaining)
 5. **SwipeActions component** — Swipe-to-edit, swipe-to-delete dengan undo
@@ -247,7 +247,7 @@ Setelah setiap task:
 | Master Plan Phase 3 (Transaction UX) | ⚠️ 60% |
 | Master Plan Phase 4 (Multi-Account) | ⚠️ 50% |
 | Master Plan Phase 5 (Onboarding) | ✅ SELESAI |
-| Master Plan Phase 6 (Gamification) | ⚠️ 75% |
+| Master Plan Phase 6 (Gamification) | ⚠️ 85% |
 | Master Plan Phase 7 (Polish) | ⚠️ 40% |
 | Production Ready | ❌ Perlu gamification UI |
 
