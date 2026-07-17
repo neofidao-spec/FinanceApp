@@ -7,11 +7,13 @@ import com.financeapp.data.model.Transaction
 import com.financeapp.data.model.TransactionType
 import com.financeapp.data.repository.CategoryRepository
 import com.financeapp.data.repository.TransactionRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
+import javax.inject.Inject
 
 data class EditTransactionUiState(
     val transactionId: Long = 0,
@@ -28,7 +30,8 @@ data class EditTransactionUiState(
     val showDeleteConfirm: Boolean = false
 )
 
-class EditTransactionViewModel(
+@HiltViewModel
+class EditTransactionViewModel @Inject constructor(
     private val transactionRepository: TransactionRepository,
     private val categoryRepository: CategoryRepository
 ) : ViewModel() {

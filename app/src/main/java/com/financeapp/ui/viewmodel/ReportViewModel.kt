@@ -7,6 +7,7 @@ import com.financeapp.data.model.MonthlyReport
 import com.financeapp.data.model.TransactionType
 import com.financeapp.data.repository.CategoryRepository
 import com.financeapp.data.repository.TransactionRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -15,6 +16,7 @@ import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
+import javax.inject.Inject
 
 data class ReportUiState(
     val currentMonth: YearMonth = YearMonth.now(),
@@ -24,7 +26,8 @@ data class ReportUiState(
     val errorMessage: String? = null
 )
 
-class ReportViewModel(
+@HiltViewModel
+class ReportViewModel @Inject constructor(
     private val transactionRepository: TransactionRepository,
     private val categoryRepository: CategoryRepository
 ) : ViewModel() {

@@ -8,11 +8,13 @@ import com.financeapp.data.model.BudgetWithCategory
 import com.financeapp.data.model.Category
 import com.financeapp.data.repository.BudgetRepository
 import com.financeapp.data.repository.CategoryRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.time.YearMonth
+import javax.inject.Inject
 
 data class BudgetUiState(
     val budgetSummary: BudgetSummary? = null,
@@ -30,7 +32,8 @@ data class BudgetUiState(
     val addAlertThreshold: String = "80"
 )
 
-class BudgetViewModel(
+@HiltViewModel
+class BudgetViewModel @Inject constructor(
     private val budgetRepository: BudgetRepository,
     private val categoryRepository: CategoryRepository
 ) : ViewModel() {

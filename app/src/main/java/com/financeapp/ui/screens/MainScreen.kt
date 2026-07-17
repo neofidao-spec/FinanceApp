@@ -19,17 +19,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import com.financeapp.ui.navigation.NavigationRoutes
-import com.financeapp.ui.viewmodel.BudgetViewModel
-import com.financeapp.ui.viewmodel.DashboardViewModel
-import com.financeapp.ui.viewmodel.ReportViewModel
-import com.financeapp.ui.viewmodel.TransactionViewModel
 
 @Composable
 fun MainScreen(
-    dashboardViewModel: DashboardViewModel,
-    transactionViewModel: TransactionViewModel,
-    reportViewModel: ReportViewModel,
-    budgetViewModel: BudgetViewModel,
     navController: NavHostController
 ) {
     var selectedTab by remember { mutableIntStateOf(0) }
@@ -87,15 +79,14 @@ fun MainScreen(
                 .padding(innerPadding)
         ) {
             when (selectedTab) {
-                0 -> DashboardScreen(viewModel = dashboardViewModel)
+                0 -> DashboardScreen()
                 1 -> TransactionListScreen(
-                    viewModel = transactionViewModel,
                     onTransactionClick = { id ->
                         navController.navigate("edit_transaction/$id")
                     }
                 )
-                2 -> ReportScreen(viewModel = reportViewModel)
-                3 -> BudgetScreen(viewModel = budgetViewModel)
+                2 -> ReportScreen()
+                3 -> BudgetScreen()
                 4 -> SettingsScreen()
             }
         }

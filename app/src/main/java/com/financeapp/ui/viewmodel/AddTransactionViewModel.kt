@@ -7,11 +7,13 @@ import com.financeapp.data.model.Transaction
 import com.financeapp.data.model.TransactionType
 import com.financeapp.data.repository.CategoryRepository
 import com.financeapp.data.repository.TransactionRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
+import javax.inject.Inject
 
 data class AddTransactionUiState(
     val amount: String = "",
@@ -26,7 +28,8 @@ data class AddTransactionUiState(
     val isFormValid: Boolean = false
 )
 
-class AddTransactionViewModel(
+@HiltViewModel
+class AddTransactionViewModel @Inject constructor(
     private val transactionRepository: TransactionRepository,
     private val categoryRepository: CategoryRepository
 ) : ViewModel() {

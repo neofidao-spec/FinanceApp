@@ -36,6 +36,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.financeapp.data.model.TransactionType
 import com.financeapp.ui.components.AmountInput
 import com.financeapp.ui.components.CategorySelector
@@ -45,7 +46,7 @@ import com.financeapp.ui.viewmodel.EditTransactionViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditTransactionScreen(
-    viewModel: EditTransactionViewModel,
+    viewModel: EditTransactionViewModel = hiltViewModel(),
     transactionId: Long,
     onNavigateBack: () -> Unit
 ) {

@@ -21,12 +21,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.financeapp.ui.utils.FormatterUtil
 import com.financeapp.ui.viewmodel.TransactionViewModel
 
 @Composable
 fun TransactionListScreen(
-    viewModel: TransactionViewModel,
+    viewModel: TransactionViewModel = hiltViewModel(),
     onTransactionClick: (Long) -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsState()
