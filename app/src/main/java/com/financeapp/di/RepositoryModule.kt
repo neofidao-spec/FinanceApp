@@ -1,13 +1,11 @@
 package com.financeapp.di
 
-import com.financeapp.data.database.BudgetDao
-import com.financeapp.data.database.CategoryDao
-import com.financeapp.data.database.TransactionDao
 import com.financeapp.data.database.AccountDao
 import com.financeapp.data.database.AchievementDao
+import com.financeapp.data.database.CategoryDao
+import com.financeapp.data.database.TransactionDao
 import com.financeapp.data.repository.AccountRepository
 import com.financeapp.data.repository.AchievementRepository
-import com.financeapp.data.repository.BudgetRepository
 import com.financeapp.data.repository.CategoryRepository
 import com.financeapp.data.repository.TransactionRepository
 import dagger.Module
@@ -30,16 +28,6 @@ object RepositoryModule {
     @Singleton
     fun provideCategoryRepository(categoryDao: CategoryDao): CategoryRepository {
         return CategoryRepository(categoryDao)
-    }
-
-    @Provides
-    @Singleton
-    fun provideBudgetRepository(
-        budgetDao: BudgetDao,
-        transactionDao: TransactionDao,
-        categoryRepository: CategoryRepository
-    ): BudgetRepository {
-        return BudgetRepository(budgetDao, transactionDao, categoryRepository)
     }
 
     @Provides
