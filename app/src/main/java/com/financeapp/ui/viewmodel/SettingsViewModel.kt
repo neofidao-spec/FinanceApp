@@ -79,33 +79,37 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
-    fun exportTransactions(): Intent? {
-        return try {
-            val transactions = kotlinx.coroutines.runBlocking {
-                transactionRepository.getAllTransactions().first()
+    fun exportTransactions(onExportReady: (Intent?) -> Unit) {
+        viewModelScope.launch {
+            try {
+                val transactions = transactionRepository.getAllTransactions().first()
+                if (transactions.isEmpty()) {
+                    onExportReady(null)
+                    return@launch
+                }
+
+                val csv = CsvExporter.exportTransactions(transactions)
+                val file = File(context.cacheDir, "transactions_export.csv")
+                file.writeText(csv)
+
+                val uri = FileProvider.getUriForFile(
+                    context,
+                    "${context.packageName}.fileprovider",
+                    file
+                )
+
+                val intent = Intent(Intent.ACTION_SEND).apply {
+                    type = "text/csv"
+                    putExtra(Intent.EXTRA_STREAM, uri)
+                    putExtra(Intent.EXTRA_SUBJECT, "Export Transaksi FinanceApp")
+                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                }
+                onExportReady(intent)
+            } catch (e: Exception) {
+                e.printStackTrace()
+                onExportReady(null)
             }
-            if (transactions.isEmpty()) return null
-
-            val csv = CsvExporter.exportTransactions(transactions)
-            val file = File(context.cacheDir, "transactions_export.csv")
-            file.writeText(csv)
-
-            val uri = FileProvider.getUriForFile(
-                context,
-                "${context.packageName}.fileprovider",
-                file
-            )
-
-            Intent(Intent.ACTION_SEND).apply {
-                type = "text/csv"
-                putExtra(Intent.EXTRA_STREAM, uri)
-                putExtra(Intent.EXTRA_SUBJECT, "Export Transaksi FinanceApp")
-                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-            null
         }
     }
 }

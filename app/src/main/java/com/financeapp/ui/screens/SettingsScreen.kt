@@ -122,9 +122,10 @@ fun SettingsScreen(
                     }
                     androidx.compose.material3.TextButton(
                         onClick = {
-                            val intent = viewModel.exportTransactions()
-                            if (intent != null) {
-                                context.startActivity(Intent.createChooser(intent, "Bagikan CSV"))
+                            viewModel.exportTransactions { intent ->
+                                if (intent != null) {
+                                    context.startActivity(Intent.createChooser(intent, "Bagikan CSV"))
+                                }
                             }
                         }
                     ) {

@@ -24,12 +24,14 @@ android {
 
     signingConfigs {
         create("release") {
-            // In CI, use environment variables
-            // For local dev, use a keystore file
-            val keystorePath = System.getenv("KEYSTORE_PATH") ?: "keystore/release.jks"
-            val keystorePassword = System.getenv("KEYSTORE_PASSWORD") ?: "financeapp123"
-            val keyAlias = System.getenv("KEY_ALIAS") ?: "financeapp"
-            val keyPassword = System.getenv("KEY_PASSWORD") ?: "financeapp123"
+            val keystorePath = System.getenv("KEYSTORE_PATH")
+                ?: throw GradleException("KEYSTORE_PATH environment variable not set")
+            val keystorePassword = System.getenv("KEYSTORE_PASSWORD")
+                ?: throw GradleException("KEYSTORE_PASSWORD environment variable not set")
+            val keyAlias = System.getenv("KEY_ALIAS")
+                ?: throw GradleException("KEY_ALIAS environment variable not set")
+            val keyPassword = System.getenv("KEY_PASSWORD")
+                ?: throw GradleException("KEY_PASSWORD environment variable not set")
 
             storeFile = file(keystorePath)
             storePassword = keystorePassword

@@ -112,7 +112,7 @@ private fun DashboardContent(
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Icon(
                     imageVector = Icons.Filled.TrendingDown,
-                    contentDescription = null,
+                    contentDescription = "Terjadi kesalahan",
                     modifier = Modifier.size(64.dp),
                     tint = MaterialTheme.colorScheme.error
                 )
@@ -131,7 +131,7 @@ private fun DashboardContent(
                 ) {
                     Icon(
                         imageVector = Icons.Filled.Refresh,
-                        contentDescription = null,
+                        contentDescription = "Coba lagi",
                         modifier = Modifier.padding(end = 8.dp)
                     )
                     Text("Coba Lagi")
@@ -330,7 +330,7 @@ private fun BalanceCard(
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Icon(
                                 imageVector = Icons.Filled.TrendingUp,
-                                contentDescription = null,
+                                contentDescription = "Pemasukan",
                                 tint = Color(0xFF81C784),
                                 modifier = Modifier.size(16.dp)
                             )
@@ -353,7 +353,7 @@ private fun BalanceCard(
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Icon(
                                 imageVector = Icons.Filled.TrendingDown,
-                                contentDescription = null,
+                                contentDescription = "Pengeluaran",
                                 tint = Color(0xFFEF9A9A),
                                 modifier = Modifier.size(16.dp)
                             )
@@ -440,7 +440,7 @@ private fun HealthScoreCard(
                     Spacer(modifier = Modifier.width(8.dp))
                     Icon(
                         imageVector = trendIcon,
-                        contentDescription = null,
+                        contentDescription = if (trend == com.financeapp.domain.HealthScore.Trend.UP) "Meningkat" else "Menurun",
                         tint = if (trend == com.financeapp.domain.HealthScore.Trend.UP) Color(0xFF2E7D32) else Color(0xFFC62828),
                         modifier = Modifier.size(16.dp)
                     )
@@ -500,7 +500,7 @@ private fun IncomeExpenseCard(
                 ) {
                     Icon(
                         imageVector = icon,
-                        contentDescription = null,
+                        contentDescription = label,
                         tint = color,
                         modifier = Modifier.size(18.dp)
                     )
@@ -554,7 +554,7 @@ private fun EmptyTransactionsState() {
         ) {
             Icon(
                 imageVector = Icons.Filled.Savings,
-                contentDescription = null,
+                contentDescription = "Belum ada transaksi",
                 modifier = Modifier.size(48.dp),
                 tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
             )
@@ -607,7 +607,7 @@ private fun TransactionItem(transaction: TransactionWithCategory) {
             ) {
                 Icon(
                     imageVector = icon,
-                    contentDescription = null,
+                    contentDescription = transaction.category.name,
                     tint = iconColor,
                     modifier = Modifier.size(20.dp)
                 )

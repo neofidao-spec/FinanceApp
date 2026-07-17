@@ -116,6 +116,7 @@ class EditTransactionViewModel @Inject constructor(
 
     fun updateTransaction() {
         if (!_uiState.value.isFormValid) return
+        val selectedCategory = _uiState.value.selectedCategory ?: return
 
         viewModelScope.launch {
             try {
@@ -125,7 +126,7 @@ class EditTransactionViewModel @Inject constructor(
                     id = _uiState.value.transactionId,
                     amount = _uiState.value.amount.toDouble(),
                     type = _uiState.value.transactionType,
-                    categoryId = _uiState.value.selectedCategory!!.id,
+                    categoryId = selectedCategory.id,
                     description = _uiState.value.description,
                     date = _uiState.value.selectedDate
                 )
@@ -155,13 +156,15 @@ class EditTransactionViewModel @Inject constructor(
     }
 
     fun deleteTransaction() {
+        val selectedCategory = _uiState.value.selectedCategory ?: return
+        
         viewModelScope.launch {
             try {
                 val transaction = Transaction(
                     id = _uiState.value.transactionId,
                     amount = _uiState.value.amount.toDouble(),
                     type = _uiState.value.transactionType,
-                    categoryId = _uiState.value.selectedCategory!!.id,
+                    categoryId = selectedCategory.id,
                     description = _uiState.value.description,
                     date = _uiState.value.selectedDate
                 )

@@ -7,7 +7,6 @@ import com.financeapp.data.model.CategorySummary
 import com.financeapp.data.model.TransactionType
 import com.financeapp.data.model.TransactionWithCategory
 import com.financeapp.data.repository.BudgetRepository
-import com.financeapp.data.repository.CategoryRepository
 import com.financeapp.data.repository.TransactionRepository
 import com.financeapp.domain.GetHealthScoreUseCase
 import com.financeapp.domain.HealthScore
@@ -15,6 +14,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
@@ -48,7 +48,6 @@ data class DashboardUiState(
 @HiltViewModel
 class DashboardViewModel @Inject constructor(
     private val transactionRepository: TransactionRepository,
-    private val categoryRepository: CategoryRepository,
     private val budgetRepository: BudgetRepository,
     private val getHealthScoreUseCase: GetHealthScoreUseCase
 ) : ViewModel() {
@@ -57,19 +56,26 @@ class DashboardViewModel @Inject constructor(
     val uiState: StateFlow<DashboardUiState> = _uiState.asStateFlow()
 
     init {
-        observeTransactions()
-        loadMonthlyTrend()
-        loadBudgetSummaries()
-        observeBudgets()
-        loadHealthScore()
-    }
-
-    private fun observeTransactions() {
+        // Single unified observer: react to transactions OR budgets changing
         viewModelScope.launch {
-            transactionRepository.getAllTransactions().collect { transactions ->
-                allTransactions = transactions
-                updateDashboardStats(transactions)
-                loadMonthlyTrend()
+            try {
+                combine(
+                    transactionRepository.getAllTransactions(),
+                    budgetRepository.getActiveBudgets()
+                ) { transactions, _ ->
+                    transactions
+                }.collect { transactions ->
+                    allTransactions = transactions
+                    updateDashboardStats(transactions)
+                    loadMonthlyTrend()
+                    loadBudgetSummaries()
+                    loadHealthScore()
+                }
+            } catch (e: Exception) {
+                _uiState.value = _uiState.value.copy(
+                    errorMessage = "Failed to load data: ${e.message}",
+                    isLoading = false
+                )
             }
         }
     }
@@ -80,7 +86,10 @@ class DashboardViewModel @Inject constructor(
         val startDate = month.atDay(1).atStartOfDay()
         val endDate = month.atEndOfMonth().atTime(23, 59, 59)
 
-        val monthTransactions = transactions.filter { it.transaction.date in startDate..endDate }.ifEmpty { transactions }
+        val monthTransactions = transactions.filter {
+            val txDate = it.transaction.date
+            !txDate.isBefore(startDate) && !txDate.isAfter(endDate)
+        }
 
         // Calculate income and expense from the list directly
         val income = monthTransactions
@@ -126,7 +135,6 @@ class DashboardViewModel @Inject constructor(
                 val trendData = mutableListOf<MonthlyTrendData>()
                 val currentMonth = YearMonth.now()
 
-                // Load last 6 months of data
                 for (i in 5 downTo 0) {
                     val month = currentMonth.minusMonths(i.toLong())
                     val startDate = month.atDay(1).atStartOfDay()
@@ -146,7 +154,9 @@ class DashboardViewModel @Inject constructor(
 
                 _uiState.value = _uiState.value.copy(monthlyTrend = trendData)
             } catch (e: Exception) {
-                // Silently fail for trend data
+                _uiState.value = _uiState.value.copy(
+                    errorMessage = "Failed to load trend data: ${e.message}"
+                )
             }
         }
     }
@@ -157,7 +167,9 @@ class DashboardViewModel @Inject constructor(
                 val summary = budgetRepository.getBudgetSummary(_uiState.value.selectedMonth)
                 _uiState.value = _uiState.value.copy(budgetSummaries = summary.budgets)
             } catch (e: Exception) {
-                // Silently fail for budget summaries
+                _uiState.value = _uiState.value.copy(
+                    errorMessage = "Failed to load budgets: ${e.message}"
+                )
             }
         }
     }
@@ -178,21 +190,15 @@ class DashboardViewModel @Inject constructor(
         loadHealthScore()
     }
 
-    private fun observeBudgets() {
-        viewModelScope.launch {
-            budgetRepository.getActiveBudgets().collect {
-                loadBudgetSummaries()
-            }
-        }
-    }
-
     private fun loadHealthScore() {
         viewModelScope.launch {
             try {
                 val score = getHealthScoreUseCase()
                 _uiState.value = _uiState.value.copy(healthScore = score)
             } catch (e: Exception) {
-                // Silent fail
+                _uiState.value = _uiState.value.copy(
+                    errorMessage = "Failed to calculate health score: ${e.message}"
+                )
             }
         }
     }
