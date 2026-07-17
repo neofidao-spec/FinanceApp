@@ -2,6 +2,7 @@ package com.financeapp.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.financeapp.data.model.Account
 import com.financeapp.data.model.Category
 import com.financeapp.data.model.Transaction
 import com.financeapp.data.model.TransactionType
@@ -24,6 +25,8 @@ data class EditTransactionUiState(
     val selectedCategory: Category? = null,
     val transactionType: TransactionType = TransactionType.EXPENSE,
     val categories: List<Category> = emptyList(),
+    val accounts: List<Account> = emptyList(),
+    val selectedAccountId: Long = 1,
     val isLoading: Boolean = true,
     val successMessage: String? = null,
     val errorMessage: String? = null,
@@ -49,6 +52,7 @@ class EditTransactionViewModel @Inject constructor(
                     val category = categoryRepository.getCategory(transaction.categoryId)
                     val account = accountRepository.getAccountById(transaction.accountId)
                     loadCategories()
+                    loadAccounts()
                     _uiState.value = _uiState.value.copy(
                         transactionId = transaction.id,
                         amount = transaction.amount.toString(),
@@ -56,6 +60,7 @@ class EditTransactionViewModel @Inject constructor(
                         selectedDate = transaction.date,
                         selectedCategory = category,
                         transactionType = transaction.type,
+                        selectedAccountId = transaction.accountId,
                         accountName = account?.let { "${it.icon} ${it.name}" } ?: "Unknown",
                         isLoading = false
                     )
@@ -82,6 +87,24 @@ class EditTransactionViewModel @Inject constructor(
         }
     }
 
+    private fun loadAccounts() {
+        viewModelScope.launch {
+            try {
+                accountRepository.getAllAccounts().collect { accounts ->
+                    val defaultId = accounts.firstOrNull { it.isDefault }?.id
+                        ?: accounts.firstOrNull()?.id ?: 1L
+                    _uiState.value = _uiState.value.copy(
+                        accounts = accounts,
+                        selectedAccountId = _uiState.value.selectedAccountId
+                            .takeIf { id -> accounts.any { it.id == id } } ?: defaultId
+                    )
+                }
+            } catch (e: Exception) {
+                // Silent fail - account selector will just be empty
+            }
+        }
+    }
+
     fun updateAmount(amount: String) {
         _uiState.value = _uiState.value.copy(amount = amount)
         validateForm()
@@ -101,6 +124,10 @@ class EditTransactionViewModel @Inject constructor(
             _uiState.value = _uiState.value.copy(selectedCategory = category)
             validateForm()
         }
+    }
+
+    fun selectAccount(accountId: Long) {
+        _uiState.value = _uiState.value.copy(selectedAccountId = accountId)
     }
 
     private fun validateForm() {
@@ -127,7 +154,8 @@ class EditTransactionViewModel @Inject constructor(
                     type = _uiState.value.transactionType,
                     categoryId = selectedCategory.id,
                     description = _uiState.value.description,
-                    date = _uiState.value.selectedDate
+                    date = _uiState.value.selectedDate,
+                    accountId = _uiState.value.selectedAccountId
                 )
 
                 transactionRepository.updateTransaction(transaction)

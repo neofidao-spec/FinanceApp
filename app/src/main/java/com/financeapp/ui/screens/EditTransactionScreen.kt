@@ -1,7 +1,9 @@
 package com.financeapp.ui.screens
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -16,6 +18,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -157,11 +160,24 @@ fun EditTransactionScreen(
                 onDateSelected = { viewModel.updateDate(it) }
             )
 
-            // Account display
-            if (uiState.accountName.isNotEmpty()) {
+            // Account selector
+            if (uiState.accounts.isNotEmpty()) {
                 Spacer(modifier = Modifier.height(8.dp))
-                Text("Akun", fontWeight = FontWeight.Bold, fontSize = 14.sp)
-                Text(uiState.accountName, fontSize = 14.sp, color = Color.Gray)
+                Text("Akun", fontWeight = FontWeight.Bold)
+                Spacer(modifier = Modifier.height(4.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    uiState.accounts.forEach { account ->
+                        FilterChip(
+                            selected = uiState.selectedAccountId == account.id,
+                            onClick = { viewModel.selectAccount(account.id) },
+                            label = { Text("${account.icon} ${account.name}") },
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
+                }
             }
 
             Spacer(modifier = Modifier.height(16.dp))

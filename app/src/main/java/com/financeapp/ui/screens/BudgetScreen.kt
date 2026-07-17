@@ -337,6 +337,7 @@ private fun QuickStatsRow(summary: com.financeapp.data.model.BudgetSummary) {
             label = "Over Budget",
             value = "${summary.exceedingBudgets.size}",
             icon = Icons.Filled.Warning,
+            contentDescription = "Over budget",
             color = if (summary.exceedingBudgets.isNotEmpty()) Color(0xFFFFF3E0) else MaterialTheme.colorScheme.surfaceVariant
         )
         
@@ -441,7 +442,7 @@ private fun BudgetItem(
                 ) {
                     Icon(
                         imageVector = icon,
-                        contentDescription = null,
+                        contentDescription = budget.category.name,
                         tint = iconColor,
                         modifier = Modifier.size(24.dp)
                     )
@@ -532,7 +533,11 @@ private fun BudgetItem(
                             budget.isAlertThreshold() -> Icons.Filled.Warning
                             else -> Icons.Filled.CheckCircle
                         },
-                        contentDescription = null,
+                        contentDescription = when {
+                            budget.isExceeded() -> "Melebihi batas"
+                            budget.isAlertThreshold() -> "Mendekati batas"
+                            else -> "Aman"
+                        },
                         modifier = Modifier.size(14.dp),
                         tint = when {
                             budget.isExceeded() -> Color(0xFFF44336)
@@ -600,7 +605,7 @@ private fun EmptyBudgetState() {
     ) {
         Icon(
             imageVector = Icons.Filled.Savings,
-            contentDescription = null,
+            contentDescription = "Belum ada budget",
             modifier = Modifier.size(64.dp),
             tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
         )
