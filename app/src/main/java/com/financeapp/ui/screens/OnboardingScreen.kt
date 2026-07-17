@@ -1,5 +1,7 @@
 package com.financeapp.ui.screens
 
+import androidx.compose.foundation.ExperimentalFoundationApi
+
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -91,6 +93,7 @@ val onboardingPages = listOf(
     )
 )
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun OnboardingScreen(
     onFinish: () -> Unit,
@@ -200,6 +203,7 @@ fun OnboardingScreen(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun OnboardingPageContent(page: OnboardingPage) {
     Column(
