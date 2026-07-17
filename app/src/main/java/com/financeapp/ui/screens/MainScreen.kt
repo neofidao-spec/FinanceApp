@@ -9,11 +9,13 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Payments
 import androidx.compose.material.icons.filled.Savings
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.TrendingUp
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Payments
 import androidx.compose.material.icons.outlined.Savings
 import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material.icons.outlined.TrendingUp
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -51,6 +53,7 @@ fun MainScreen(
         NavigationItem("Transaksi", Icons.Filled.Payments, Icons.Outlined.Payments),
         NavigationItem("Laporan", Icons.Filled.TrendingUp, Icons.Outlined.TrendingUp),
         NavigationItem("Budget", Icons.Filled.Savings, Icons.Outlined.Savings),
+        NavigationItem("Profil", Icons.Filled.Star, Icons.Outlined.Star),
         NavigationItem("Pengaturan", Icons.Filled.Settings, Icons.Outlined.Settings)
     )
 
@@ -109,7 +112,8 @@ fun MainScreen(
                 )
                 2 -> ReportScreen()
                 3 -> BudgetScreen()
-                4 -> SettingsScreen()
+                4 -> GamificationScreen()
+                5 -> SettingsScreen()
             }
         }
     }

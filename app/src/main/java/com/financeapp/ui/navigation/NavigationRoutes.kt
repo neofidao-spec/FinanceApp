@@ -9,4 +9,5 @@ sealed class NavigationRoutes {
     data object Reports : NavigationRoutes()
     data object Budget : NavigationRoutes()
     data object Settings : NavigationRoutes()
+    data object Gamification : NavigationRoutes()
 }

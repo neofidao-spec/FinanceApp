@@ -1,0 +1,428 @@
+package com.financeapp.ui.screens
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.EmojiEvents
+import androidx.compose.material.icons.filled.History
+import androidx.compose.material.icons.filled.LocalFireDepartment
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.TrendingUp
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.financeapp.data.model.Achievement
+import com.financeapp.data.model.Challenge
+import com.financeapp.data.model.DefaultAchievements
+import com.financeapp.data.model.XpHistory
+import com.financeapp.data.model.XpSource
+import com.financeapp.ui.components.LevelCard
+import com.financeapp.ui.components.StreakCard
+import com.financeapp.ui.viewmodel.GamificationUiState
+import com.financeapp.ui.viewmodel.GamificationViewModel
+import com.financeapp.ui.utils.FormatterUtil
+import java.time.format.DateTimeFormatter
+
+@Composable
+fun GamificationScreen(
+    viewModel: GamificationViewModel = hiltViewModel()
+) {
+    val state by viewModel.uiState.collectAsState()
+
+    // Loading state
+    if (state.isLoading && state.userProgress == null) {
+        Box(
+            modifier = Modifier.fillMaxSize().padding(32.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator()
+        }
+        return
+    }
+
+    // Error state
+    if (state.errorMessage != null && state.userProgress == null) {
+        Box(
+            modifier = Modifier.fillMaxSize().padding(32.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Icon(
+                    imageVector = Icons.Filled.TrendingUp,
+                    contentDescription = null,
+                    modifier = Modifier.size(64.dp),
+                    tint = MaterialTheme.colorScheme.error
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    text = state.errorMessage,
+                    style = MaterialTheme.typography.bodyLarge,
+                    textAlign = TextAlign.Center
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                Button(
+                    onClick = { },
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                ) {
+                    Icon(Icons.Filled.Refresh, contentDescription = null, modifier = Modifier.padding(end = 8.dp))
+                    Text("Coba Lagi")
+                }
+            }
+        }
+        return
+    }
+
+    val dateFormatter = remember { DateTimeFormatter.ofPattern("dd MMM HH:mm") }
+
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+        contentPadding = PaddingValues(vertical = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        // Title
+        item {
+            Text(
+                text = "Profil & Prestasi",
+                style = MaterialTheme.typography.headlineSmall,
+                fontWeight = FontWeight.Bold
+            )
+        }
+
+        // 1. Level + Streak cards
+        state.userProgress?.let { progress ->
+            item {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    LevelCard(
+                        progress = progress,
+                        modifier = Modifier.weight(1.5f)
+                    )
+                    StreakCard(
+                        currentStreak = progress.currentStreak,
+                        bestStreak = progress.bestStreak,
+                        streakFreezes = progress.streakFreezes,
+                        onUseFreeze = { viewModel.useFreeze() },
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+            }
+        }
+
+        // 2. Stats summary
+        state.userProgress?.let { progress ->
+            item {
+                StatsSummaryCard(
+                    totalTransactions = progress.totalTransactions,
+                    totalXpEarned = progress.totalXp,
+                    bestStreak = progress.bestStreak
+                )
+            }
+        }
+
+        // 3. Active Challenges
+        if (state.activeChallenges.isNotEmpty()) {
+            item {
+                SectionTitle(title = "Tantangan Aktif")
+            }
+            state.activeChallenges.forEach { challenge ->
+                item {
+                    ChallengeCard(challenge = challenge)
+                }
+            }
+        }
+
+        // 4. Completed Challenges (max 3)
+        if (state.completedChallenges.isNotEmpty()) {
+            item {
+                SectionTitle(title = "Tantangan Terselesaikan")
+            }
+            state.completedChallenges.take(3).forEach { challenge ->
+                item {
+                    ChallengeCard(challenge = challenge)
+                }
+            }
+        }
+
+        // 5. XP History
+        if (state.recentXpHistory.isNotEmpty()) {
+            item {
+                SectionTitle(title = "Riwayat XP")
+            }
+            item {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+                ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        state.recentXpHistory.forEach { xp ->
+                            XpHistoryItem(xp = xp, dateFormatter = dateFormatter)
+                            if (xp != state.recentXpHistory.last()) {
+                                Spacer(modifier = Modifier.height(10.dp))
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun SectionTitle(title: String) {
+    Text(
+        text = title,
+        style = MaterialTheme.typography.titleMedium,
+        fontWeight = FontWeight.Bold,
+        modifier = Modifier.padding(bottom = 4.dp)
+    )
+}
+
+@Composable
+private fun StatsSummaryCard(
+    totalTransactions: Int,
+    totalXpEarned: Int,
+    bestStreak: Int
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
+        )
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(16.dp),
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+            StatItem(
+                icon = Icons.Filled.CheckCircle,
+                value = "$totalTransactions",
+                label = "Transaksi",
+                color = Color(0xFF2E7D32)
+            )
+            StatItem(
+                icon = Icons.Filled.Star,
+                value = "$totalXpEarned",
+                label = "Total XP",
+                color = Color(0xFFFF8F00)
+            )
+            StatItem(
+                icon = Icons.Filled.LocalFireDepartment,
+                value = "$bestStreak",
+                label = "Best Streak",
+                color = Color(0xFFE65100)
+            )
+        }
+    }
+}
+
+@Composable
+private fun StatItem(
+    icon: ImageVector,
+    value: String,
+    label: String,
+    color: Color
+) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Box(
+            modifier = Modifier
+                .size(36.dp)
+                .background(color.copy(alpha = 0.15f), CircleShape),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(icon, contentDescription = null, tint = color, modifier = Modifier.size(18.dp))
+        }
+        Spacer(modifier = Modifier.height(6.dp))
+        Text(text = value, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+        Text(text = label, fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+    }
+}
+
+@Composable
+private fun ChallengeCard(challenge: Challenge) {
+    val progress = if (challenge.targetValue > 0)
+        (challenge.currentProgress.toFloat() / challenge.targetValue).coerceIn(0f, 1f)
+    else 0f
+
+    // Determine challenge type color
+    val typeColor = when {
+        challenge.challengeType.contains("weekly", ignoreCase = true) -> Color(0xFF1565C0)
+        challenge.challengeType.contains("monthly", ignoreCase = true) -> Color(0xFF7B1FA2)
+        else -> Color(0xFFE65100)
+    }
+
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(14.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+    ) {
+        Column(modifier = Modifier.padding(14.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                // Type badge
+                Text(
+                    text = challenge.challengeType,
+                    fontSize = 10.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = typeColor,
+                    modifier = Modifier
+                        .background(typeColor.copy(alpha = 0.12f), RoundedCornerShape(4.dp))
+                        .padding(horizontal = 6.dp, vertical = 2.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                if (challenge.isCompleted) {
+                    Icon(
+                        imageVector = Icons.Filled.EmojiEvents,
+                        contentDescription = null,
+                        tint = Color(0xFFFF8F00),
+                        modifier = Modifier.size(16.dp)
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text(
+                text = challenge.name,
+                fontSize = 14.sp,
+                fontWeight = FontWeight.SemiBold
+            )
+
+            Spacer(modifier = Modifier.height(6.dp))
+
+            LinearProgressIndicator(
+                progress = progress,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(6.dp)
+                    .clip(RoundedCornerShape(3.dp)),
+                color = if (challenge.isCompleted) Color(0xFF2E7D32) else typeColor,
+                trackColor = MaterialTheme.colorScheme.surfaceVariant,
+                strokeCap = StrokeCap.Round
+            )
+
+            Spacer(modifier = Modifier.height(4.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = "${challenge.currentProgress} / ${challenge.targetValue}",
+                    fontSize = 11.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Text(
+                    text = "+${challenge.xpReward} XP",
+                    fontSize = 11.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = Color(0xFFFF8F00)
+                )
+            }
+
+            // Deadline
+            if (challenge.deadline != null && !challenge.isCompleted) {
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = "Deadline: ${challenge.deadline}",
+                    fontSize = 10.sp,
+                    color = Color(0xFFE65100).copy(alpha = 0.7f)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun XpHistoryItem(xp: XpHistory, dateFormatter: DateTimeFormatter) {
+    val sourceLabel = when (xp.source) {
+        XpSource.TRANSACTION -> "Mencatat Transaksi"
+        XpSource.STREAK_BONUS -> "Streak Bonus"
+        XpSource.BUDGET_ADHERENCE -> "Patuh Budget"
+        XpSource.SAVINGS_BONUS -> "Bonus Menabung"
+        XpSource.QUEST_COMPLETED -> "Quest Selesai"
+        XpSource.CHALLENGE_COMPLETED -> "Tantangan Selesai"
+        XpSource.DAILY_LOGIN -> "Login Harian"
+    }
+
+    val icon = when (xp.source) {
+        XpSource.TRANSACTION -> Icons.Filled.CheckCircle
+        XpSource.STREAK_BONUS -> Icons.Filled.LocalFireDepartment
+        XpSource.BUDGET_ADHERENCE -> Icons.Filled.Star
+        XpSource.SAVINGS_BONUS -> Icons.Filled.TrendingUp
+        XpSource.QUEST_COMPLETED -> Icons.Filled.EmojiEvents
+        XpSource.CHALLENGE_COMPLETED -> Icons.Filled.EmojiEvents
+        XpSource.DAILY_LOGIN -> Icons.Filled.Star
+    }
+
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.size(20.dp)
+        )
+        Spacer(modifier = Modifier.width(10.dp))
+        Column(modifier = Modifier.weight(1f)) {
+            Text(text = sourceLabel, fontSize = 13.sp, fontWeight = FontWeight.Medium)
+            Text(
+                text = xp.timestamp.format(dateFormatter),
+                fontSize = 11.sp,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+        Text(
+            text = "+${xp.amount} XP",
+            fontSize = 13.sp,
+            fontWeight = FontWeight.SemiBold,
+            color = Color(0xFFFF8F00)
+        )
+    }
+}
