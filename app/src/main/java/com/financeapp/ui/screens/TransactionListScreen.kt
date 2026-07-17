@@ -1,8 +1,9 @@
+package com.financeapp.ui.screens
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.shape.RoundedCornerShape
 import com.financeapp.ui.utils.FinanceIcons
 
-package com.financeapp.ui.screens
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
