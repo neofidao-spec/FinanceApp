@@ -20,16 +20,14 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Divider
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
-import androidx.compose.material3.InputChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -54,7 +52,6 @@ fun TransactionListScreen(
     onTransactionClick: (Long) -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    var showFilterDialog by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
@@ -65,7 +62,7 @@ fun TransactionListScreen(
         SearchBar(
             query = uiState.searchQuery,
             onSearchChange = { viewModel.updateSearchQuery(it) },
-            onFilterClick = { showFilterDialog = true },
+            onFilterClick = { viewModel.showFilterDialog() },
             modifier = Modifier.padding(top = 8.dp)
         )
 
@@ -77,7 +74,7 @@ fun TransactionListScreen(
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 uiState.activeFilter?.type?.let { type ->
-                    InputChip(
+                    FilterChip(
                         selected = true,
                         onClick = { viewModel.clearFilter() },
                         label = {
@@ -91,28 +88,28 @@ fun TransactionListScreen(
                     )
                 }
                 uiState.activeFilter?.startDate?.let {
-                    InputChip(
+                    FilterChip(
                         selected = true,
                         onClick = {},
                         label = { Text("Dari: ${it.toLocalDate()}") }
                     )
                 }
                 uiState.activeFilter?.endDate?.let {
-                    InputChip(
+                    FilterChip(
                         selected = true,
                         onClick = {},
                         label = { Text("Sampai: ${it.toLocalDate()}") }
                     )
                 }
                 uiState.activeFilter?.minAmount?.let {
-                    InputChip(
+                    FilterChip(
                         selected = true,
                         onClick = {},
                         label = { Text("Min: ${FormatterUtil.formatCurrency(it)}") }
                     )
                 }
                 uiState.activeFilter?.maxAmount?.let {
-                    InputChip(
+                    FilterChip(
                         selected = true,
                         onClick = {},
                         label = { Text("Max: ${FormatterUtil.formatCurrency(it)}") }
@@ -159,20 +156,26 @@ fun TransactionListScreen(
                             onClick = { onTransactionClick(txn.transaction.id) }
                         )
                     }
+                    item {
+                        Divider(
+                            modifier = Modifier.padding(vertical = 4.dp),
+                            color = MaterialTheme.colorScheme.outlineVariant
+                        )
+                    }
                 }
             }
         }
     }
 
-    // Filter Dialog
-    if (showFilterDialog) {
+    // Filter Dialog — driven by ViewModel state
+    if (uiState.showFilterDialog) {
         FilterDialog(
             currentFilter = uiState.activeFilter,
             onApply = { filter ->
                 viewModel.applyFilter(filter)
-                showFilterDialog = false
+                viewModel.hideFilterDialog()
             },
-            onDismiss = { showFilterDialog = false }
+            onDismiss = { viewModel.hideFilterDialog() }
         )
     }
 }
@@ -289,7 +292,7 @@ private fun groupTransactionsByDate(
             when {
                 date == today -> "Hari Ini"
                 date == yesterday -> "Kemarin"
-                else -> date.format(DateTimeFormatter.ofPattern("dd MMMM yyyy"))
+                else -> date.format(DateTimeFormatter.ofPattern("dd MMM yyyy"))
             }
         }
 }

@@ -27,6 +27,7 @@ data class Transaction(
     val description: String,
     val date: LocalDateTime,
     val createdAt: LocalDateTime = LocalDateTime.now()
+    val accountId: Long = 1
 )
 
 enum class TransactionType {

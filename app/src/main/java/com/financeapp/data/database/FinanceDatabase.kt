@@ -6,12 +6,13 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.financeapp.data.model.Budget
+import com.financeapp.data.model.Account
 import com.financeapp.data.model.Category
 import com.financeapp.data.model.Transaction
 
 @Database(
-    entities = [Transaction::class, Category::class, Budget::class],
-    version = 3,
+    entities = [Transaction::class, Category::class, Budget::class, Account::class],
+    version = 4,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -19,6 +20,7 @@ abstract class FinanceDatabase : RoomDatabase() {
     abstract fun transactionDao(): TransactionDao
     abstract fun categoryDao(): CategoryDao
     abstract fun budgetDao(): BudgetDao
+    abstract fun accountDao(): AccountDao
 
     companion object {
         @Volatile

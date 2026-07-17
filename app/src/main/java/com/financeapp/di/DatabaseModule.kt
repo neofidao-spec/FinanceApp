@@ -8,6 +8,7 @@ import com.financeapp.data.database.BudgetDao
 import com.financeapp.data.database.CategoryDao
 import com.financeapp.data.database.Converters
 import com.financeapp.data.database.FinanceDatabase
+import com.financeapp.data.database.AccountDao
 import com.financeapp.data.database.TransactionDao
 import com.financeapp.data.model.Category
 import com.financeapp.data.model.DefaultCategories
@@ -45,6 +46,13 @@ object DatabaseModule {
                             arrayOf(category.id, category.name, category.icon, category.type.name, category.color)
                         )
                     }
+                    // Insert default accounts
+                    db.execSQL("INSERT INTO accounts (name, type, balance, icon, color, isDefault) VALUES (?, ?, ?, ?, ?, ?)",
+                        arrayOf("Cash", "CASH", 0.0, "💵", "#4CAF50", 1))
+                    db.execSQL("INSERT INTO accounts (name, type, balance, icon, color, isDefault) VALUES (?, ?, ?, ?, ?, ?)",
+                        arrayOf("Bank", "BANK", 0.0, "🏦", "#2196F3", 0))
+                    db.execSQL("INSERT INTO accounts (name, type, balance, icon, color, isDefault) VALUES (?, ?, ?, ?, ?, ?)",
+                        arrayOf("E-Wallet", "EWALLET", 0.0, "📱", "#FF9800", 0))
                 }
             }
         })
@@ -64,5 +72,10 @@ object DatabaseModule {
     @Provides
     fun provideBudgetDao(database: FinanceDatabase): BudgetDao {
         return database.budgetDao()
+    }
+
+    @Provides
+    fun provideAccountDao(database: FinanceDatabase): AccountDao {
+        return database.accountDao()
     }
 }

@@ -28,6 +28,7 @@ data class TransactionUiState(
     val errorMessage: String? = null,
     val selectedFilter: TransactionType? = null,
     val searchQuery: String = "",
+    val showFilterDialog: Boolean = false,
     val activeFilter: TransactionFilter? = null
 )
 
@@ -93,6 +94,14 @@ class TransactionViewModel @Inject constructor(
     fun clearFilter() {
         _uiState.value = _uiState.value.copy(activeFilter = null)
         applyFilters()
+    }
+
+    fun showFilterDialog() {
+        _uiState.value = _uiState.value.copy(showFilterDialog = true)
+    }
+
+    fun hideFilterDialog() {
+        _uiState.value = _uiState.value.copy(showFilterDialog = false)
     }
 
     private fun applyFilters() {
