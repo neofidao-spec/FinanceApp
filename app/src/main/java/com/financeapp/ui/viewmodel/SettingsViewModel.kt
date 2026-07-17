@@ -72,13 +72,6 @@ class SettingsViewModel @Inject constructor(
             }
         }
     }
-            val accCount = accountRepository.getAccountCount()
-            _uiState.value = _uiState.value.copy(
-                transactionCount = txCount,
-                accountCount = accCount
-            )
-        }
-    }
 
     fun toggleDarkMode(enabled: Boolean) {
         viewModelScope.launch {
