@@ -53,10 +53,10 @@ class DashboardViewModel @Inject constructor(
     private val getHealthScoreUseCase: GetHealthScoreUseCase
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(DashboardUiState())
+    private var allTransactions: List<TransactionWithCategory> = emptyList()
     val uiState: StateFlow<DashboardUiState> = _uiState.asStateFlow()
 
     init {
-        loadDashboardData()
         observeTransactions()
         loadMonthlyTrend()
         loadBudgetSummaries()
@@ -67,40 +67,13 @@ class DashboardViewModel @Inject constructor(
     private fun observeTransactions() {
         viewModelScope.launch {
             transactionRepository.getAllTransactions().collect { transactions ->
+                allTransactions = transactions
                 updateDashboardStats(transactions)
-                loadDashboardData()
                 loadMonthlyTrend()
             }
         }
     }
 
-
-    private fun loadDashboardData() {
-        viewModelScope.launch {
-            try {
-                val month = _uiState.value.selectedMonth
-                val startDate = month.atDay(1).atStartOfDay()
-                val endDate = month.atEndOfMonth().atTime(23, 59, 59)
-
-                val income = transactionRepository.getTotalIncome(startDate, endDate)
-                val expense = transactionRepository.getTotalExpense(startDate, endDate)
-                val rate = if (income > 0) (expense / income).toFloat() else 0f
-
-                _uiState.value = _uiState.value.copy(
-                    totalIncome = income,
-                    totalExpense = expense,
-                    balance = income - expense,
-                    spendingRate = rate,
-                    isLoading = false
-                )
-            } catch (e: Exception) {
-                _uiState.value = _uiState.value.copy(
-                    errorMessage = e.message,
-                    isLoading = false
-                )
-            }
-        }
-    }
 
     private fun updateDashboardStats(transactions: List<TransactionWithCategory>) {
         val month = _uiState.value.selectedMonth
@@ -108,12 +81,22 @@ class DashboardViewModel @Inject constructor(
         val endDate = month.atEndOfMonth().atTime(23, 59, 59)
 
         val monthTransactions = transactions.filter { it.transaction.date in startDate..endDate }
-        val expenses = monthTransactions.filter { it.transaction.type == TransactionType.EXPENSE }
 
+        // Calculate income and expense from the list directly
+        val income = monthTransactions
+            .filter { it.transaction.type == TransactionType.INCOME }
+            .sumOf { it.transaction.amount }
+        val expense = monthTransactions
+            .filter { it.transaction.type == TransactionType.EXPENSE }
+            .sumOf { it.transaction.amount }
+        val balance = income - expense
+        val rate = if (income > 0) (expense / income).toFloat() else 0f
+
+        // Category breakdown
+        val expenses = monthTransactions.filter { it.transaction.type == TransactionType.EXPENSE }
         val categoryExpenseMap = expenses.groupingBy { it.category }.fold(0.0) { acc, item ->
             acc + item.transaction.amount
         }
-
         val totalExpense = categoryExpenseMap.values.sum()
         val topExpenses = categoryExpenseMap.map { (category, amount) ->
             CategorySummary(
@@ -126,12 +109,16 @@ class DashboardViewModel @Inject constructor(
         val recent = monthTransactions.sortedByDescending { it.transaction.date }.take(10)
 
         _uiState.value = _uiState.value.copy(
+            totalIncome = income,
+            totalExpense = expense,
+            balance = balance,
+            spendingRate = rate,
             recentTransactions = recent,
             topExpenses = topExpenses,
-            categoryBreakdown = topExpenses
+            categoryBreakdown = topExpenses,
+            isLoading = false
         )
     }
-
     private fun loadMonthlyTrend() {
         viewModelScope.launch {
             try {
@@ -177,14 +164,14 @@ class DashboardViewModel @Inject constructor(
 
     fun selectMonth(month: YearMonth) {
         _uiState.value = _uiState.value.copy(selectedMonth = month)
-        loadDashboardData()
+        updateDashboardStats(allTransactions)
         loadBudgetSummaries()
 
     }
 
     fun retry() {
         _uiState.value = _uiState.value.copy(isLoading = true, errorMessage = null)
-        loadDashboardData()
+        updateDashboardStats(allTransactions)
         loadMonthlyTrend()
         loadBudgetSummaries()
 

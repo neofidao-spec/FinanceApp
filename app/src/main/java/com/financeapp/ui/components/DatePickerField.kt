@@ -1,8 +1,7 @@
 package com.financeapp.ui.components
 
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.PressInteraction
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.DatePicker
@@ -13,8 +12,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import java.time.Instant
@@ -29,39 +30,34 @@ fun DatePickerField(
     onDateSelected: (LocalDateTime) -> Unit,
     label: String = "Tanggal"
 ) {
+    var showDatePicker by remember { mutableStateOf(false) }
     val dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
-    val interactionSource = remember { MutableInteractionSource() }
-    var showDatePicker = remember { androidx.compose.runtime.mutableStateOf(false) }
 
-    // Detect clicks on the text field
-    LaunchedEffect(interactionSource) {
-        interactionSource.interactions.collect { interaction ->
-            if (interaction is PressInteraction.Release) {
-                showDatePicker.value = true
-            }
-        }
-    }
-
-    Column {
+    // Box with clickable wraps the OutlinedTextField
+    // This way the click is captured by Box, not consumed by the read-only TextField
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { showDatePicker = true }
+            .padding(bottom = 8.dp)
+    ) {
         OutlinedTextField(
             value = value.format(dateFormatter),
             onValueChange = {},
             label = { Text(label) },
             readOnly = true,
-            interactionSource = interactionSource,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 8.dp)
+            enabled = false, // disabled so it doesn't consume clicks
+            modifier = Modifier.fillMaxWidth()
         )
     }
 
-    if (showDatePicker.value) {
+    if (showDatePicker) {
         val datePickerState = rememberDatePickerState(
             initialSelectedDateMillis = value.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
         )
 
         DatePickerDialog(
-            onDismissRequest = { showDatePicker.value = false },
+            onDismissRequest = { showDatePicker = false },
             confirmButton = {
                 TextButton(onClick = {
                     datePickerState.selectedDateMillis?.let {
@@ -71,13 +67,13 @@ fun DatePickerField(
                         val newDateTime = selectedDate.atTime(value.hour, value.minute)
                         onDateSelected(newDateTime)
                     }
-                    showDatePicker.value = false
+                    showDatePicker = false
                 }) {
                     Text("OK")
                 }
             },
             dismissButton = {
-                TextButton(onClick = { showDatePicker.value = false }) {
+                TextButton(onClick = { showDatePicker = false }) {
                     Text("Batal")
                 }
             }
