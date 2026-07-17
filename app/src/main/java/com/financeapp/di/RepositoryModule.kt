@@ -14,6 +14,7 @@ import com.financeapp.data.repository.AchievementRepository
 import com.financeapp.data.repository.CategoryRepository
 import com.financeapp.data.repository.GamificationRepository
 import com.financeapp.data.repository.TransactionRepository
+import com.financeapp.data.repository.RecurringTransactionRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -60,5 +61,13 @@ object RepositoryModule {
         xpHistoryDao: XpHistoryDao
     ): GamificationRepository {
         return GamificationRepository(userProgressDao, dailyQuestDao, challengeDao, xpHistoryDao)
+    }
+
+    @Provides
+    @Singleton
+    fun provideRecurringTransactionRepository(
+        recurringTransactionDao: RecurringTransactionDao
+    ): RecurringTransactionRepository {
+        return RecurringTransactionRepository(recurringTransactionDao)
     }
 }

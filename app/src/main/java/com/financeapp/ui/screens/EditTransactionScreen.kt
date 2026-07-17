@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.financeapp.data.model.TransactionType
+import com.financeapp.ui.components.AccountSelectorRow
 import com.financeapp.ui.components.AmountInput
 import com.financeapp.ui.components.CategorySelector
 import com.financeapp.ui.components.DatePickerField
@@ -163,21 +164,11 @@ fun EditTransactionScreen(
             // Account selector
             if (uiState.accounts.isNotEmpty()) {
                 Spacer(modifier = Modifier.height(8.dp))
-                Text("Akun", fontWeight = FontWeight.Bold)
-                Spacer(modifier = Modifier.height(4.dp))
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    uiState.accounts.forEach { account ->
-                        FilterChip(
-                            selected = uiState.selectedAccountId == account.id,
-                            onClick = { viewModel.selectAccount(account.id) },
-                            label = { Text("${account.icon} ${account.name}") },
-                            modifier = Modifier.weight(1f)
-                        )
-                    }
-                }
+                AccountSelectorRow(
+                    accounts = uiState.accounts,
+                    selectedAccountId = uiState.selectedAccountId,
+                    onAccountSelected = { viewModel.selectAccount(it) }
+                )
             }
 
             Spacer(modifier = Modifier.height(16.dp))

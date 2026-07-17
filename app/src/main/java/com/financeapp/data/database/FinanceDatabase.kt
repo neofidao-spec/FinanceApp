@@ -17,12 +17,13 @@ import com.financeapp.data.model.UserProgress
 import com.financeapp.data.model.DailyQuest
 import com.financeapp.data.model.Challenge
 import com.financeapp.data.model.XpHistory
+import com.financeapp.data.model.RecurringTransaction
 
 @Database(
     entities = [Transaction::class, Category::class, Budget::class, Account::class, Achievement::class,
                UserProgress::class, DailyQuest::class, Challenge::class, XpHistory::class,
-               TransactionFts::class],
-    version = 8,
+               TransactionFts::class, RecurringTransaction::class],
+    version = 9,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -37,6 +38,7 @@ abstract class FinanceDatabase : RoomDatabase() {
     abstract fun challengeDao(): ChallengeDao
     abstract fun xpHistoryDao(): XpHistoryDao
     abstract fun transactionFtsDao(): TransactionFtsDao
+    abstract fun recurringTransactionDao(): RecurringTransactionDao
 
     companion object {
         @Volatile
@@ -203,6 +205,34 @@ abstract class FinanceDatabase : RoomDatabase() {
             }
         }
 
+        internal val MIGRATION_8_9 = object : Migration(8, 9) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("""
+                    CREATE TABLE IF NOT EXISTS `recurring_transactions` (
+                        `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                        `amount` REAL NOT NULL,
+                        `description` TEXT NOT NULL,
+                        `type` TEXT NOT NULL,
+                        `categoryId` INTEGER NOT NULL,
+                        `accountId` INTEGER NOT NULL DEFAULT 1,
+                        `interval` TEXT NOT NULL,
+                        `intervalValue` INTEGER NOT NULL DEFAULT 1,
+                        `startDate` TEXT NOT NULL,
+                        `endDate` TEXT,
+                        `endType` TEXT NOT NULL DEFAULT 'NEVER',
+                        `maxOccurrences` INTEGER NOT NULL DEFAULT 0,
+                        `occurrencesGenerated` INTEGER NOT NULL DEFAULT 0,
+                        `nextDueDate` TEXT NOT NULL,
+                        `isActive` INTEGER NOT NULL DEFAULT 1,
+                        `createdAt` TEXT NOT NULL,
+                        FOREIGN KEY (`categoryId`) REFERENCES `categories`(`id`) ON DELETE CASCADE
+                    )
+                """)
+                database.execSQL("CREATE INDEX IF NOT EXISTS `index_recurring_transactions_categoryId` ON `recurring_transactions` (`categoryId`)")
+                database.execSQL("CREATE INDEX IF NOT EXISTS `index_recurring_transactions_nextDueDate` ON `recurring_transactions` (`nextDueDate`)")
+            }
+        }
+
         fun getInstance(context: Context): FinanceDatabase {
             return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
@@ -217,7 +247,8 @@ abstract class FinanceDatabase : RoomDatabase() {
                         MIGRATION_4_5,
                         MIGRATION_5_6,
                         MIGRATION_6_7,
-                        MIGRATION_7_8
+                        MIGRATION_7_8,
+                        MIGRATION_8_9
                     )
                     .build()
                 INSTANCE = instance
