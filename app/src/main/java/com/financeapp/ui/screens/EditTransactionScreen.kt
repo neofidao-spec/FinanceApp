@@ -47,6 +47,7 @@ import com.financeapp.ui.components.AccountSelectorRow
 import com.financeapp.ui.components.AmountInput
 import com.financeapp.ui.components.CategorySelector
 import com.financeapp.ui.components.DatePickerField
+import com.financeapp.ui.components.HapticButton
 import com.financeapp.ui.viewmodel.EditTransactionViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -176,23 +177,15 @@ fun EditTransactionScreen(
             uiState.errorMessage?.let {
                 Text(it, color = Color.Red, modifier = Modifier.padding(bottom = 8.dp))
             }
-
-            Button(
+            // Save button
+            HapticButton(
                 onClick = {
                     focusManager.clearFocus()
                     viewModel.updateTransaction()
                 },
-                modifier = Modifier.fillMaxWidth(),
                 enabled = uiState.isFormValid && !uiState.isLoading,
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.primary
-                )
-            ) {
-                Text(
-                    if (uiState.isLoading) "Menyimpan..." else "Simpan Perubahan",
-                    modifier = Modifier.padding(vertical = 8.dp)
-                )
-            }
+                text = if (uiState.isLoading) "Menyimpan..." else "Simpan Perubahan"
+            )
         }
     }
 }
