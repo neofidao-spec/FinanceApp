@@ -8,6 +8,7 @@ import com.financeapp.data.model.BudgetWithCategory
 import com.financeapp.data.model.Category
 import com.financeapp.data.repository.BudgetRepository
 import com.financeapp.data.repository.CategoryRepository
+import com.financeapp.data.repository.TransactionRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -36,7 +37,8 @@ data class BudgetUiState(
 @HiltViewModel
 class BudgetViewModel @Inject constructor(
     private val budgetRepository: BudgetRepository,
-    private val categoryRepository: CategoryRepository
+    private val categoryRepository: CategoryRepository,
+    private val transactionRepository: TransactionRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(BudgetUiState())
@@ -60,6 +62,14 @@ class BudgetViewModel @Inject constructor(
                 )
 
                 // Observe budget changes in background
+
+                // Also refresh budget when transactions change
+                launch {
+                    transactionRepository.getAllTransactions().collect {
+                        val newSummary = budgetRepository.getBudgetSummary(_uiState.value.selectedMonth)
+                        _uiState.value = _uiState.value.copy(budgetSummary = newSummary)
+                    }
+                }
                 launch {
                     budgetRepository.getActiveBudgets().collect {
                         val newSummary = budgetRepository.getBudgetSummary(_uiState.value.selectedMonth)
