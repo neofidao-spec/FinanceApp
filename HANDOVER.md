@@ -38,7 +38,7 @@
 | DashboardScreen revamp | ✅ | Menggunakan semua komponen di atas |
 | Vico chart library | ❌ Dilewat | Tidak perlu — custom Canvas lebih ringan & tanpa dependency |
 
-### Phase 3: Transaction UX ⚠️ PARTIAL
+### Phase 3: Transaction UX ✅ SELESAI
 | Task | Status | Catatan |
 |------|--------|---------|
 | SearchBar component | ✅ | `ui/components/SearchBar.kt` |
@@ -46,9 +46,8 @@
 | Search debounce (300ms) | ✅ | `TransactionViewModel.kt` |
 | Pagination (infinite scroll) | ✅ | PAGE_SIZE=50, derivedStateOf trigger |
 | Group by date | ✅ | Hari Ini, Kemarin, dd MMM yyyy |
-| FTS4 Full-Text Search | ❌ BELUM | Masih pakai LIKE, belum FTS4 |
-| SwipeActions component | ❌ BELUM | Swipe-to-edit, swipe-to-delete |
-| Multi-select bulk actions | ❌ BELUM | |
+| FTS4 Full-Text Search | ✅ | `117a89a` — Virtual table + triggers + DAO + migration 7→8 |
+| SwipeActions component | ✅ | `117a89a` — Swipe-to-edit/delete + undo snackbar |
 
 ### Phase 4: Multi-Account & Recurring ⚠️ PARTIAL
 | Task | Status | Catatan |
@@ -104,12 +103,12 @@
 ## KODEBASE AKTUAL
 
 ### Stats
-- 70 Kotlin files
-- Room DB v7 (9 entities: Transaction, Category, Budget, Account, Achievement,
-  UserProgress, DailyQuest, Challenge, XpHistory)
+- 75 Kotlin files
+- Room DB v8 (10 entities: Transaction, Category, Budget, Account, Achievement,
+  UserProgress, DailyQuest, Challenge, XpHistory, TransactionFts)
 - Hilt DI (DatabaseModule + RepositoryModule)
 - DataStore preferences
-- 9 screens (Dashboard, Transaction, Add/Edit, Report, Budget, Settings, Onboarding, Gamification), 9 viewmodels, 15+ reusable components
+- 10 screens (Dashboard, Transaction, Add/Edit, Report, Budget, Settings, Onboarding, Gamification, Main), 9 viewmodels, 16+ reusable components
 
 ### Architecture
 ```
@@ -213,12 +212,17 @@ com.financeapp/
 ### ~~MEDIUM: Gamification Screen (Phase 6.4)~~ ✅ DONE
 4. ~~GamificationScreen~~ — Commit `cafdfa7`
 
-### MEDIUM: Transaction UX (Phase 3 remaining)
-5. **SwipeActions component** — Swipe-to-edit, swipe-to-delete dengan undo
+### ~~MEDIUM: Transaction UX (Phase 3 remaining)~~ ✅ DONE
+5. ~~SwipeActions component~~ — Commit `117a89a`
+6. ~~FTS4 Full-Text Search~~ — Commit `117a89a`
+
+### MEDIUM: Multi-Account & Recurring (Phase 4)
+7. **AccountSelector component** — Standalone account switcher
+8. **Recurring Transaction entity + DAO** — Scheduling recurring transactions
 
 ### LOW: Polish (Phase 7 remaining)
-6. **Screen transition animations** — NavHost custom enter/exit transitions
-7. **Health Score ring UI** — Animated ring di dashboard
+9. **Screen transition animations** — NavHost custom enter/exit transitions
+10. **Health Score ring UI** — Animated ring di dashboard
 
 ---
 
@@ -244,7 +248,7 @@ Setelah setiap task:
 | Bug Fix 1-5 | ✅ SELESAI |
 | Master Plan Phase 1 (Foundation) | ✅ SELESAI |
 | Master Plan Phase 2 (Dashboard) | ✅ SELESAI |
-| Master Plan Phase 3 (Transaction UX) | ⚠️ 60% |
+| Master Plan Phase 3 (Transaction UX) | ✅ SELESAI |
 | Master Plan Phase 4 (Multi-Account) | ⚠️ 50% |
 | Master Plan Phase 5 (Onboarding) | ✅ SELESAI |
 | Master Plan Phase 6 (Gamification) | ⚠️ 85% |
