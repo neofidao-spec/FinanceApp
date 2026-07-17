@@ -49,14 +49,14 @@
 | FTS4 Full-Text Search | ✅ | `117a89a` — Virtual table + triggers + DAO + migration 7→8 |
 | SwipeActions component | ✅ | `117a89a` — Swipe-to-edit/delete + undo snackbar |
 
-### Phase 4: Multi-Account & Recurring ⚠️ PARTIAL
+### Phase 4: Multi-Account & Recurring ✅ SELESAI
 | Task | Status | Catatan |
 |------|--------|---------|
 | Account entity + DAO + Repository | ✅ | 3 default akun: Cash, Bank, E-Wallet |
 | Account selector di Add/Edit | ✅ | FilterChip row |
-| AccountSelector standalone component | ❌ BELUM | |
-| Recurring Transaction entity + DAO | ❌ BELUM | |
-| Recurring auto-add system | ❌ BELUM | |
+| AccountSelector standalone component | ✅ | `69464b3` — Dropdown + Chip variants |
+| Recurring Transaction entity + DAO | ✅ | `69464b3` — 5 interval types + end conditions |
+| Recurring auto-add system | ✅ | `69464b3` — WorkManager daily worker |
 
 ### Phase 5: Onboarding & Settings ✅ SELESAI
 | Task | Status | Catatan |
@@ -103,9 +103,9 @@
 ## KODEBASE AKTUAL
 
 ### Stats
-- 75 Kotlin files
-- Room DB v8 (10 entities: Transaction, Category, Budget, Account, Achievement,
-  UserProgress, DailyQuest, Challenge, XpHistory, TransactionFts)
+- 80 Kotlin files
+- Room DB v9 (11 entities: Transaction, Category, Budget, Account, Achievement,
+  UserProgress, DailyQuest, Challenge, XpHistory, TransactionFts, RecurringTransaction)
 - Hilt DI (DatabaseModule + RepositoryModule)
 - DataStore preferences
 - 10 screens (Dashboard, Transaction, Add/Edit, Report, Budget, Settings, Onboarding, Gamification, Main), 9 viewmodels, 16+ reusable components
@@ -216,9 +216,10 @@ com.financeapp/
 5. ~~SwipeActions component~~ — Commit `117a89a`
 6. ~~FTS4 Full-Text Search~~ — Commit `117a89a`
 
-### MEDIUM: Multi-Account & Recurring (Phase 4)
-7. **AccountSelector component** — Standalone account switcher
-8. **Recurring Transaction entity + DAO** — Scheduling recurring transactions
+### ~~MEDIUM: Multi-Account & Recurring (Phase 4)~~ ✅ DONE
+7. ~~AccountSelector component~~ — Commit `69464b3`
+8. ~~Recurring Transaction entity + DAO~~ — Commit `69464b3`
+9. ~~Recurring auto-add (WorkManager)~~ — Commit `69464b3`
 
 ### LOW: Polish (Phase 7 remaining)
 9. **Screen transition animations** — NavHost custom enter/exit transitions
@@ -249,7 +250,7 @@ Setelah setiap task:
 | Master Plan Phase 1 (Foundation) | ✅ SELESAI |
 | Master Plan Phase 2 (Dashboard) | ✅ SELESAI |
 | Master Plan Phase 3 (Transaction UX) | ✅ SELESAI |
-| Master Plan Phase 4 (Multi-Account) | ⚠️ 50% |
+| Master Plan Phase 4 (Multi-Account) | ✅ SELESAI |
 | Master Plan Phase 5 (Onboarding) | ✅ SELESAI |
 | Master Plan Phase 6 (Gamification) | ⚠️ 85% |
 | Master Plan Phase 7 (Polish) | ⚠️ 40% |
