@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
@@ -33,8 +34,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -144,9 +148,23 @@ fun TransactionListScreen(
                 isFiltered = uiState.searchQuery.isNotBlank() || uiState.activeFilter != null
             )
         } else {
-            val groupedTransactions = groupTransactionsByDate(uiState.filteredTransactions)
+            val groupedTransactions = groupTransactionsByDate(uiState.filteredTransactions.take(uiState.visibleCount))
+            val listState = rememberLazyListState()
+
+            // Infinite scroll: load more when reaching the last visible item
+            val shouldLoadMore by remember {
+                derivedStateOf {
+                    val lastVisibleItem = listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
+                    val totalItems = listState.layoutInfo.totalItemsCount
+                    lastVisibleItem >= totalItems - 3 && uiState.hasMore && !uiState.isLoadingMore
+                }
+            }
+            LaunchedEffect(shouldLoadMore) {
+                if (shouldLoadMore) viewModel.loadMore()
+            }
 
             LazyColumn(
+                state = listState,
                 modifier = Modifier.fillMaxSize()
             ) {
                 groupedTransactions.forEach { (dateLabel, transactions) ->
@@ -172,6 +190,19 @@ fun TransactionListScreen(
                             modifier = Modifier.padding(vertical = 4.dp),
                             color = MaterialTheme.colorScheme.outlineVariant
                         )
+                    }
+                }
+                // Loading more indicator
+                if (uiState.isLoadingMore) {
+                    item {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator(modifier = Modifier.size(24.dp))
+                        }
                     }
                 }
             }

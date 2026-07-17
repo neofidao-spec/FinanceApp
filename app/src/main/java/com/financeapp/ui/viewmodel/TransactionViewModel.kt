@@ -25,12 +25,16 @@ data class TransactionUiState(
     val categories: List<Category> = emptyList(),
     val selectedTransaction: Transaction? = null,
     val isLoading: Boolean = true,
+    val isLoadingMore: Boolean = false,
     val successMessage: String? = null,
     val errorMessage: String? = null,
     val selectedFilter: TransactionType? = null,
     val searchQuery: String = "",
     val showFilterDialog: Boolean = false,
-    val activeFilter: TransactionFilter? = null
+    val activeFilter: TransactionFilter? = null,
+    val PAGE_SIZE: Int = 50,
+    val visibleCount: Int = 50,
+    val hasMore: Boolean = true
 )
 
 @HiltViewModel
@@ -107,6 +111,21 @@ class TransactionViewModel @Inject constructor(
         applyFilters()
     }
 
+    fun loadMore() {
+        val state = _uiState.value
+        if (state.isLoadingMore || !state.hasMore) return
+        _uiState.value = state.copy(isLoadingMore = true)
+        // Simulate async load for visibility — triggers recomposition
+        viewModelScope.launch {
+            val newCount = minOf(state.visibleCount + state.PAGE_SIZE, state.filteredTransactions.size)
+            _uiState.value = _uiState.value.copy(
+                visibleCount = newCount,
+                hasMore = newCount < state.filteredTransactions.size,
+                isLoadingMore = false
+            )
+        }
+    }
+
     fun showFilterDialog() {
         _uiState.value = _uiState.value.copy(showFilterDialog = true)
     }
@@ -149,7 +168,11 @@ class TransactionViewModel @Inject constructor(
             result = result.filter { it.transaction.amount <= max }
         }
 
-        _uiState.value = state.copy(filteredTransactions = result)
+        _uiState.value = state.copy(
+            filteredTransactions = result,
+            visibleCount = minOf(state.PAGE_SIZE, result.size),
+            hasMore = result.size > state.PAGE_SIZE
+        )
     }
 
     fun addTransaction(amount: Double, type: TransactionType, categoryId: Long, description: String, date: LocalDateTime) {
