@@ -154,6 +154,13 @@ fun EditTransactionScreen(
                 onDateSelected = { viewModel.updateDate(it) }
             )
 
+            // Account display
+            if (uiState.accountName.isNotEmpty()) {
+                Spacer(modifier = Modifier.height(8.dp))
+                Text("Akun", fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                Text(uiState.accountName, fontSize = 14.sp, color = Color.Gray)
+            }
+
             Spacer(modifier = Modifier.height(16.dp))
 
             uiState.errorMessage?.let {

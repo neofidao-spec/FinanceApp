@@ -12,6 +12,7 @@ import com.financeapp.data.database.AccountDao
 import com.financeapp.data.database.AchievementDao
 import com.financeapp.data.database.TransactionDao
 import com.financeapp.data.model.Category
+import com.financeapp.data.model.DefaultAchievements
 import com.financeapp.data.model.DefaultCategories
 import com.financeapp.data.model.TransactionType
 import dagger.Module
@@ -54,6 +55,14 @@ object DatabaseModule {
                         arrayOf("Bank", "BANK", 0.0, "🏦", "#2196F3", 0))
                     db.execSQL("INSERT INTO accounts (name, type, balance, icon, color, isDefault) VALUES (?, ?, ?, ?, ?, ?)",
                         arrayOf("E-Wallet", "EWALLET", 0.0, "📱", "#FF9800", 0))
+                    // Insert default achievements
+                    val achievements = DefaultAchievements.getDefault()
+                    achievements.forEach { achievement ->
+                        db.execSQL(
+                            "INSERT INTO achievements (name, description, icon, category, targetValue, currentValue, isUnlocked) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                            arrayOf(achievement.name, achievement.description, achievement.icon, achievement.category, achievement.targetValue, 0, 0)
+                        )
+                    }
                 }
             }
         })

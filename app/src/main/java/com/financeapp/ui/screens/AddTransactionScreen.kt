@@ -142,6 +142,26 @@ fun AddTransactionScreen(
                 onDateSelected = { viewModel.updateDate(it) }
             )
 
+            // Account selector
+            if (uiState.accounts.isNotEmpty()) {
+                Spacer(modifier = Modifier.height(8.dp))
+                Text("Akun", fontWeight = FontWeight.Bold)
+                Spacer(modifier = Modifier.height(4.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    uiState.accounts.forEach { account ->
+                        FilterChip(
+                            selected = uiState.selectedAccountId == account.id,
+                            onClick = { viewModel.selectAccount(account.id) },
+                            label = { Text("${account.icon} ${account.name}") },
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
+                }
+            }
+
             Spacer(modifier = Modifier.height(16.dp))
 
             // Error message

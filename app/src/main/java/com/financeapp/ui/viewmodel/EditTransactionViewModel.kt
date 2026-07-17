@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.financeapp.data.model.Category
 import com.financeapp.data.model.Transaction
 import com.financeapp.data.model.TransactionType
+import com.financeapp.data.repository.AccountRepository
 import com.financeapp.data.repository.CategoryRepository
 import com.financeapp.data.repository.TransactionRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -27,13 +28,15 @@ data class EditTransactionUiState(
     val successMessage: String? = null,
     val errorMessage: String? = null,
     val isFormValid: Boolean = false,
-    val showDeleteConfirm: Boolean = false
+    val showDeleteConfirm: Boolean = false,
+    val accountName: String = ""
 )
 
 @HiltViewModel
 class EditTransactionViewModel @Inject constructor(
     private val transactionRepository: TransactionRepository,
-    private val categoryRepository: CategoryRepository
+    private val categoryRepository: CategoryRepository,
+    private val accountRepository: AccountRepository
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(EditTransactionUiState())
     val uiState: StateFlow<EditTransactionUiState> = _uiState.asStateFlow()
@@ -44,6 +47,7 @@ class EditTransactionViewModel @Inject constructor(
                 val transaction = transactionRepository.getTransaction(transactionId)
                 if (transaction != null) {
                     val category = categoryRepository.getCategory(transaction.categoryId)
+                    val account = accountRepository.getAccountById(transaction.accountId)
                     loadCategories()
                     _uiState.value = _uiState.value.copy(
                         transactionId = transaction.id,
@@ -52,6 +56,7 @@ class EditTransactionViewModel @Inject constructor(
                         selectedDate = transaction.date,
                         selectedCategory = category,
                         transactionType = transaction.type,
+                        accountName = account?.let { "${it.icon} ${it.name}" } ?: "Unknown",
                         isLoading = false
                     )
                     validateForm()

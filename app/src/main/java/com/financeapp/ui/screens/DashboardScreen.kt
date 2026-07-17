@@ -156,7 +156,65 @@ private fun DashboardContent(
             }
         }
 
-        // 3. DonutChart - expense breakdown
+        // 3. Health Score
+        uiState.healthScore?.let { health ->
+            item {
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 16.dp),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = when {
+                            health.score >= 80 -> Color(0xFF4CAF50).copy(alpha = 0.1f)
+                            health.score >= 60 -> Color(0xFF2196F3).copy(alpha = 0.1f)
+                            health.score >= 40 -> Color(0xFFFF9800).copy(alpha = 0.1f)
+                            else -> Color(0xFFF44336).copy(alpha = 0.1f)
+                        }
+                    )
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = "Kesehatan Keuangan",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            Text(
+                                text = health.description,
+                                style = MaterialTheme.typography.bodyMedium,
+                                fontWeight = FontWeight.Medium
+                            )
+                        }
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Text(
+                                text = "${health.score}",
+                                fontSize = 28.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = when {
+                                    health.score >= 80 -> Color(0xFF4CAF50)
+                                    health.score >= 60 -> Color(0xFF2196F3)
+                                    health.score >= 40 -> Color(0xFFFF9800)
+                                    else -> Color(0xFFF44336)
+                                }
+                            )
+                            Text(
+                                text = health.category,
+                                fontSize = 10.sp,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
+                }
+            }
+        }
+
+        // 4. DonutChart - expense breakdown
         if (uiState.categoryBreakdown.isNotEmpty()) {
             item {
                 SectionTitle(title = "Pengeluaran per Kategori")

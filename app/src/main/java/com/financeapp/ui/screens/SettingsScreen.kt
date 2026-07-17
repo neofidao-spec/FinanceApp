@@ -135,7 +135,7 @@ fun SettingsScreen(
                 Divider()
                 Spacer(modifier = Modifier.height(8.dp))
                 Text("Database", fontWeight = FontWeight.Medium)
-                Text("Room Database v2 - Offline storage", fontSize = 12.sp, color = Color.Gray)
+                Text("Room Database v5 - Offline storage", fontSize = 12.sp, color = Color.Gray)
                 Spacer(modifier = Modifier.height(8.dp))
                 Divider()
                 Spacer(modifier = Modifier.height(8.dp))
@@ -175,13 +175,13 @@ fun SettingsScreen(
             Column(modifier = Modifier.padding(16.dp)) {
                 Text("Tech Stack", fontWeight = FontWeight.Medium, fontSize = 14.sp)
                 Spacer(modifier = Modifier.height(8.dp))
-                TechItem("Kotlin", "1.9.10")
-                TechItem("Jetpack Compose", "BOM 2023.10")
+                TechItem("Kotlin", "1.9.22")
+                TechItem("Jetpack Compose", "BOM 2024.02")
                 TechItem("Material 3", "1.1.2")
-                TechItem("Room Database", "2.6.0")
+                TechItem("Room Database", "2.6.1")
                 TechItem("Navigation Compose", "2.7.5")
                 TechItem("Lifecycle ViewModel", "2.6.2")
-                TechItem("Hilt", "2.48")
+                TechItem("Hilt", "2.48.1")
                 TechItem("DataStore", "1.0.0")
             }
         }

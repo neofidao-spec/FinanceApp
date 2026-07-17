@@ -2,9 +2,11 @@ package com.financeapp.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.financeapp.data.model.Account
 import com.financeapp.data.model.Category
 import com.financeapp.data.model.Transaction
 import com.financeapp.data.model.TransactionType
+import com.financeapp.data.repository.AccountRepository
 import com.financeapp.data.repository.CategoryRepository
 import com.financeapp.data.repository.TransactionRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -22,6 +24,8 @@ data class AddTransactionUiState(
     val selectedCategory: Category? = null,
     val transactionType: TransactionType = TransactionType.EXPENSE,
     val categories: List<Category> = emptyList(),
+    val accounts: List<Account> = emptyList(),
+    val selectedAccountId: Long = 1,
     val isLoading: Boolean = false,
     val successMessage: String? = null,
     val errorMessage: String? = null,
@@ -31,13 +35,15 @@ data class AddTransactionUiState(
 @HiltViewModel
 class AddTransactionViewModel @Inject constructor(
     private val transactionRepository: TransactionRepository,
-    private val categoryRepository: CategoryRepository
+    private val categoryRepository: CategoryRepository,
+    private val accountRepository: AccountRepository
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(AddTransactionUiState())
     val uiState: StateFlow<AddTransactionUiState> = _uiState.asStateFlow()
 
     init {
         loadCategories()
+        loadAccounts()
     }
 
     private fun loadCategories() {
@@ -48,6 +54,22 @@ class AddTransactionViewModel @Inject constructor(
                 }
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(errorMessage = e.message)
+            }
+        }
+    }
+
+    private fun loadAccounts() {
+        viewModelScope.launch {
+            try {
+                accountRepository.getAllAccounts().collect { accounts ->
+                    val defaultId = accounts.firstOrNull { it.isDefault }?.id ?: accounts.firstOrNull()?.id ?: 1L
+                    _uiState.value = _uiState.value.copy(
+                        accounts = accounts,
+                        selectedAccountId = _uiState.value.selectedAccountId.takeIf { id -> accounts.any { it.id == id } } ?: defaultId
+                    )
+                }
+            } catch (e: Exception) {
+                // Silent fail
             }
         }
     }
@@ -72,6 +94,10 @@ class AddTransactionViewModel @Inject constructor(
             _uiState.value = _uiState.value.copy(selectedCategory = categoryOfType)
             validateForm()
         }
+    }
+
+    fun selectAccount(accountId: Long) {
+        _uiState.value = _uiState.value.copy(selectedAccountId = accountId)
     }
 
     fun switchTransactionType(type: TransactionType) {
@@ -99,17 +125,18 @@ class AddTransactionViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 _uiState.value = _uiState.value.copy(isLoading = true)
-                
+
                 val transaction = Transaction(
                     amount = _uiState.value.amount.toDouble(),
                     type = _uiState.value.transactionType,
                     categoryId = _uiState.value.selectedCategory!!.id,
                     description = _uiState.value.description,
-                    date = _uiState.value.selectedDate
+                    date = _uiState.value.selectedDate,
+                    accountId = _uiState.value.selectedAccountId
                 )
 
                 transactionRepository.addTransaction(transaction)
-                
+
                 _uiState.value = _uiState.value.copy(
                     successMessage = "Transaksi berhasil ditambahkan",
                     isLoading = false,

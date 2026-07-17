@@ -9,6 +9,8 @@ import com.financeapp.data.model.TransactionWithCategory
 import com.financeapp.data.repository.BudgetRepository
 import com.financeapp.data.repository.CategoryRepository
 import com.financeapp.data.repository.TransactionRepository
+import com.financeapp.domain.GetHealthScoreUseCase
+import com.financeapp.domain.HealthScore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -37,6 +39,7 @@ data class DashboardUiState(
     val monthlyTrend: List<MonthlyTrendData> = emptyList(),
     val spendingRate: Float = 0f,
     val budgetSummaries: List<BudgetWithCategory> = emptyList(),
+    val healthScore: HealthScore? = null,
     val isLoading: Boolean = true,
     val selectedMonth: YearMonth = YearMonth.now(),
     val errorMessage: String? = null
@@ -46,7 +49,8 @@ data class DashboardUiState(
 class DashboardViewModel @Inject constructor(
     private val transactionRepository: TransactionRepository,
     private val categoryRepository: CategoryRepository,
-    private val budgetRepository: BudgetRepository
+    private val budgetRepository: BudgetRepository,
+    private val getHealthScoreUseCase: GetHealthScoreUseCase
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(DashboardUiState())
     val uiState: StateFlow<DashboardUiState> = _uiState.asStateFlow()
@@ -56,6 +60,7 @@ class DashboardViewModel @Inject constructor(
         observeTransactions()
         loadMonthlyTrend()
         loadBudgetSummaries()
+        loadHealthScore()
     }
 
     private fun observeTransactions() {
@@ -177,5 +182,17 @@ class DashboardViewModel @Inject constructor(
         loadDashboardData()
         loadMonthlyTrend()
         loadBudgetSummaries()
+        loadHealthScore()
+    }
+
+    private fun loadHealthScore() {
+        viewModelScope.launch {
+            try {
+                val score = getHealthScoreUseCase()
+                _uiState.value = _uiState.value.copy(healthScore = score)
+            } catch (e: Exception) {
+                // Silent fail
+            }
+        }
     }
 }
