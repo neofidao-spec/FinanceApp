@@ -382,7 +382,7 @@ private fun HealthScoreCard(
     score: Int,
     category: String,
     description: String,
-    trend: String
+    trend: com.financeapp.domain.HealthScore.Trend
 ) {
     val scoreColor = when {
         score >= 80 -> Color(0xFF2E7D32)
@@ -392,8 +392,8 @@ private fun HealthScoreCard(
     }
     
     val trendIcon = when (trend) {
-        "UP" -> Icons.Filled.TrendingUp
-        "DOWN" -> Icons.Filled.TrendingDown
+        com.financeapp.domain.HealthScore.Trend.UP -> Icons.Filled.TrendingUp
+        com.financeapp.domain.HealthScore.Trend.DOWN -> Icons.Filled.TrendingDown
         else -> Icons.Filled.TrendingUp
     }
     
@@ -441,7 +441,7 @@ private fun HealthScoreCard(
                     Icon(
                         imageVector = trendIcon,
                         contentDescription = null,
-                        tint = if (trend == "UP") Color(0xFF2E7D32) else Color(0xFFC62828),
+                        tint = if (trend == com.financeapp.domain.HealthScore.Trend.UP) Color(0xFF2E7D32) else Color(0xFFC62828),
                         modifier = Modifier.size(16.dp)
                     )
                 }

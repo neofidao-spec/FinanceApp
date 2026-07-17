@@ -3,25 +3,38 @@ package com.financeapp.ui.utils
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBalance
 import androidx.compose.material.icons.filled.AccountBalanceWallet
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.AttachMoney
 import androidx.compose.material.icons.filled.CardGiftcard
 import androidx.compose.material.icons.filled.Category
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.DirectionsBus
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Error
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Lightbulb
 import androidx.compose.material.icons.filled.LocalDining
 import androidx.compose.material.icons.filled.LocalGroceryStore
 import androidx.compose.material.icons.filled.LocalHospital
 import androidx.compose.material.icons.filled.Movie
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Payments
 import androidx.compose.material.icons.filled.School
 import androidx.compose.material.icons.filled.Savings
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.ShoppingBag
 import androidx.compose.material.icons.filled.Subscriptions
 import androidx.compose.material.icons.filled.TrendingDown
 import androidx.compose.material.icons.filled.TrendingUp
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material.icons.filled.Work
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -106,35 +119,5 @@ object FinanceIcons {
         } catch (e: Exception) {
             Color(0xFF757575)
         }
-    }
-    
-    // Navigation icons
-    object Navigation {
-        val Dashboard = Icons.Filled.Home
-        val Transactions = Icons.Filled.Payments
-        val Reports = Icons.Filled.TrendingUp
-        val Budget = Icons.Filled.Savings
-        val Settings = Icons.Filled.Settings
-    }
-    
-    // Action icons
-    object Action {
-        val Add = Icons.Filled.Add
-        val Edit = Icons.Filled.Edit
-        val Delete = Icons.Filled.Delete
-        val Search = Icons.Filled.Search
-        val Filter = Icons.Filled.FilterList
-        val ArrowBack = Icons.Filled.ArrowBack
-        val ArrowForward = Icons.Filled.ArrowForward
-        val Check = Icons.Filled.Check
-        val Close = Icons.Filled.Close
-    }
-    
-    // Status icons
-    object Status {
-        val Success = Icons.Filled.CheckCircle
-        val Warning = Icons.Filled.Warning
-        val Error = Icons.Filled.Error
-        val Info = Icons.Filled.Info
     }
 }
