@@ -66,7 +66,7 @@
 | CsvExporter utility | ✅ | `util/CsvExporter.kt` |
 | SettingsScreen | ✅ | Dark mode toggle, export CSV, tech info |
 
-### Phase 6: Gamification ⚠️ PARTIAL (85%)
+### Phase 6: Gamification ✅ SELESAI
 | Task | Status | Catatan |
 |------|--------|---------|
 | Achievement entity + DAO + Repository | ✅ | 9 default achievements (4 kategori) |
@@ -84,7 +84,7 @@
 | Daily Quests UI di dashboard | ✅ | `902117b` — `DailyQuestCard.kt` + dashboard integration |
 | Transaction → gamification wiring | ✅ | `902117b` — AddTransactionVM triggers XP + streak |
 | Profile page / GamificationScreen | ✅ | `cafdfa7` — Full screen + bottom nav 'Profil' tab |
-| AchievementGallery screen | ❌ BELUM | |
+| AchievementGallery screen | ✅ | `37def40` — Tab Prestasi di GamificationScreen |
 ### Phase 7: Polish ⚠️ PARTIAL
 | Task | Status | Catatan |
 |------|--------|---------|
@@ -252,7 +252,7 @@ Setelah setiap task:
 | Master Plan Phase 3 (Transaction UX) | ✅ SELESAI |
 | Master Plan Phase 4 (Multi-Account) | ✅ SELESAI |
 | Master Plan Phase 5 (Onboarding) | ✅ SELESAI |
-| Master Plan Phase 6 (Gamification) | ⚠️ 85% |
+| Master Plan Phase 6 (Gamification) | ✅ SELESAI |
 | Master Plan Phase 7 (Polish) | ⚠️ 40% |
 | Production Ready | ❌ Perlu gamification UI |
 
