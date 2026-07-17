@@ -67,23 +67,24 @@
 | CsvExporter utility | ✅ | `util/CsvExporter.kt` |
 | SettingsScreen | ✅ | Dark mode toggle, export CSV, tech info |
 
-### Phase 6: Gamification ⚠️ PARTIAL
+### Phase 6: Gamification ⚠️ PARTIAL (60%)
 | Task | Status | Catatan |
 |------|--------|---------|
 | Achievement entity + DAO + Repository | ✅ | 9 default achievements (4 kategori) |
 | DefaultAchievements seeding | ✅ | Auto-insert via DatabaseModule callback |
 | AchievementBadge component | ✅ | `ui/components/AchievementBadge.kt` |
 | GetHealthScoreUseCase | ✅ | `domain/GetHealthScoreUseCase.kt` (savings rate formula) |
-| UserProgress entity (XP, level, streak) | ❌ BELUM | Perlu tabel baru: user_progress |
-| XP calculation engine | ❌ BELUM | XP earning rules dari GAMIFICATION_CONCEPT.md |
-| Level progression logic | ❌ BELUM | 10 level, 0 → 50.000 XP |
-| Streak tracker (daily counter + freeze) | ❌ BELUM | |
-| Daily/weekly/monthly quest system | ❌ BELUM | |
-| Challenge system | ❌ BELUM | |
+| UserProgress entity (XP, level, streak) | ✅ | `fa47973` — `data/model/UserProgress.kt` |
+| XP calculation engine | ✅ | `fa47973` — `domain/GamificationUseCase.kt` |
+| Level progression logic | ✅ | 10 level, 0 → 50.000 XP, Indonesian titles |
+| Streak tracker (daily counter + freeze) | ✅ | Auto-freeze + earn freeze per 7 streak days |
+| Daily/weekly/monthly quest system | ✅ | `fa47973` — DailyQuest + Challenge entities + generators |
+| Challenge system | ✅ | Weekly + Monthly generators |
 | Health Score ring UI | ❌ BELUM | Belum di-display di Dashboard |
-| XP bar + level badge UI | ❌ BELUM | |
-| Streak counter UI | ❌ BELUM | |
-| Profile page | ❌ BELUM | |
+| XP bar + level badge UI | ✅ | `f7ab798` — `LevelCard.kt` di dashboard |
+| Streak counter UI | ✅ | `f7ab798` — `StreakCard.kt` di dashboard |
+| Daily Quests UI di dashboard | ❌ BELUM | |
+| Profile page / GamificationScreen | ❌ BELUM | |
 | AchievementGallery screen | ❌ BELUM | |
 
 ### Phase 7: Polish ⚠️ PARTIAL
@@ -104,8 +105,9 @@
 ## KODEBASE AKTUAL
 
 ### Stats
-- 58 Kotlin files
-- Room DB v6 (5 entities: Transaction, Category, Budget, Account, Achievement)
+- 70 Kotlin files
+- Room DB v7 (9 entities: Transaction, Category, Budget, Account, Achievement,
+  UserProgress, DailyQuest, Challenge, XpHistory)
 - Hilt DI (DatabaseModule + RepositoryModule)
 - DataStore preferences
 - 8 screens, 8 viewmodels, 12+ reusable components
@@ -128,19 +130,22 @@ com.financeapp/
 ├── di/
 │   ├── DatabaseModule.kt            — DB + DAOs providers
 │   └── RepositoryModule.kt          — Repository providers
-├── domain/
-│   └── GetHealthScoreUseCase.kt     — FHS calculation
+│   ├── domain/
+│   │   ├── GetHealthScoreUseCase.kt     — FHS calculation
+│   │   └── GamificationUseCase.kt       — XP engine + streak + level
 ├── data/
 │   ├── model/
 │   │   ├── Transaction.kt, Category.kt, Budget.kt, Account.kt, Achievement.kt
+│   │   ├── UserProgress.kt, DailyQuest.kt, Challenge.kt, XpHistory.kt
 │   │   ├── DashboardStats.kt, DefaultCategories.kt, DefaultAchievements.kt
 │   ├── database/
-│   │   ├── FinanceDatabase.kt       — Room DB v6 + migrations
+│   │   ├── FinanceDatabase.kt       — Room DB v7 + migrations 1→7
 │   │   ├── TransactionDao.kt, CategoryDao.kt, BudgetDao.kt, AccountDao.kt, AchievementDao.kt
+│   │   ├── UserProgressDao.kt, DailyQuestDao.kt, ChallengeDao.kt, XpHistoryDao.kt
 │   │   └── Converters.kt
 │   ├── repository/
 │   │   ├── TransactionRepository.kt, CategoryRepository.kt, BudgetRepository.kt
-│   │   ├── AccountRepository.kt, AchievementRepository.kt
+│   │   ├── AccountRepository.kt, AchievementRepository.kt, GamificationRepository.kt
 │   └── preferences/
 │       └── AppPreferences.kt        — DataStore wrapper
 ├── ui/
@@ -148,15 +153,15 @@ com.financeapp/
 │   │   ├── DashboardScreen.kt, TransactionListScreen.kt, AddTransactionScreen.kt
 │   │   ├── EditTransactionScreen.kt, BudgetScreen.kt, ReportScreen.kt
 │   │   ├── SettingsScreen.kt, OnboardingScreen.kt
-│   ├── viewmodel/ (8)
+│   ├── viewmodel/ (9)
 │   │   ├── DashboardViewModel.kt, TransactionViewModel.kt, AddTransactionViewModel.kt
 │   │   ├── EditTransactionViewModel.kt, BudgetViewModel.kt, ReportViewModel.kt
-│   │   ├── SettingsViewModel.kt, OnboardingViewModel.kt
-│   ├── components/ (12+)
+│   │   ├── SettingsViewModel.kt, OnboardingViewModel.kt, GamificationViewModel.kt
+│   ├── components/ (14+)
 │   │   ├── SearchBar.kt, FilterDialog.kt, CategorySelector.kt, DatePickerField.kt
 │   │   ├── AmountInput.kt, BalanceCard.kt
 │   │   ├── AnimatedNumber.kt, DonutChart.kt, MonthlyTrendChart.kt, BudgetProgressRing.kt
-│   │   └── AchievementBadge.kt
+│   │   ├── AchievementBadge.kt, StreakCard.kt, LevelCard.kt
 │   ├── navigation/ — AppNavigation.kt, NavigationRoutes.kt
 │   ├── theme/ — Theme.kt, Type.kt
 │   └── utils/ — FormatterUtil.kt, FinanceIcons.kt
@@ -201,22 +206,19 @@ com.financeapp/
 ### ~~URGENT: Fix Regression~~ ✅ DONE
 1. ~~Fix DatabaseModule.kt~~ — Commit `b2aba4e`
 
-### HIGH: Gamification Foundation (Phase 6.1)
-2. **UserProgress entity** — Tabel baru: totalXp, currentLevel, bestStreak, currentStreak, streakFreezes, lastActivityDate, healthScore
-3. **XP calculation engine** — XP earning rules (10 XP per transaksi, 50 XP bonus 7 hari, 20 XP/hari no overspend, dll)
-4. **Level progression logic** — 10 level mapping (0-50.000 XP)
+### HIGH: Gamification UI (Phase 6.3)
+2. **Daily Quests UI di dashboard** — Card dengan daily quest checklist
+3. **Wiring transaction recording → XP + streak** — Panggil `GamificationViewModel.onTransactionRecorded()` dari AddTransactionScreen
 
-### MEDIUM: Streak System (Phase 6.2)
-5. **Streak tracker** — Daily counter, freeze mechanic, best streak record
-6. **Streak UI** — Counter di dashboard, flame icon
+### MEDIUM: Gamification Screen (Phase 6.4)
+4. **GamificationScreen** — Quest list, challenge progress, XP history, badge gallery
 
 ### MEDIUM: Transaction UX (Phase 3 remaining)
-7. **SwipeActions component** — Swipe-to-edit, swipe-to-delete dengan undo
-8. **FTS4 Full-Text Search** — Room FTS4 entity untuk pencarian cepat
+5. **SwipeActions component** — Swipe-to-edit, swipe-to-delete dengan undo
 
 ### LOW: Polish (Phase 7 remaining)
-9. **Screen transition animations** — NavHost custom enter/exit transitions
-10. **Micro-interactions** — Spring bounce, haptic feedback
+6. **Screen transition animations** — NavHost custom enter/exit transitions
+7. **Health Score ring UI** — Animated ring di dashboard
 
 ---
 
@@ -245,9 +247,9 @@ Setelah setiap task:
 | Master Plan Phase 3 (Transaction UX) | ⚠️ 60% |
 | Master Plan Phase 4 (Multi-Account) | ⚠️ 50% |
 | Master Plan Phase 5 (Onboarding) | ✅ SELESAI |
-| Master Plan Phase 6 (Gamification) | ⚠️ 30% |
+| Master Plan Phase 6 (Gamification) | ⚠️ 60% |
 | Master Plan Phase 7 (Polish) | ⚠️ 40% |
-| Production Ready | ❌ Perlu fix regression + gamification |
+| Production Ready | ❌ Perlu gamification UI |
 
 ---
 
