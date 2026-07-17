@@ -60,6 +60,7 @@ class DashboardViewModel @Inject constructor(
         observeTransactions()
         loadMonthlyTrend()
         loadBudgetSummaries()
+        observeBudgets()
         loadHealthScore()
     }
 
@@ -69,6 +70,15 @@ class DashboardViewModel @Inject constructor(
                 updateDashboardStats(transactions)
                 loadDashboardData()
                 loadMonthlyTrend()
+            }
+        }
+    }
+
+    private fun observeBudgets() {
+        viewModelScope.launch {
+            budgetRepository.getActiveBudgets().collect {
+                loadBudgetSummaries()
+        observeBudgets()
             }
         }
     }
@@ -162,7 +172,8 @@ class DashboardViewModel @Inject constructor(
         }
     }
 
-    private fun loadBudgetSummaries() {
+    private fun loadBudgetSummaries()
+        observeBudgets() {
         viewModelScope.launch {
             try {
                 val summary = budgetRepository.getBudgetSummary(_uiState.value.selectedMonth)
@@ -177,6 +188,7 @@ class DashboardViewModel @Inject constructor(
         _uiState.value = _uiState.value.copy(selectedMonth = month)
         loadDashboardData()
         loadBudgetSummaries()
+        observeBudgets()
     }
 
     fun retry() {
@@ -184,6 +196,7 @@ class DashboardViewModel @Inject constructor(
         loadDashboardData()
         loadMonthlyTrend()
         loadBudgetSummaries()
+        observeBudgets()
         loadHealthScore()
     }
 

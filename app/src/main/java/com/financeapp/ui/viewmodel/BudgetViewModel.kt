@@ -57,9 +57,23 @@ class BudgetViewModel @Inject constructor(
         }
 
         loadBudgets()
+
+        // Observe budget changes
+        viewModelScope.launch {
+            budgetRepository.getActiveBudgets().collect {
+                loadBudgets()
+            }
+        }
     }
 
     private fun loadBudgets() {
+
+        // Observe budget changes
+        viewModelScope.launch {
+            budgetRepository.getActiveBudgets().collect {
+                loadBudgets()
+            }
+        }
         viewModelScope.launch {
             try {
                 _uiState.value = _uiState.value.copy(isLoading = true)
@@ -135,6 +149,13 @@ class BudgetViewModel @Inject constructor(
                     successMessage = "Budget berhasil ditambahkan"
                 )
                 loadBudgets()
+
+        // Observe budget changes
+        viewModelScope.launch {
+            budgetRepository.getActiveBudgets().collect {
+                loadBudgets()
+            }
+        }
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(errorMessage = e.message)
             }
@@ -149,6 +170,13 @@ class BudgetViewModel @Inject constructor(
                     successMessage = "Budget berhasil dihapus"
                 )
                 loadBudgets()
+
+        // Observe budget changes
+        viewModelScope.launch {
+            budgetRepository.getActiveBudgets().collect {
+                loadBudgets()
+            }
+        }
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(errorMessage = e.message)
             }
@@ -160,6 +188,13 @@ class BudgetViewModel @Inject constructor(
             selectedMonth = _uiState.value.selectedMonth.minusMonths(1)
         )
         loadBudgets()
+
+        // Observe budget changes
+        viewModelScope.launch {
+            budgetRepository.getActiveBudgets().collect {
+                loadBudgets()
+            }
+        }
     }
 
     fun nextMonth() {
@@ -167,6 +202,13 @@ class BudgetViewModel @Inject constructor(
             selectedMonth = _uiState.value.selectedMonth.plusMonths(1)
         )
         loadBudgets()
+
+        // Observe budget changes
+        viewModelScope.launch {
+            budgetRepository.getActiveBudgets().collect {
+                loadBudgets()
+            }
+        }
     }
 
     fun clearMessages() {

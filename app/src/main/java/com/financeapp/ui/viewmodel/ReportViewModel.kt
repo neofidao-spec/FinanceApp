@@ -35,6 +35,12 @@ class ReportViewModel @Inject constructor(
     val uiState: StateFlow<ReportUiState> = _uiState.asStateFlow()
 
     init {
+        // Auto-refresh when transactions change
+        viewModelScope.launch {
+            transactionRepository.getAllTransactions().collect {
+                loadMonthlyReport()
+            }
+        }
         loadMonthlyReport()
     }
 

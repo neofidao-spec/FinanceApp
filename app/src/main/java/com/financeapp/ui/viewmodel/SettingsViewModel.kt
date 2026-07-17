@@ -43,9 +43,35 @@ class SettingsViewModel @Inject constructor(
             }
         }
         loadStats()
+
+        // Auto-refresh when transactions change
+        viewModelScope.launch {
+            transactionRepository.getAllTransactions().collect {
+                loadStats()
+            }
+        }
+        // Auto-refresh when accounts change
+        viewModelScope.launch {
+            accountRepository.getAllAccounts().collect {
+                loadStats()
+            }
+        }
     }
 
     private fun loadStats() {
+
+        // Auto-refresh when transactions change
+        viewModelScope.launch {
+            transactionRepository.getAllTransactions().collect {
+                loadStats()
+            }
+        }
+        // Auto-refresh when accounts change
+        viewModelScope.launch {
+            accountRepository.getAllAccounts().collect {
+                loadStats()
+            }
+        }
         viewModelScope.launch {
             val txCount = transactionRepository.getTransactionCount()
             val accCount = accountRepository.getAccountCount()
