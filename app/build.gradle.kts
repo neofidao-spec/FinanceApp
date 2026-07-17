@@ -74,8 +74,8 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
 
     // Hilt
-    implementation("com.google.dagger:hilt-android:2.49")
-    ksp("com.google.dagger:hilt-compiler:2.49")
+    implementation("com.google.dagger:hilt-android:2.48.1")
+    ksp("com.google.dagger:hilt-compiler:2.48.1")
     implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
 
     // DataStore

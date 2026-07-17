@@ -10,7 +10,7 @@ pluginManagement {
                 useModule("com.google.devtools.ksp:com.google.devtools.ksp.gradle.plugin:1.9.22-1.0.17")
             }
             if (requested.id.id == "com.google.dagger.hilt.android") {
-                useModule("com.google.dagger:hilt-android-gradle-plugin:2.49")
+                useModule("com.google.dagger:hilt-android-gradle-plugin:2.48.1")
             }
         }
     }
