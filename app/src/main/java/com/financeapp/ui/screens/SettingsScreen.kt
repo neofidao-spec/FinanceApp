@@ -11,7 +11,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
-import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -70,7 +70,7 @@ fun SettingsScreen(
                 Text("Database", fontWeight = FontWeight.Medium)
                 Text("Room Database v2 - Offline storage", fontSize = 12.sp, color = Color.Gray)
                 Spacer(modifier = Modifier.height(8.dp))
-                HorizontalDivider()
+                Divider()
                 Spacer(modifier = Modifier.height(8.dp))
                 Text("Format Mata Uang", fontWeight = FontWeight.Medium)
                 Text("Rp (Rupiah Indonesia)", fontSize = 12.sp, color = Color.Gray)

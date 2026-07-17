@@ -150,7 +150,7 @@ fun AddTransactionScreen(
 
             // Save button
             Button(
-                onClick = { viewModel.saveTransaction() },
+                onClick = { viewModel.submitTransaction() },
                 modifier = Modifier.fillMaxWidth(),
                 enabled = uiState.isFormValid && !uiState.isLoading,
                 colors = ButtonDefaults.buttonColors(

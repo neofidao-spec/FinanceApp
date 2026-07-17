@@ -1,5 +1,6 @@
 package com.financeapp.ui.screens
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -31,7 +32,9 @@ fun DashboardScreen(viewModel: DashboardViewModel) {
     val uiState by viewModel.uiState.collectAsState()
 
     if (uiState.isLoading) {
-        CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
+        Box(modifier = Modifier.fillMaxWidth().padding(32.dp), contentAlignment = Alignment.Center) {
+            CircularProgressIndicator()
+        }
         return
     }
 
