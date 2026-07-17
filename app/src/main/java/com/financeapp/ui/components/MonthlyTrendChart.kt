@@ -131,7 +131,7 @@ fun MonthlyTrendChart(
             if (pointCount < 2) return@Canvas
 
             val xStep = chartWidth / (pointCount - 1).toFloat()
-            val yScale = if (maxValue > 0) chartHeight / maxValue.toFloat() else 1f
+            val yScale = if (maxValue != null && maxValue > 0) chartHeight / maxValue.toFloat() else 1f
 
             // Draw Y-axis gridlines
             val gridLines = 4

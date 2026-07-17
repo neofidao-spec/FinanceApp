@@ -17,6 +17,9 @@ import kotlinx.coroutines.launch
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
+
+/**
+ * Data class representing monthly trend data for the line chart.
  */
 data class MonthlyTrendData(
     val month: String,
