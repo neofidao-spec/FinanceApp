@@ -120,9 +120,8 @@ class BudgetViewModel @Inject constructor(
                     monthlyLimit = limit,
                     alertThreshold = (state.addAlertThreshold.toDoubleOrNull() ?: 80.0) / 100.0,
                     description = state.addDescription,
-                    month = state.selectedMonth
                 )
-                budgetRepository.insertBudget(budget)
+                budgetRepository.addBudget(budget)
                 _uiState.value = _uiState.value.copy(
                     successMessage = "Budget berhasil ditambahkan",
                     showAddDialog = false,
