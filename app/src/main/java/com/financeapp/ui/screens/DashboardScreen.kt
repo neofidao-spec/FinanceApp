@@ -64,29 +64,41 @@ import com.financeapp.ui.components.AnimatedNumber
 import com.financeapp.ui.components.BudgetProgressRing
 import com.financeapp.ui.components.DonutChart
 import com.financeapp.ui.components.DonutSegment
+import com.financeapp.ui.components.LevelCard
 import com.financeapp.ui.components.MonthlyData
 import com.financeapp.ui.components.MonthlyTrendChart
+import com.financeapp.ui.components.StreakCard
 import com.financeapp.ui.theme.FinanceAppTheme
 import com.financeapp.ui.utils.FinanceIcons
 import com.financeapp.ui.utils.FormatterUtil
 import com.financeapp.ui.viewmodel.DashboardUiState
 import com.financeapp.ui.viewmodel.DashboardViewModel
+import com.financeapp.ui.viewmodel.GamificationUiState
+import com.financeapp.ui.viewmodel.GamificationViewModel
 import com.financeapp.ui.viewmodel.MonthlyTrendData
 
 @Composable
-fun DashboardScreen(viewModel: DashboardViewModel = hiltViewModel()) {
+fun DashboardScreen(
+    viewModel: DashboardViewModel = hiltViewModel(),
+    gamificationViewModel: GamificationViewModel = hiltViewModel()
+) {
     val uiState by viewModel.uiState.collectAsState()
+    val gamificationState by gamificationViewModel.uiState.collectAsState()
 
     DashboardContent(
         uiState = uiState,
-        onRetry = { viewModel.retry() }
+        gamificationState = gamificationState,
+        onRetry = { viewModel.retry() },
+        onUseFreeze = { gamificationViewModel.useFreeze() }
     )
 }
 
 @Composable
 private fun DashboardContent(
     uiState: DashboardUiState,
-    onRetry: () -> Unit
+    gamificationState: GamificationUiState,
+    onRetry: () -> Unit,
+    onUseFreeze: () -> Unit
 ) {
     // Loading state
     if (uiState.isLoading) {
@@ -157,7 +169,29 @@ private fun DashboardContent(
             )
         }
 
-        // 2. Health Score Card
+        // 2. Gamification Cards (Streak + Level)
+        if (gamificationState.userProgress != null && !gamificationState.isLoading) {
+            item {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    LevelCard(
+                        progress = gamificationState.userProgress,
+                        modifier = Modifier.weight(1.5f)
+                    )
+                    StreakCard(
+                        currentStreak = gamificationState.userProgress.currentStreak,
+                        bestStreak = gamificationState.userProgress.bestStreak,
+                        streakFreezes = gamificationState.userProgress.streakFreezes,
+                        onUseFreeze = onUseFreeze,
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+            }
+        }
+
+        // 3. Health Score Card
         uiState.healthScore?.let { health ->
             item {
                 HealthScoreCard(
@@ -169,7 +203,7 @@ private fun DashboardContent(
             }
         }
 
-        // 3. Income/Expense Cards
+        // 4. Income/Expense Cards
         item {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -192,7 +226,7 @@ private fun DashboardContent(
             }
         }
 
-        // 4. DonutChart - Expense breakdown
+        // 5. DonutChart - Expense breakdown
         if (uiState.categoryBreakdown.isNotEmpty()) {
             item {
                 SectionHeader(title = "Pengeluaran per Kategori")
@@ -210,7 +244,7 @@ private fun DashboardContent(
             }
         }
 
-        // 5. Monthly Trend Chart
+        // 6. Monthly Trend Chart
         if (uiState.monthlyTrend.isNotEmpty()) {
             item {
                 SectionHeader(title = "Tren Bulanan")
@@ -235,7 +269,7 @@ private fun DashboardContent(
             }
         }
 
-        // 6. Budget Overview
+        // 7. Budget Overview
         if (uiState.budgetSummaries.isNotEmpty()) {
             item {
                 SectionHeader(title = "Budget Overview")
@@ -258,7 +292,7 @@ private fun DashboardContent(
             }
         }
 
-        // 7. Recent Transactions
+        // 8. Recent Transactions
         item {
             SectionHeader(title = "Transaksi Terbaru")
         }
