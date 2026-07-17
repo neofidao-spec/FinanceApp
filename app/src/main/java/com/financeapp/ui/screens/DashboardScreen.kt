@@ -1,6 +1,5 @@
 package com.financeapp.ui.screens
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -23,6 +22,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.financeapp.ui.components.BalanceCard
+import com.financeapp.ui.utils.FormatterUtil
 import com.financeapp.ui.viewmodel.DashboardViewModel
 
 @Composable
@@ -30,7 +31,7 @@ fun DashboardScreen(viewModel: DashboardViewModel) {
     val uiState by viewModel.uiState.collectAsState()
 
     if (uiState.isLoading) {
-        CircularProgressIndicator()
+        CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
         return
     }
 
@@ -40,27 +41,7 @@ fun DashboardScreen(viewModel: DashboardViewModel) {
             .padding(16.dp)
     ) {
         item {
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 16.dp),
-                shape = RoundedCornerShape(12.dp)
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(MaterialTheme.colorScheme.primary)
-                        .padding(20.dp)
-                ) {
-                    Text("Saldo Anda", color = Color.White, fontSize = 14.sp)
-                    Text(
-                        "Rp ${'$'}{String.format("%,.0f", uiState.balance)}",
-                        color = Color.White,
-                        fontSize = 28.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-            }
+            BalanceCard(uiState.balance)
         }
 
         item {
@@ -79,7 +60,7 @@ fun DashboardScreen(viewModel: DashboardViewModel) {
                         Text("Pemasukan", fontSize = 12.sp)
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
-                            "Rp ${'$'}{String.format("%,.0f", uiState.totalIncome)}",
+                            FormatterUtil.formatCurrency(uiState.totalIncome),
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Bold,
                             color = Color.Green
@@ -100,7 +81,7 @@ fun DashboardScreen(viewModel: DashboardViewModel) {
                         Text("Pengeluaran", fontSize = 12.sp)
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
-                            "Rp ${'$'}{String.format("%,.0f", uiState.totalExpense)}",
+                            FormatterUtil.formatCurrency(uiState.totalExpense),
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Bold,
                             color = Color.Red
@@ -127,7 +108,7 @@ fun DashboardScreen(viewModel: DashboardViewModel) {
                     Text(expense.category.name, fontWeight = FontWeight.Bold)
                     Text("${'$'}{String.format("%.1f", expense.percentage)}%", fontSize = 12.sp)
                 }
-                Text("Rp ${'$'}{String.format("%,.0f", expense.total)}", fontWeight = FontWeight.Bold)
+                Text(FormatterUtil.formatCurrency(expense.total), fontWeight = FontWeight.Bold)
             }
         }
 
@@ -149,7 +130,7 @@ fun DashboardScreen(viewModel: DashboardViewModel) {
                     Text(transaction.transaction.description, fontSize = 12.sp)
                 }
                 Text(
-                    "Rp ${'$'}{String.format("%,.0f", transaction.transaction.amount)}",
+                    FormatterUtil.formatCurrency(transaction.transaction.amount),
                     fontWeight = FontWeight.Bold,
                     color = if (transaction.transaction.type.name == "INCOME") Color.Green else Color.Red
                 )
