@@ -1,10 +1,6 @@
 package com.financeapp.ui.screens
 
 import androidx.compose.foundation.ExperimentalFoundationApi
-
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -23,73 +19,58 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.BarChart
 import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Money
+import androidx.compose.material.icons.filled.Savings
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.financeapp.data.preferences.AppPreferences
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-@HiltViewModel
-class OnboardingViewModel @Inject constructor(
-    private val appPreferences: AppPreferences
-) : ViewModel() {
-
-    val isOnboardingCompleted = appPreferences.isOnboardingCompleted
-
-    fun completeOnboarding() {
-        viewModelScope.launch {
-            appPreferences.setOnboardingCompleted()
-        }
-    }
-}
-
-data class OnboardingPage(
+private data class OnboardingPage(
     val title: String,
     val subtitle: String,
-    val emoji: String,
-    val icon: ImageVector? = null
+    val icon: ImageVector,
+    val color: Color
 )
 
-val onboardingPages = listOf(
+private val onboardingPages = listOf(
     OnboardingPage(
         title = "Kelola Keuanganmu",
-        subtitle = "Pantau pemasukan dan pengeluaranmu dengan mudah. Atur keuanganmu dengan lebih bijak.",
-        emoji = "💰"
+        subtitle = "Pantau pemasukan dan pengeluaran dengan mudah. Atur keuanganmu dengan lebih bijak.",
+        icon = Icons.Filled.Money,
+        color = Color(0xFF2E7D32)
     ),
     OnboardingPage(
-        title = "Catat, Analisa, Hemat",
-        subtitle = "Fitur lengkap untuk mencatat transaksi, menganalisa pola pengeluaran, dan menghemat pengeluaranmu.",
-        emoji = "📊",
-        icon = Icons.Default.Info
+        title = "Analisa Pengeluaran",
+        subtitle = "Lihat grafik dan laporan untuk memahami pola pengeluaranmu.",
+        icon = Icons.Filled.BarChart,
+        color = Color(0xFF1565C0)
     ),
     OnboardingPage(
-        title = "Siap Memulai?",
-        subtitle = "Mulai kelola keuanganmu sekarang dan capai tujuan finansialmu!",
-        emoji = "🚀",
-        icon = Icons.Default.CheckCircle
+        title = "Capai Tujuan Finansial",
+        subtitle = "Atur budget dan pantau progress menuju kebebasan finansial.",
+        icon = Icons.Filled.Savings,
+        color = Color(0xFFE65100)
     )
 )
 
@@ -108,20 +89,22 @@ fun OnboardingScreen(
             .background(
                 Brush.verticalGradient(
                     colors = listOf(
-                        MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
+                        MaterialTheme.colorScheme.primary.copy(alpha = 0.05f),
                         MaterialTheme.colorScheme.background
                     )
                 )
             )
     ) {
         Column(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 24.dp)
         ) {
             // Skip button
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                    .padding(top = 16.dp),
                 horizontalArrangement = Arrangement.End
             ) {
                 TextButton(
@@ -132,7 +115,7 @@ fun OnboardingScreen(
                 ) {
                     Text(
                         text = "Lewati",
-                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
+                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)
                     )
                 }
             }
@@ -140,8 +123,7 @@ fun OnboardingScreen(
             // Pager
             HorizontalPager(
                 state = pagerState,
-                modifier = Modifier.weight(1f),
-                contentPadding = PaddingValues(horizontal = 32.dp)
+                modifier = Modifier.weight(1f)
             ) { page ->
                 OnboardingPageContent(page = onboardingPages[page])
             }
@@ -158,44 +140,48 @@ fun OnboardingScreen(
                     Box(
                         modifier = Modifier
                             .padding(horizontal = 4.dp)
-                            .size(if (pagerState.currentPage == index) 12.dp else 8.dp)
-                            .clip(CircleShape)
+                            .size(if (pagerState.currentPage == index) 24.dp else 8.dp)
+                            .height(8.dp)
+                            .clip(RoundedCornerShape(4.dp))
                             .background(
                                 if (pagerState.currentPage == index)
                                     MaterialTheme.colorScheme.primary
                                 else
-                                    MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)
+                                    MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
                             )
                     )
                 }
             }
 
+            Spacer(modifier = Modifier.height(16.dp))
+
             // Action button
-            AnimatedVisibility(
-                visible = pagerState.currentPage == onboardingPages.size - 1,
-                enter = fadeIn(),
-                exit = fadeOut()
-            ) {
-                Button(
-                    onClick = {
+            val isLastPage = pagerState.currentPage == onboardingPages.size - 1
+
+            Button(
+                onClick = {
+                    if (isLastPage) {
                         viewModel.completeOnboarding()
                         onFinish()
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 32.dp, vertical = 16.dp)
-                        .height(56.dp),
-                    shape = RoundedCornerShape(16.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.primary
-                    )
-                ) {
-                    Text(
-                        text = "Mulai",
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
+                    } else {
+                        scope.launch {
+                            pagerState.animateScrollToPage(pagerState.currentPage + 1)
+                        }
+                    }
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp),
+                shape = RoundedCornerShape(16.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primary
+                )
+            ) {
+                Text(
+                    text = if (isLastPage) "Mulai" else "Selanjutnya",
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.SemiBold
+                )
             }
 
             Spacer(modifier = Modifier.height(32.dp))
@@ -203,7 +189,6 @@ fun OnboardingScreen(
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun OnboardingPageContent(page: OnboardingPage) {
     Column(
@@ -211,24 +196,25 @@ private fun OnboardingPageContent(page: OnboardingPage) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        // Emoji illustration
-        Text(
-            text = page.emoji,
-            fontSize = 80.sp,
-            modifier = Modifier.padding(bottom = 24.dp)
-        )
-
-        // Icon if present
-        page.icon?.let { icon ->
+        // Icon in a colored circle
+        Box(
+            modifier = Modifier
+                .size(120.dp)
+                .background(
+                    color = page.color.copy(alpha = 0.1f),
+                    shape = CircleShape
+                ),
+            contentAlignment = Alignment.Center
+        ) {
             Icon(
-                imageVector = icon,
+                imageVector = page.icon,
                 contentDescription = null,
-                modifier = Modifier
-                    .size(48.dp)
-                    .padding(bottom = 16.dp),
-                tint = MaterialTheme.colorScheme.primary
+                modifier = Modifier.size(64.dp),
+                tint = page.color
             )
         }
+
+        Spacer(modifier = Modifier.height(32.dp))
 
         // Title
         Text(
@@ -245,8 +231,9 @@ private fun OnboardingPageContent(page: OnboardingPage) {
             text = page.subtitle,
             style = MaterialTheme.typography.bodyLarge,
             textAlign = TextAlign.Center,
-            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
-            lineHeight = 24.sp
+            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
+            lineHeight = 24.sp,
+            modifier = Modifier.padding(horizontal = 16.dp)
         )
     }
 }

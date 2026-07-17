@@ -123,7 +123,7 @@ fun MonthlyTrendChart(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(200.dp)
-                .padding(start = 40.dp, end = 16.dp, top = 8.dp, bottom = 24.dp)
+                .padding(horizontal = 16.dp, vertical = 8.dp)
         ) {
             val chartWidth = size.width
             val chartHeight = size.height
@@ -228,7 +228,7 @@ fun MonthlyTrendChart(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 40.dp, end = 16.dp),
+                .padding(horizontal = 16.dp),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             data.forEach { monthlyData ->
