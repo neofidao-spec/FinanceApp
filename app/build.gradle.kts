@@ -13,8 +13,8 @@ android {
         applicationId = "com.financeapp"
         minSdk = 24
         targetSdk = 34
-        versionCode = 1
-        versionName = "1.0.0"
+        versionCode = 2
+        versionName = "1.0.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -22,8 +22,33 @@ android {
         }
     }
 
+    signingConfigs {
+        create("release") {
+            // In CI, use environment variables
+            // For local dev, use a keystore file
+            val keystorePath = System.getenv("KEYSTORE_PATH") ?: "keystore/release.jks"
+            val keystorePassword = System.getenv("KEYSTORE_PASSWORD") ?: "financeapp123"
+            val keyAlias = System.getenv("KEY_ALIAS") ?: "financeapp"
+            val keyPassword = System.getenv("KEY_PASSWORD") ?: "financeapp123"
+
+            storeFile = file(keystorePath)
+            storePassword = keystorePassword
+            this.keyAlias = keyAlias
+            this.keyPassword = keyPassword
+        }
+    }
+
     buildTypes {
         release {
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+            signingConfig = signingConfigs.getByName("release")
+        }
+        debug {
             isMinifyEnabled = false
         }
     }
