@@ -268,7 +268,7 @@ private fun EmptyTransactionState(
         ) {
             Icon(
                 imageVector = Icons.Default.Search,
-                contentDescription = null,
+                contentDescription = "Tidak ada transaksi",
                 modifier = Modifier.size(64.dp),
                 tint = Color.Gray
             )

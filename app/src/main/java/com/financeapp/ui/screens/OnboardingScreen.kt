@@ -223,7 +223,7 @@ private fun OnboardingPageContent(page: OnboardingPage) {
         ) {
             Icon(
                 imageVector = page.icon,
-                contentDescription = null,
+                contentDescription = page.title,
                 modifier = Modifier.size(64.dp),
                 tint = page.color
             )

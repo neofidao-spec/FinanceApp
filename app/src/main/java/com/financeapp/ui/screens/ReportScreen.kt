@@ -96,7 +96,7 @@ fun ReportScreen(viewModel: ReportViewModel = hiltViewModel()) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Icon(
                             imageVector = Icons.Default.TrendingUp,
-                            contentDescription = null,
+                            contentDescription = "Error",
                             modifier = Modifier.size(48.dp),
                             tint = MaterialTheme.colorScheme.error
                         )
@@ -161,7 +161,7 @@ fun ReportScreen(viewModel: ReportViewModel = hiltViewModel()) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Icon(
                             imageVector = Icons.Default.TrendingUp,
-                            contentDescription = null,
+                            contentDescription = "Tidak ada data",
                             modifier = Modifier.size(64.dp),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f)
                         )

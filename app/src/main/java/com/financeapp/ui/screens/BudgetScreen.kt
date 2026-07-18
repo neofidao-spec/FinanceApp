@@ -385,7 +385,7 @@ private fun StatCard(
         ) {
             Icon(
                 imageVector = icon,
-                contentDescription = null,
+                contentDescription = "Ikon kategori",
                 modifier = Modifier.size(24.dp),
                 tint = MaterialTheme.colorScheme.onSurface
             )

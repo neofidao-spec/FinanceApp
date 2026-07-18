@@ -92,7 +92,7 @@ fun GamificationScreen(
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Icon(
                     imageVector = Icons.Filled.TrendingUp,
-                    contentDescription = null,
+                    contentDescription = "Error memuat data",
                     modifier = Modifier.size(64.dp),
                     tint = MaterialTheme.colorScheme.error
                 )
@@ -264,7 +264,7 @@ private fun AchievementTab(state: com.financeapp.ui.viewmodel.GamificationUiStat
                 ) {
                     Icon(
                         imageVector = Icons.Filled.EmojiEvents,
-                        contentDescription = null,
+                        contentDescription = "Prestasi",
                         tint = Color(0xFFFF8F00),
                         modifier = Modifier.size(48.dp)
                     )
@@ -364,7 +364,7 @@ private fun StatItem(icon: ImageVector, value: String, label: String, color: Col
                 .background(color.copy(alpha = 0.15f), CircleShape),
             contentAlignment = Alignment.Center
         ) {
-            Icon(icon, contentDescription = null, tint = color, modifier = Modifier.size(18.dp))
+            Icon(icon, contentDescription = "Statistik", tint = color, modifier = Modifier.size(18.dp))
         }
         Spacer(modifier = Modifier.height(6.dp))
         Text(text = value, fontSize = 16.sp, fontWeight = FontWeight.Bold)
@@ -404,7 +404,7 @@ private fun ChallengeCard(challenge: Challenge) {
                 if (challenge.isCompleted) {
                     Icon(
                         imageVector = Icons.Filled.EmojiEvents,
-                        contentDescription = null,
+                        contentDescription = "Tantangan selesai",
                         tint = Color(0xFFFF8F00),
                         modifier = Modifier.size(16.dp)
                     )
@@ -482,7 +482,7 @@ private fun XpHistoryRow(xp: XpHistory, dateFormatter: DateTimeFormatter) {
     ) {
         Icon(
             imageVector = icon,
-            contentDescription = null,
+            contentDescription = "Riwayat XP",
             tint = MaterialTheme.colorScheme.primary,
             modifier = Modifier.size(20.dp)
         )
