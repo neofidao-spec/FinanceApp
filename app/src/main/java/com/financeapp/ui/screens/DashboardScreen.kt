@@ -62,6 +62,8 @@ import com.financeapp.ui.components.StreakCard
 import com.financeapp.ui.theme.Spacing
 import com.financeapp.ui.theme.financeColors
 import com.financeapp.ui.utils.FinanceIcons
+import androidx.compose.ui.res.stringResource
+import com.financeapp.R
 import com.financeapp.ui.utils.FormatterUtil
 import com.financeapp.ui.viewmodel.DashboardUiState
 import com.financeapp.ui.viewmodel.DashboardViewModel
@@ -125,7 +127,7 @@ private fun DashboardContent(
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Icon(
                     imageVector = Icons.Filled.TrendingDown,
-                    contentDescription = "Terjadi kesalahan",
+                    contentDescription = stringResource(R.string.common_error_occurred),
                     modifier = Modifier.size(Spacing.iconXl),
                     tint = MaterialTheme.colorScheme.error
                 )
@@ -144,10 +146,10 @@ private fun DashboardContent(
                 ) {
                     Icon(
                         imageVector = Icons.Filled.Refresh,
-                        contentDescription = "Coba lagi",
+                        contentDescription = stringResource(R.string.common_retry),
                         modifier = Modifier.padding(end = Spacing.sm)
                     )
-                    Text("Coba Lagi")
+                    Text(stringResource(R.string.common_retry))
                 }
             }
         }
@@ -220,14 +222,14 @@ private fun DashboardContent(
             ) {
                 IncomeExpenseCard(
                     modifier = Modifier.weight(1f),
-                    label = "Pemasukan",
+                    label = stringResource(R.string.common_income),
                     amount = uiState.totalIncome,
                     icon = Icons.Filled.ArrowUpward,
                     color = MaterialTheme.colorScheme.financeColors.income
                 )
                 IncomeExpenseCard(
                     modifier = Modifier.weight(1f),
-                    label = "Pengeluaran",
+                    label = stringResource(R.string.common_expense),
                     amount = uiState.totalExpense,
                     icon = Icons.Filled.ArrowDownward,
                     color = MaterialTheme.colorScheme.financeColors.expense
@@ -238,7 +240,7 @@ private fun DashboardContent(
         // 6. DonutChart - Expense breakdown
         if (uiState.categoryBreakdown.isNotEmpty()) {
             item {
-                SectionHeader(title = "Pengeluaran per Kategori")
+                SectionHeader(title = stringResource(R.string.dashboard_expense_by_category))
                 DonutChart(
                     segments = uiState.categoryBreakdown.map { summary ->
                         DonutSegment(
@@ -256,7 +258,7 @@ private fun DashboardContent(
         // 7. Monthly Trend Chart
         if (uiState.monthlyTrend.isNotEmpty()) {
             item {
-                SectionHeader(title = "Tren Bulanan")
+                SectionHeader(title = stringResource(R.string.dashboard_monthly_trend))
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     shape = MaterialTheme.shapes.medium,
@@ -282,7 +284,7 @@ private fun DashboardContent(
         // 8. Budget Overview
         if (uiState.budgetSummaries.isNotEmpty()) {
             item {
-                SectionHeader(title = "Budget Overview")
+                SectionHeader(title = stringResource(R.string.dashboard_budget_overview))
             }
             item {
                 Row(
@@ -304,7 +306,7 @@ private fun DashboardContent(
 
         // 9. Recent Transactions
         item {
-            SectionHeader(title = "Transaksi Terbaru")
+            SectionHeader(title = stringResource(R.string.dashboard_recent_transactions))
         }
 
         if (uiState.recentTransactions.isEmpty()) {
@@ -340,7 +342,7 @@ private fun BalanceCard(
                 .padding(Spacing.lg)
         ) {
             Text(
-                text = "Total Saldo",
+                text = stringResource(R.string.dashboard_total_balance),
                 style = MaterialTheme.typography.labelLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -361,13 +363,13 @@ private fun BalanceCard(
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Icon(
                                 imageVector = Icons.Filled.TrendingUp,
-                                contentDescription = "Pemasukan",
+                                contentDescription = stringResource(R.string.common_income),
                                 tint = MaterialTheme.colorScheme.financeColors.income,
                                 modifier = Modifier.size(Spacing.iconT)
                             )
                             Spacer(modifier = Modifier.width(Spacing.xs))
                             Text(
-                                text = "Pemasukan",
+                                text = stringResource(R.string.common_income),
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -383,13 +385,13 @@ private fun BalanceCard(
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Icon(
                                 imageVector = Icons.Filled.TrendingDown,
-                                contentDescription = "Pengeluaran",
+                                contentDescription = stringResource(R.string.common_expense),
                                 tint = MaterialTheme.colorScheme.financeColors.expense,
                                 modifier = Modifier.size(Spacing.iconT)
                             )
                             Spacer(modifier = Modifier.width(Spacing.xs))
                             Text(
-                                text = "Pengeluaran",
+                                text = stringResource(R.string.common_expense),
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -491,18 +493,18 @@ private fun EmptyTransactionsState() {
         ) {
             Icon(
                 imageVector = Icons.Filled.Savings,
-                contentDescription = "Belum ada transaksi",
+                contentDescription = stringResource(R.string.dashboard_no_transactions),
                 modifier = Modifier.size(48.dp),
                 tint = MaterialTheme.colorScheme.tertiary
             )
             Spacer(modifier = Modifier.height(Spacing.md))
             Text(
-                text = "Belum ada transaksi",
+                text = stringResource(R.string.dashboard_no_transactions),
                 style = MaterialTheme.typography.titleMedium
             )
             Spacer(modifier = Modifier.height(Spacing.xs))
             Text(
-                text = "Mulai tambahkan transaksi pertamamu!",
+                text = stringResource(R.string.dashboard_no_transactions_hint),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )

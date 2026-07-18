@@ -44,6 +44,8 @@ import com.financeapp.ui.components.HapticButton
 import com.financeapp.ui.viewmodel.AddTransactionViewModel
 import com.financeapp.ui.theme.financeColors
 import com.financeapp.ui.theme.Spacing
+import androidx.compose.ui.res.stringResource
+import com.financeapp.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -66,10 +68,10 @@ fun AddTransactionScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Tambah Transaksi") },
+                title = { Text(stringResource(R.string.add_transaction_title)) },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.Filled.ArrowBack, contentDescription = "Kembali")
+                        Icon(Icons.Filled.ArrowBack, contentDescription = stringResource(R.string.common_back))
                     }
                 }
             )
@@ -84,7 +86,7 @@ fun AddTransactionScreen(
                 .verticalScroll(rememberScrollState())
         ) {
             // Transaction type selector
-            Text("Tipe Transaksi", fontWeight = FontWeight.Bold)
+            Text(stringResource(R.string.add_transaction_type), fontWeight = FontWeight.Bold)
             Spacer(modifier = Modifier.height(Spacing.sm))
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -93,7 +95,7 @@ fun AddTransactionScreen(
                 FilterChip(
                     selected = uiState.transactionType == TransactionType.EXPENSE,
                     onClick = { viewModel.switchTransactionType(TransactionType.EXPENSE) },
-                    label = { Text("Pengeluaran") },
+                    label = { Text(stringResource(R.string.common_expense)) },
                     colors = FilterChipDefaults.filterChipColors(
                         selectedContainerColor = MaterialTheme.colorScheme.financeColors.expense.copy(alpha = 0.15f),
                         selectedLabelColor = MaterialTheme.colorScheme.financeColors.expense
@@ -103,7 +105,7 @@ fun AddTransactionScreen(
                 FilterChip(
                     selected = uiState.transactionType == TransactionType.INCOME,
                     onClick = { viewModel.switchTransactionType(TransactionType.INCOME) },
-                    label = { Text("Pemasukan") },
+                    label = { Text(stringResource(R.string.common_income)) },
                     colors = FilterChipDefaults.filterChipColors(
                         selectedContainerColor = MaterialTheme.colorScheme.financeColors.income.copy(alpha = 0.15f),
                         selectedLabelColor = MaterialTheme.colorScheme.financeColors.income
@@ -118,14 +120,14 @@ fun AddTransactionScreen(
             AmountInput(
                 value = uiState.amount,
                 onValueChange = { viewModel.updateAmount(it) },
-                label = "Jumlah"
+                label = stringResource(R.string.common_amount)
             )
 
             // Description
             OutlinedTextField(
                 value = uiState.description,
                 onValueChange = { viewModel.updateDescription(it) },
-                label = { Text("Deskripsi") },
+                label = { Text(stringResource(R.string.common_description)) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = Spacing.sm),
@@ -172,7 +174,7 @@ fun AddTransactionScreen(
                     viewModel.submitTransaction()
                 },
                 enabled = uiState.isFormValid && !uiState.isLoading,
-                text = if (uiState.isLoading) "Menyimpan..." else "Simpan"
+                text = if (uiState.isLoading) stringResource(R.string.common_saving) else stringResource(R.string.common_save)
             )
         }
     }

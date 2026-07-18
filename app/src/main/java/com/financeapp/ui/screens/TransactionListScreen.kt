@@ -62,6 +62,8 @@ import com.financeapp.ui.viewmodel.TransactionViewModel
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import com.financeapp.ui.theme.Spacing
+import androidx.compose.ui.res.stringResource
+import com.financeapp.R
 
 @OptIn(ExperimentalLayoutApi::class, ExperimentalFoundationApi::class)
 @Composable
@@ -73,11 +75,13 @@ fun TransactionListScreen(
     val snackbarHostState = remember { SnackbarHostState() }
 
     // Show undo snackbar when a transaction is deleted via swipe
+    val deletedMessage = stringResource(R.string.transaction_deleted)
+    val undoLabel = stringResource(R.string.transaction_undo)
     LaunchedEffect(uiState.deletedTransactionId) {
         uiState.deletedTransactionId?.let {
             val result = snackbarHostState.showSnackbar(
-                message = "Transaksi dihapus",
-                actionLabel = "Urungkan",
+                message = deletedMessage,
+                actionLabel = undoLabel,
                 duration = SnackbarDuration.Short
             )
             if (result == SnackbarResult.ActionPerformed) {
@@ -116,13 +120,13 @@ fun TransactionListScreen(
                             onClick = { viewModel.clearFilter() },
                             label = {
                                 Text(
-                                    if (type == TransactionType.INCOME) "Pemasukan" else "Pengeluaran"
+                                    if (type == TransactionType.INCOME) stringResource(R.string.common_income) else stringResource(R.string.common_expense)
                                 )
                             },
                             trailingIcon = {
                                 Icon(
                                     imageVector = Icons.Filled.Close,
-                                    contentDescription = "Hapus filter",
+                                    contentDescription = stringResource(R.string.transaction_remove_filter),
                                     modifier = Modifier.size(Spacing.iconT)
                                 )
                             }
@@ -177,7 +181,7 @@ fun TransactionListScreen(
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Icon(
                             imageVector = Icons.Filled.TrendingUp,
-                            contentDescription = "Error",
+                            contentDescription = stringResource(R.string.common_error_occurred),
                             modifier = Modifier.size(Spacing.iconXl),
                             tint = MaterialTheme.colorScheme.error
                         )
@@ -189,8 +193,8 @@ fun TransactionListScreen(
                         )
                         Spacer(modifier = Modifier.height(Spacing.md))
                         Button(onClick = { viewModel.retry() }) {
-                            Icon(Icons.Filled.Refresh, contentDescription = "Coba lagi", modifier = Modifier.padding(end = Spacing.sm))
-                            Text("Coba Lagi")
+                            Icon(Icons.Filled.Refresh, contentDescription = stringResource(R.string.common_retry), modifier = Modifier.padding(end = Spacing.sm))
+                            Text(stringResource(R.string.common_retry))
                         }
                     }
                 }
@@ -301,20 +305,20 @@ private fun EmptyTransactionState(
         ) {
             Icon(
                 imageVector = Icons.Default.Search,
-                contentDescription = "Tidak ada transaksi",
+                contentDescription = stringResource(R.string.dashboard_no_transactions),
                 modifier = Modifier.size(48.dp),
                 tint = MaterialTheme.colorScheme.tertiary
             )
             Spacer(modifier = Modifier.height(Spacing.md))
             Text(
-                text = if (isFiltered) "Tidak ada transaksi ditemukan" else "Belum ada transaksi",
+                text = if (isFiltered) stringResource(R.string.transaction_no_results) else stringResource(R.string.dashboard_no_transactions),
                 style = MaterialTheme.typography.titleMedium,
                 textAlign = TextAlign.Center
             )
             Spacer(modifier = Modifier.height(Spacing.xs))
             Text(
-                text = if (isFiltered) "Coba ubah filter atau kata kunci pencarian"
-                else "Mulai dengan menambahkan transaksi baru",
+                text = if (isFiltered) stringResource(R.string.transaction_no_results_hint)
+                else stringResource(R.string.transaction_start_hint),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center

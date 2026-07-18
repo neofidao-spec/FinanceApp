@@ -1,4 +1,72 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Finance App</string>
+
+    <!-- Common / Shared -->
+    <string name="common_income">Pemasukan</string>
+    <string name="common_expense">Pengeluaran</string>
+    <string name="common_retry">Coba Lagi</string>
+    <string name="common_cancel">Batal</string>
+    <string name="common_delete">Hapus</string>
+    <string name="common_save">Simpan</string>
+    <string name="common_back">Kembali</string>
+    <string name="common_saving">Menyimpan...</string>
+    <string name="common_amount">Jumlah</string>
+    <string name="common_description">Deskripsi</string>
+    <string name="common_error_occurred">Terjadi kesalahan</string>
+
+    <!-- Dashboard -->
+    <string name="dashboard_total_balance">Total Saldo</string>
+    <string name="dashboard_expense_by_category">Pengeluaran per Kategori</string>
+    <string name="dashboard_monthly_trend">Tren Bulanan</string>
+    <string name="dashboard_budget_overview">Budget Overview</string>
+    <string name="dashboard_recent_transactions">Transaksi Terbaru</string>
+    <string name="dashboard_no_transactions">Belum ada transaksi</string>
+    <string name="dashboard_no_transactions_hint">Mulai tambahkan transaksi pertamamu!</string>
+
+    <!-- Transaction List -->
+    <string name="transaction_deleted">Transaksi dihapus</string>
+    <string name="transaction_undo">Urungkan</string>
+    <string name="transaction_remove_filter">Hapus filter</string>
+    <string name="transaction_no_results">Tidak ada transaksi ditemukan</string>
+    <string name="transaction_no_results_hint">Coba ubah filter atau kata kunci pencarian</string>
+    <string name="transaction_start_hint">Mulai dengan menambahkan transaksi baru</string>
+    <string name="transaction_today">Hari Ini</string>
+    <string name="transaction_yesterday">Kemarin</string>
+
+    <!-- Add Transaction -->
+    <string name="add_transaction_title">Tambah Transaksi</string>
+    <string name="add_transaction_type">Tipe Transaksi</string>
+
+    <!-- Edit Transaction -->
+    <string name="edit_transaction_title">Edit Transaksi</string>
+    <string name="edit_transaction_delete_title">Hapus Transaksi</string>
+    <string name="edit_transaction_delete_confirm">Apakah Anda yakin ingin menghapus transaksi ini?</string>
+    <string name="edit_transaction_save_changes">Simpan Perubahan</string>
+
+    <!-- Budget -->
+    <string name="budget_my_budgets">Budget Saya</string>
+    <string name="budget_total">Total Budget</string>
+    <string name="budget_used">Terpakai</string>
+    <string name="budget_remaining_label">Sisa</string>
+    <string name="budget_count">Budget</string>
+    <string name="budget_over_budget">Over Budget</string>
+    <string name="budget_health">Kesehatan</string>
+    <string name="budget_safe">Aman</string>
+    <string name="budget_approaching_limit">Mendekati batas</string>
+    <string name="budget_exceeded">Melebihi batas!</string>
+    <string name="budget_exceeded_cd">Melebihi batas</string>
+    <string name="budget_no_budget">Belum Ada Budget</string>
+    <string name="budget_no_budget_hint">Buat budget untuk mengontrol pengeluaranmu</string>
+    <string name="budget_create">Buat Budget</string>
+    <string name="budget_add_title">Tambah Budget</string>
+    <string name="budget_category">Kategori</string>
+    <string name="budget_monthly_limit">Batas Bulanan (Rp)</string>
+    <string name="budget_description_optional">Deskripsi (opsional)</string>
+    <string name="budget_alert_threshold">Alert Threshold (%)</string>
+    <string name="budget_delete_title">Hapus Budget</string>
+    <string name="budget_previous_month">Bulan Sebelumnya</string>
+    <string name="budget_next_month">Bulan Berikutnya</string>
+    <string name="budget_category_icon">Ikon kategori</string>
+    <string name="budget_no_budget_cd">Belum ada budget</string>
 </resources>

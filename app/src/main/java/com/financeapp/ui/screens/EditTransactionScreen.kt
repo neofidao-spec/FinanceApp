@@ -48,6 +48,8 @@ import com.financeapp.ui.components.DatePickerField
 import com.financeapp.ui.components.HapticButton
 import com.financeapp.ui.viewmodel.EditTransactionViewModel
 import com.financeapp.ui.theme.Spacing
+import androidx.compose.ui.res.stringResource
+import com.financeapp.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -74,16 +76,16 @@ fun EditTransactionScreen(
     if (uiState.showDeleteConfirm) {
         AlertDialog(
             onDismissRequest = { viewModel.hideDeleteConfirmation() },
-            title = { Text("Hapus Transaksi") },
-            text = { Text("Apakah Anda yakin ingin menghapus transaksi ini?") },
+            title = { Text(stringResource(R.string.edit_transaction_delete_title)) },
+            text = { Text(stringResource(R.string.edit_transaction_delete_confirm)) },
             confirmButton = {
                 Button(onClick = { viewModel.deleteTransaction() }) {
-                    Text("Hapus")
+                    Text(stringResource(R.string.common_delete))
                 }
             },
             dismissButton = {
                 OutlinedButton(onClick = { viewModel.hideDeleteConfirmation() }) {
-                    Text("Batal")
+                    Text(stringResource(R.string.common_cancel))
                 }
             }
         )
@@ -92,15 +94,15 @@ fun EditTransactionScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Edit Transaksi") },
+                title = { Text(stringResource(R.string.edit_transaction_title)) },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.Filled.ArrowBack, contentDescription = "Kembali")
+                        Icon(Icons.Filled.ArrowBack, contentDescription = stringResource(R.string.common_back))
                     }
                 },
                 actions = {
                     IconButton(onClick = { viewModel.showDeleteConfirmation() }) {
-                        Icon(Icons.Filled.Delete, contentDescription = "Hapus")
+                        Icon(Icons.Filled.Delete, contentDescription = stringResource(R.string.common_delete))
                     }
                 }
             )
@@ -134,13 +136,13 @@ fun EditTransactionScreen(
             AmountInput(
                 value = uiState.amount,
                 onValueChange = { viewModel.updateAmount(it) },
-                label = "Jumlah"
+                label = stringResource(R.string.common_amount)
             )
 
             OutlinedTextField(
                 value = uiState.description,
                 onValueChange = { viewModel.updateDescription(it) },
-                label = { Text("Deskripsi") },
+                label = { Text(stringResource(R.string.common_description)) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = Spacing.sm),
@@ -183,7 +185,7 @@ fun EditTransactionScreen(
                     viewModel.updateTransaction()
                 },
                 enabled = uiState.isFormValid && !uiState.isLoading,
-                text = if (uiState.isLoading) "Menyimpan..." else "Simpan Perubahan"
+                text = if (uiState.isLoading) stringResource(R.string.common_saving) else stringResource(R.string.edit_transaction_save_changes)
             )
         }
     }
