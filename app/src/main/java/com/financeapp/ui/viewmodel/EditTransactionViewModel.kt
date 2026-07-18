@@ -183,20 +183,15 @@ class EditTransactionViewModel @Inject constructor(
     }
 
     fun deleteTransaction() {
-        val selectedCategory = _uiState.value.selectedCategory ?: return
-        
         viewModelScope.launch {
             try {
-                val transaction = Transaction(
-                    id = _uiState.value.transactionId,
-                    amount = _uiState.value.amount.toDouble(),
-                    type = _uiState.value.transactionType,
-                    categoryId = selectedCategory.id,
-                    description = _uiState.value.description,
-                    date = _uiState.value.selectedDate
-                )
-
-                transactionRepository.deleteTransaction(transaction)
+                // Room only needs primary key for delete — avoid amount parsing
+                val id = _uiState.value.transactionId
+                if (id <= 0) {
+                    _uiState.value = _uiState.value.copy(errorMessage = "ID transaksi tidak valid")
+                    return@launch
+                }
+                transactionRepository.deleteTransactionById(id)
 
                 _uiState.value = _uiState.value.copy(
                     successMessage = "Transaksi berhasil dihapus",

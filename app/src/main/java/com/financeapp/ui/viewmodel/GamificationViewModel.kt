@@ -101,47 +101,59 @@ class GamificationViewModel @Inject constructor(
     /** Call when user records a transaction */
     fun onTransactionRecorded() {
         viewModelScope.launch {
-            gamificationUseCase.onTransactionRecorded()
-            val (streak, best) = gamificationUseCase.updateStreak()
-            gamificationUseCase.checkStreakMilestone(streak)
+            try {
+                gamificationUseCase.onTransactionRecorded()
+                val (streak, best) = gamificationUseCase.updateStreak()
+                gamificationUseCase.checkStreakMilestone(streak)
+            } catch (_: Exception) { /* gamification non-blocking */ }
         }
     }
 
     /** Call when user logs in daily */
     fun onDailyLogin() {
         viewModelScope.launch {
-            gamificationUseCase.onDailyLogin()
-            gamificationUseCase.updateStreak()
+            try {
+                gamificationUseCase.onDailyLogin()
+                gamificationUseCase.updateStreak()
+            } catch (_: Exception) { /* gamification non-blocking */ }
         }
     }
 
     /** Call when budget adherence is confirmed for the day */
     fun onBudgetAdhered() {
         viewModelScope.launch {
-            gamificationUseCase.onBudgetAdhered()
+            try {
+                gamificationUseCase.onBudgetAdhered()
+            } catch (_: Exception) { /* gamification non-blocking */ }
         }
     }
 
     /** Mark a quest as completed */
     fun completeQuest(quest: DailyQuest) {
         viewModelScope.launch {
-            repository.updateQuestProgress(quest.id, quest.targetValue, true)
-            gamificationUseCase.onQuestCompleted(quest.name, quest.xpReward)
+            try {
+                repository.updateQuestProgress(quest.id, quest.targetValue, true)
+                gamificationUseCase.onQuestCompleted(quest.name, quest.xpReward)
+            } catch (_: Exception) { /* gamification non-blocking */ }
         }
     }
 
     /** Mark a challenge as completed */
     fun completeChallenge(challenge: Challenge) {
         viewModelScope.launch {
-            repository.updateChallengeProgress(challenge.id, challenge.targetValue, true)
-            gamificationUseCase.onChallengeCompleted(challenge.name, challenge.xpReward)
+            try {
+                repository.updateChallengeProgress(challenge.id, challenge.targetValue, true)
+                gamificationUseCase.onChallengeCompleted(challenge.name, challenge.xpReward)
+            } catch (_: Exception) { /* gamification non-blocking */ }
         }
     }
 
     /** Use a streak freeze */
     fun useFreeze() {
         viewModelScope.launch {
-            gamificationUseCase.useFreeze()
+            try {
+                gamificationUseCase.useFreeze()
+            } catch (_: Exception) { /* gamification non-blocking */ }
         }
     }
 }

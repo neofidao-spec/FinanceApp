@@ -13,6 +13,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.launch
@@ -267,10 +268,15 @@ class TransactionViewModel @Inject constructor(
         }
     }
 
+    private var undoTimerJob: Job? = null
+
     /** Swipe-to-delete: save for undo, then remove from DB */
     fun swipeDeleteTransaction(txn: TransactionWithCategory) {
         viewModelScope.launch {
             try {
+                // Cancel any previous undo timer to prevent stomping
+                undoTimerJob?.cancel()
+
                 val state = _uiState.value
                 _uiState.value = state.copy(
                     deletedTransactionId = txn.transaction.id,
@@ -278,11 +284,14 @@ class TransactionViewModel @Inject constructor(
                 )
                 transactionRepository.deleteTransaction(txn.transaction)
                 // Auto-clear undo state after 4 seconds
+                undoTimerJob = coroutineContext[Job]
                 kotlinx.coroutines.delay(4000)
-                _uiState.value = _uiState.value.copy(
-                    deletedTransactionId = null,
-                    deletedTransaction = null
-                )
+                if (undoTimerJob?.isActive == true) {
+                    _uiState.value = _uiState.value.copy(
+                        deletedTransactionId = null,
+                        deletedTransaction = null
+                    )
+                }
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(errorMessage = e.message)
             }
