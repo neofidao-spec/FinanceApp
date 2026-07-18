@@ -137,6 +137,11 @@ fun BudgetScreen(viewModel: BudgetViewModel = hiltViewModel()) {
                     Text(
                         text = uiState.errorMessage ?: "Terjadi kesalahan",
                         textAlign = TextAlign.Center,
+        )
+        Spacer(modifier = Modifier.height(Spacing.md))
+        Button(onClick = onAdd) {
+            Text("Buat Budget")
+        }
                         color = MaterialTheme.colorScheme.error
                     )
                     Spacer(modifier = Modifier.height(Spacing.md))
@@ -196,7 +201,7 @@ fun BudgetScreen(viewModel: BudgetViewModel = hiltViewModel()) {
             val budgets = uiState.budgetSummary?.budgets ?: emptyList()
             if (budgets.isEmpty()) {
                 item {
-                    EmptyBudgetState()
+                    EmptyBudgetState(onAdd = { viewModel.showAddDialog() })
                 }
             } else {
                 items(budgets) { budget ->
@@ -637,7 +642,7 @@ private fun BudgetItem(
 }
 
 @Composable
-private fun EmptyBudgetState() {
+private fun EmptyBudgetState(onAdd: () -> Unit = {}) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -663,6 +668,10 @@ private fun EmptyBudgetState() {
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center
         )
+        Spacer(modifier = Modifier.height(Spacing.md))
+        Button(onClick = onAdd) {
+            Text("Buat Budget")
+        }
     }
 }
 
