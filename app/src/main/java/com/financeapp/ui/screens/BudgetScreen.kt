@@ -136,12 +136,6 @@ fun BudgetScreen(viewModel: BudgetViewModel = hiltViewModel()) {
                     Spacer(modifier = Modifier.height(Spacing.md))
                     Text(
                         text = uiState.errorMessage ?: "Terjadi kesalahan",
-                        textAlign = TextAlign.Center,
-        )
-        Spacer(modifier = Modifier.height(Spacing.md))
-        Button(onClick = onAdd) {
-            Text("Buat Budget")
-        }
                         color = MaterialTheme.colorScheme.error
                     )
                     Spacer(modifier = Modifier.height(Spacing.md))
