@@ -54,8 +54,8 @@ fun HealthScoreCard(
     }
 
     val trendColor = when (trend) {
-        HealthScore.Trend.UP -> MaterialTheme.financeColors.income
-        HealthScore.Trend.DOWN -> MaterialTheme.financeColors.expense
+        HealthScore.Trend.UP -> MaterialTheme.colorScheme.financeColors.income
+        HealthScore.Trend.DOWN -> MaterialTheme.colorScheme.financeColors.expense
         else -> MaterialTheme.colorScheme.onSurfaceVariant
     }
 
