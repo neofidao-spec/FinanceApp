@@ -51,10 +51,12 @@ abstract class FinanceDatabase : RoomDatabase() {
                     CREATE TABLE IF NOT EXISTS budgets (
                         id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
                         categoryId INTEGER NOT NULL,
-                        monthYear TEXT NOT NULL,
-                        limit REAL NOT NULL,
-                        alertThreshold INTEGER NOT NULL DEFAULT 80,
+                        monthlyLimit REAL NOT NULL,
+                        description TEXT NOT NULL DEFAULT '',
+                        alertThreshold REAL NOT NULL DEFAULT 80.0,
+                        isActive INTEGER NOT NULL DEFAULT 1,
                         createdAt TEXT NOT NULL,
+                        updatedAt TEXT NOT NULL,
                         FOREIGN KEY(categoryId) REFERENCES categories(id) ON DELETE CASCADE
                     )
                 """)
@@ -69,8 +71,11 @@ abstract class FinanceDatabase : RoomDatabase() {
                     CREATE TABLE IF NOT EXISTS accounts (
                         id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
                         name TEXT NOT NULL,
-                        icon TEXT,
+                        type TEXT NOT NULL DEFAULT 'CASH',
                         balance REAL NOT NULL DEFAULT 0.0,
+                        icon TEXT NOT NULL DEFAULT 'account_balance_wallet',
+                        color TEXT NOT NULL DEFAULT '#4CAF50',
+                        isDefault INTEGER NOT NULL DEFAULT 0,
                         createdAt TEXT NOT NULL
                     )
                 """)
@@ -84,10 +89,13 @@ abstract class FinanceDatabase : RoomDatabase() {
                     CREATE TABLE IF NOT EXISTS achievements (
                         id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
                         name TEXT NOT NULL,
-                        description TEXT,
-                        icon TEXT,
-                        unlockedAt TEXT,
-                        category TEXT NOT NULL
+                        description TEXT NOT NULL DEFAULT '',
+                        icon TEXT NOT NULL DEFAULT 'emoji_events',
+                        category TEXT NOT NULL,
+                        targetValue INTEGER NOT NULL DEFAULT 0,
+                        currentValue INTEGER NOT NULL DEFAULT 0,
+                        isUnlocked INTEGER NOT NULL DEFAULT 0,
+                        unlockedAt TEXT
                     )
                 """)
             }
