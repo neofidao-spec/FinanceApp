@@ -1,0 +1,153 @@
+Downloading https://services.gradle.org/distributions/gradle-8.4-bin.zip
+............10%............20%.............30%............40%.............50%............60%.............70%............80%.............90%............100%
+
+Welcome to Gradle 8.4!
+
+Here are the highlights of this release:
+ - Compiling and testing with Java 21
+ - Faster Java compilation on Windows
+ - Role focused dependency configurations creation
+
+For more details see https://docs.gradle.org/8.4/release-notes.html
+
+To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/8.4/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon will be stopped at the end of the build 
+
+> Configure project :
+w: file:///home/runner/work/FinanceApp/FinanceApp/build.gradle.kts:11:24: 'getter for buildDir: File!' is deprecated. Deprecated in Java
+
+> Task :app:preBuild UP-TO-DATE
+> Task :app:preDebugBuild UP-TO-DATE
+> Task :app:mergeDebugNativeDebugMetadata NO-SOURCE
+> Task :app:checkKotlinGradlePluginConfigurationErrors
+> Task :app:generateDebugResValues
+> Task :app:checkDebugAarMetadata
+> Task :app:mapDebugSourceSetPaths
+> Task :app:generateDebugResources
+> Task :app:packageDebugResources
+> Task :app:mergeDebugResources
+> Task :app:createDebugCompatibleScreenManifests
+> Task :app:extractDeepLinksDebug
+> Task :app:parseDebugLocalResources
+> Task :app:processDebugMainManifest
+> Task :app:processDebugManifest
+> Task :app:javaPreCompileDebug
+> Task :app:mergeDebugShaders
+> Task :app:compileDebugShaders NO-SOURCE
+> Task :app:generateDebugAssets UP-TO-DATE
+> Task :app:mergeDebugAssets
+> Task :app:compressDebugAssets
+> Task :app:desugarDebugFileDependencies
+> Task :app:mergeDebugJniLibFolders
+> Task :app:mergeDebugNativeLibs NO-SOURCE
+> Task :app:checkDebugDuplicateClasses
+> Task :app:processDebugManifestForPackage
+> Task :app:mergeExtDexDebug
+> Task :app:stripDebugDebugSymbols NO-SOURCE
+> Task :app:mergeLibDexDebug
+> Task :app:validateSigningDebug
+> Task :app:writeDebugAppMetadata
+> Task :app:writeDebugSigningConfigVersions
+> Task :app:processDebugResources
+
+> Task :app:kspDebugKotlin FAILED
+w: [ksp] /home/runner/work/FinanceApp/FinanceApp/app/src/main/java/com/financeapp/data/database/TransactionFtsDao.kt:28: The query returns some columns [categoryName, categoryIcon, categoryColor, categoryType] which are not used by com.financeapp.data.model.TransactionWithCategory. You can use @ColumnInfo annotation on the fields to specify the mapping. You can annotate the method with @RewriteQueriesToDropUnusedColumns to direct Room to rewrite your query to avoid fetching unused columns.  You can suppress this warning by annotating the method with @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH). Columns returned by the query: id, amount, type, categoryId, description, date, createdAt, accountId, categoryName, categoryIcon, categoryColor, categoryType.
+e: [ksp] AssistedProcessingStep was unable to process 'context' because 'error.NonExistentClass' could not be resolved.
+
+Dependency trace:
+    => element (CLASS): com.financeapp.domain.RecurringTransactionWorker
+    => element (CONSTRUCTOR): RecurringTransactionWorker(android.content.Context,androidx.work.WorkerParameters,com.financeapp.data.repository.RecurringTransactionRepository,com.financeapp.data.repository.TransactionRepository)
+    => annotation type: Inject
+    => type (ERROR annotation type): error.NonExistentClass
+
+If type 'error.NonExistentClass' is a generated type, check above for compilation errors that may have prevented the type from being generated. Otherwise, ensure that type 'error.NonExistentClass' is on your classpath.
+e: [ksp] AssistedProcessingStep was unable to process 'workerParams' because 'error.NonExistentClass' could not be resolved.
+
+Dependency trace:
+    => element (CLASS): com.financeapp.domain.RecurringTransactionWorker
+    => element (CONSTRUCTOR): RecurringTransactionWorker(android.content.Context,androidx.work.WorkerParameters,com.financeapp.data.repository.RecurringTransactionRepository,com.financeapp.data.repository.TransactionRepository)
+    => annotation type: Inject
+    => type (ERROR annotation type): error.NonExistentClass
+
+If type 'error.NonExistentClass' is a generated type, check above for compilation errors that may have prevented the type from being generated. Otherwise, ensure that type 'error.NonExistentClass' is on your classpath.
+e: [ksp] ModuleProcessingStep was unable to process 'com.financeapp.di.RepositoryModule' because 'error.NonExistentClass' could not be resolved.
+
+Dependency trace:
+    => element (OBJECT): com.financeapp.di.RepositoryModule
+    => element (METHOD): provideRecurringTransactionRepository(error.NonExistentClass)
+    => element (PARAMETER): recurringTransactionDao
+    => type (ERROR parameter type): error.NonExistentClass
+
+If type 'error.NonExistentClass' is a generated type, check above for compilation errors that may have prevented the type from being generated. Otherwise, ensure that type 'error.NonExistentClass' is on your classpath.
+e: [ksp] BindingMethodProcessingStep was unable to process 'provideTransactionRepository(com.financeapp.data.database.TransactionDao,com.financeapp.data.database.TransactionFtsDao)' because 'error.NonExistentClass' could not be resolved.
+
+Dependency trace:
+    => element (OBJECT): com.financeapp.di.RepositoryModule
+    => element (METHOD): provideRecurringTransactionRepository(error.NonExistentClass)
+    => element (PARAMETER): recurringTransactionDao
+    => type (ERROR parameter type): error.NonExistentClass
+
+If type 'error.NonExistentClass' is a generated type, check above for compilation errors that may have prevented the type from being generated. Otherwise, ensure that type 'error.NonExistentClass' is on your classpath.
+e: [ksp] BindingMethodProcessingStep was unable to process 'provideCategoryRepository(com.financeapp.data.database.CategoryDao)' because 'error.NonExistentClass' could not be resolved.
+
+Dependency trace:
+    => element (OBJECT): com.financeapp.di.RepositoryModule
+    => element (METHOD): provideRecurringTransactionRepository(error.NonExistentClass)
+    => element (PARAMETER): recurringTransactionDao
+    => type (ERROR parameter type): error.NonExistentClass
+
+If type 'error.NonExistentClass' is a generated type, check above for compilation errors that may have prevented the type from being generated. Otherwise, ensure that type 'error.NonExistentClass' is on your classpath.
+e: [ksp] BindingMethodProcessingStep was unable to process 'provideAccountRepository(com.financeapp.data.database.AccountDao)' because 'error.NonExistentClass' could not be resolved.
+
+Dependency trace:
+    => element (OBJECT): com.financeapp.di.RepositoryModule
+    => element (METHOD): provideRecurringTransactionRepository(error.NonExistentClass)
+    => element (PARAMETER): recurringTransactionDao
+    => type (ERROR parameter type): error.NonExistentClass
+
+If type 'error.NonExistentClass' is a generated type, check above for compilation errors that may have prevented the type from being generated. Otherwise, ensure that type 'error.NonExistentClass' is on your classpath.
+e: [ksp] BindingMethodProcessingStep was unable to process 'provideAchievementRepository(com.financeapp.data.database.AchievementDao)' because 'error.NonExistentClass' could not be resolved.
+
+Dependency trace:
+    => element (OBJECT): com.financeapp.di.RepositoryModule
+    => element (METHOD): provideRecurringTransactionRepository(error.NonExistentClass)
+    => element (PARAMETER): recurringTransactionDao
+    => type (ERROR parameter type): error.NonExistentClass
+
+If type 'error.NonExistentClass' is a generated type, check above for compilation errors that may have prevented the type from being generated. Otherwise, ensure that type 'error.NonExistentClass' is on your classpath.
+e: [ksp] BindingMethodProcessingStep was unable to process 'provideGamificationRepository(com.financeapp.data.database.UserProgressDao,com.financeapp.data.database.DailyQuestDao,com.financeapp.data.database.ChallengeDao,com.financeapp.data.database.XpHistoryDao)' because 'error.NonExistentClass' could not be resolved.
+
+Dependency trace:
+    => element (OBJECT): com.financeapp.di.RepositoryModule
+    => element (METHOD): provideRecurringTransactionRepository(error.NonExistentClass)
+    => element (PARAMETER): recurringTransactionDao
+    => type (ERROR parameter type): error.NonExistentClass
+
+If type 'error.NonExistentClass' is a generated type, check above for compilation errors that may have prevented the type from being generated. Otherwise, ensure that type 'error.NonExistentClass' is on your classpath.
+e: [ksp] BindingMethodProcessingStep was unable to process 'provideRecurringTransactionRepository(error.NonExistentClass)' because 'error.NonExistentClass' could not be resolved.
+
+Dependency trace:
+    => element (OBJECT): com.financeapp.di.RepositoryModule
+    => element (METHOD): provideRecurringTransactionRepository(error.NonExistentClass)
+    => element (PARAMETER): recurringTransactionDao
+    => type (ERROR parameter type): error.NonExistentClass
+
+If type 'error.NonExistentClass' is a generated type, check above for compilation errors that may have prevented the type from being generated. Otherwise, ensure that type 'error.NonExistentClass' is on your classpath.
+e: Error occurred in KSP, check log for detail
+e: file:///home/runner/work/FinanceApp/FinanceApp/app/src/main/java/com/financeapp/ui/screens/TransactionListScreen.kt:388:2 Expecting '}'
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':app:kspDebugKotlin'.
+> A failure occurred while executing org.jetbrains.kotlin.compilerRunner.GradleCompilerRunnerWithWorkers$GradleKotlinCompilerWorkAction
+   > Compilation error. See log for more details
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org.
+
+BUILD FAILED in 2m 54s
+26 actionable tasks: 26 executed
