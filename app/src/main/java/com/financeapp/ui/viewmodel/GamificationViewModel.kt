@@ -68,14 +68,14 @@ class GamificationViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val today = LocalDate.now()
-                combine(
-                    repository.getUserProgress(),
-                    repository.getDailyQuests(today),
-                    repository.getActiveChallenges(),
-                    repository.getCompletedChallenges(),
-                    repository.getRecentXpHistory(20),
-                    achievementRepository.getAllAchievements()
-                ) { progress: UserProgress?, quests: List<DailyQuest>, activeChallenges: List<Challenge>, completedChallenges: List<Challenge>, xpHistory: List<XpHistory>, achievements: List<Achievement> ->
+                val progressFlow = repository.getUserProgress()
+                val questsFlow = repository.getDailyQuests(today)
+                val activeFlow = repository.getActiveChallenges()
+                val completedFlow = repository.getCompletedChallenges()
+                val xpFlow = repository.getRecentXpHistory(20)
+                val achievementsFlow = achievementRepository.getAllAchievements()
+                combine(progressFlow, questsFlow, activeFlow, completedFlow, xpFlow, achievementsFlow) {
+                    progress, quests, activeChallenges, completedChallenges, xpHistory, achievements ->
                     GamificationUiState(
                         userProgress = progress,
                         dailyQuests = quests,
