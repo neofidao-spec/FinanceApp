@@ -101,14 +101,17 @@ fun BudgetScreen(viewModel: BudgetViewModel = hiltViewModel()) {
     }
 
     Scaffold(
-        snackbarHost = { SnackbarHost(snackbarHostState) },
-        floatingActionButton = {
+    snackbarHost = { SnackbarHost(snackbarHostState) },
+    floatingActionButton = {
+        // Show FAB only when there are budgets (not empty state)
+        if (uiState.budgetSummary?.budgets?.isNotEmpty() == true) {
             FloatingActionButton(
                 onClick = { viewModel.showAddDialog() },
                 containerColor = MaterialTheme.colorScheme.primary,
                 shape = CircleShape
             ) {
                 Icon(Icons.Filled.Add, contentDescription = stringResource(R.string.budget_add_title))
+                }
             }
         }
     ) { innerPadding ->

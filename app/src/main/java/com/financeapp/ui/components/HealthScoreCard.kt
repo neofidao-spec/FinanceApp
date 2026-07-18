@@ -74,7 +74,7 @@ fun HealthScoreCard(
         shape = MaterialTheme.shapes.medium,
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         colors = CardDefaults.cardColors(
-            containerColor = scoreColor.copy(alpha = 0.1f)
+            containerColor = MaterialTheme.colorScheme.surface
         )
     ) {
         Row(

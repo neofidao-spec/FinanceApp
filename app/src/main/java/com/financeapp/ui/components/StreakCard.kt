@@ -61,7 +61,7 @@ fun StreakCard(
         modifier = modifier.fillMaxWidth(),
         shape = MaterialTheme.shapes.medium,
         colors = CardDefaults.cardColors(
-            containerColor = flameColor.copy(alpha = 0.08f * animatedAlpha)
+            containerColor = MaterialTheme.colorScheme.surface
         )
     ) {
         Row(
