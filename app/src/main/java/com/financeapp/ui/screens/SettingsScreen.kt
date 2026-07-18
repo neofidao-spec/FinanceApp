@@ -46,7 +46,7 @@ fun SettingsScreen(
         Spacer(modifier = Modifier.height(24.dp))
 
         // Section 1: Tampilan
-        Text("Tampilan", fontWeight = FontWeight.Bold, fontSize = 14.sp, color = Color.Gray)
+        Text("Tampilan", fontWeight = FontWeight.Bold, fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
         Spacer(modifier = Modifier.height(8.dp))
 
         Card(modifier = Modifier.fillMaxWidth()) {
@@ -57,7 +57,7 @@ fun SettingsScreen(
                 ) {
                     Column(modifier = Modifier.weight(1f)) {
                         Text("Mode Gelap", fontWeight = FontWeight.Medium)
-                        Text("Gunakan tema gelap", fontSize = 12.sp, color = Color.Gray)
+                        Text("Gunakan tema gelap", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                     Switch(
                         checked = uiState.isDarkMode,
@@ -70,7 +70,7 @@ fun SettingsScreen(
         Spacer(modifier = Modifier.height(24.dp))
 
         // Section 2: Akun
-        Text("Akun", fontWeight = FontWeight.Bold, fontSize = 14.sp, color = Color.Gray)
+        Text("Akun", fontWeight = FontWeight.Bold, fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
         Spacer(modifier = Modifier.height(8.dp))
 
         Card(modifier = Modifier.fillMaxWidth()) {
@@ -81,21 +81,21 @@ fun SettingsScreen(
                 ) {
                     Column(modifier = Modifier.weight(1f)) {
                         Text("Jumlah Akun", fontWeight = FontWeight.Medium)
-                        Text("${uiState.accountCount} akun terdaftar", fontSize = 12.sp, color = Color.Gray)
+                        Text("${uiState.accountCount} akun terdaftar", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                 }
                 Spacer(modifier = Modifier.height(8.dp))
                 Divider()
                 Spacer(modifier = Modifier.height(8.dp))
                 Text("Kelola Akun", fontWeight = FontWeight.Medium)
-                Text("Atur akun Cash, Bank, E-Wallet", fontSize = 12.sp, color = Color.Gray)
+                Text("Atur akun Cash, Bank, E-Wallet", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         }
 
         Spacer(modifier = Modifier.height(24.dp))
 
         // Section 3: Data
-        Text("Data", fontWeight = FontWeight.Bold, fontSize = 14.sp, color = Color.Gray)
+        Text("Data", fontWeight = FontWeight.Bold, fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
         Spacer(modifier = Modifier.height(8.dp))
 
         Card(modifier = Modifier.fillMaxWidth()) {
@@ -106,7 +106,7 @@ fun SettingsScreen(
                 ) {
                     Column(modifier = Modifier.weight(1f)) {
                         Text("Total Transaksi", fontWeight = FontWeight.Medium)
-                        Text("${uiState.transactionCount} transaksi tersimpan", fontSize = 12.sp, color = Color.Gray)
+                        Text("${uiState.transactionCount} transaksi tersimpan", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                 }
                 Spacer(modifier = Modifier.height(8.dp))
@@ -118,7 +118,7 @@ fun SettingsScreen(
                 ) {
                     Column(modifier = Modifier.weight(1f)) {
                         Text("Export CSV", fontWeight = FontWeight.Medium)
-                        Text("Unduh data transaksi dalam format CSV", fontSize = 12.sp, color = Color.Gray)
+                        Text("Unduh data transaksi dalam format CSV", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                     androidx.compose.material3.TextButton(
                         onClick = {
@@ -136,30 +136,30 @@ fun SettingsScreen(
                 Divider()
                 Spacer(modifier = Modifier.height(8.dp))
                 Text("Database", fontWeight = FontWeight.Medium)
-                Text("Room Database v5 - Offline storage", fontSize = 12.sp, color = Color.Gray)
+                Text("Room Database v5 - Offline storage", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 Spacer(modifier = Modifier.height(8.dp))
                 Divider()
                 Spacer(modifier = Modifier.height(8.dp))
                 Text("Format Mata Uang", fontWeight = FontWeight.Medium)
-                Text("Rp (Rupiah Indonesia)", fontSize = 12.sp, color = Color.Gray)
+                Text("Rp (Rupiah Indonesia)", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         }
 
         Spacer(modifier = Modifier.height(24.dp))
 
         // Section 4: Tentang
-        Text("Tentang", fontWeight = FontWeight.Bold, fontSize = 14.sp, color = Color.Gray)
+        Text("Tentang", fontWeight = FontWeight.Bold, fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
         Spacer(modifier = Modifier.height(8.dp))
 
         Card(modifier = Modifier.fillMaxWidth()) {
             Column(modifier = Modifier.padding(16.dp)) {
                 Text("Finance App", fontWeight = FontWeight.Medium)
-                Text("Versi 1.0.0", fontSize = 12.sp, color = Color.Gray)
+                Text("Versi 1.0.0", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     "Aplikasi manajemen keuangan pribadi",
                     fontSize = 12.sp,
-                    color = Color.Gray
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
@@ -199,6 +199,6 @@ private fun TechItem(name: String, version: String) {
             .padding(vertical = 2.dp)
     ) {
         Text(name, fontSize = 12.sp, modifier = Modifier.weight(1f))
-        Text(version, fontSize = 12.sp, color = Color.Gray)
+        Text(version, fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
 }

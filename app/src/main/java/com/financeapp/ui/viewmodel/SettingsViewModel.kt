@@ -23,7 +23,9 @@ import javax.inject.Inject
 data class SettingsUiState(
     val isDarkMode: Boolean = false,
     val transactionCount: Int = 0,
-    val accountCount: Int = 0
+    val accountCount: Int = 0,
+    val isLoading: Boolean = true,
+    val errorMessage: String? = null
 )
 
 @HiltViewModel
@@ -39,28 +41,37 @@ class SettingsViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            // Unified observer: dark mode preference + data changes
-            combine(
-                appPreferences.isDarkMode,
-                transactionRepository.getAllTransactions(),
-                accountRepository.getAllAccounts()
-            ) { dark, transactions, _ ->
-                val txCount = transactionRepository.getTransactionCount()
-                val accCount = accountRepository.getAccountCount()
-                SettingsUiState(
-                    isDarkMode = dark,
-                    transactionCount = txCount,
-                    accountCount = accCount
+            try {
+                combine(
+                    appPreferences.isDarkMode,
+                    transactionRepository.getAllTransactions(),
+                    accountRepository.getAllAccounts()
+                ) { dark, transactions, accounts ->
+                    SettingsUiState(
+                        isDarkMode = dark,
+                        transactionCount = transactions.size,
+                        accountCount = accounts.size,
+                        isLoading = false
+                    )
+                }.collect { state ->
+                    _uiState.value = state
+                }
+            } catch (e: Exception) {
+                _uiState.value = _uiState.value.copy(
+                    errorMessage = e.message,
+                    isLoading = false
                 )
-            }.collect { state ->
-                _uiState.value = state
             }
         }
     }
 
     fun toggleDarkMode(enabled: Boolean) {
         viewModelScope.launch {
-            appPreferences.setDarkMode(enabled)
+            try {
+                appPreferences.setDarkMode(enabled)
+            } catch (e: Exception) {
+                _uiState.value = _uiState.value.copy(errorMessage = e.message)
+            }
         }
     }
 

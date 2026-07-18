@@ -1,6 +1,7 @@
 package com.financeapp.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.financeapp.data.model.CategorySummary
 import com.financeapp.data.model.MonthlyReport
@@ -113,6 +114,7 @@ class ReportViewModel @Inject constructor(
                 }
                 .sortedByDescending { it.total }
         } catch (e: Exception) {
+            Log.w("ReportVM", "getCategoryBreakdown failed", e)
             emptyList()
         }
     }

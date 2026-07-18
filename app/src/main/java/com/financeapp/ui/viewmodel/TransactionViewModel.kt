@@ -1,6 +1,7 @@
 package com.financeapp.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.financeapp.data.model.Category
 import com.financeapp.data.model.Transaction
@@ -64,8 +65,8 @@ class TransactionViewModel @Inject constructor(
                             _uiState.value = state.copy(filteredTransactions = results)
                             applyFiltersFromFts(results)
                         }
-                    } catch (_: Exception) {
-                        // Fallback to client-side filter if FTS fails
+                    } catch (e: Exception) {
+                        Log.w("TransactionVM", "FTS search failed, falling back", e)
                         applyFilters()
                     }
                 } else {

@@ -1,6 +1,7 @@
 package com.financeapp.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.financeapp.data.model.Achievement
 import com.financeapp.data.model.Challenge
@@ -119,7 +120,7 @@ class GamificationViewModel @Inject constructor(
                 gamificationUseCase.onTransactionRecorded()
                 val (streak, best) = gamificationUseCase.updateStreak()
                 gamificationUseCase.checkStreakMilestone(streak)
-            } catch (_: Exception) { /* gamification non-blocking */ }
+            } catch (e: Exception) { Log.w("GamificationVM", "Action failed", e) }
         }
     }
 
@@ -129,7 +130,7 @@ class GamificationViewModel @Inject constructor(
             try {
                 gamificationUseCase.onDailyLogin()
                 gamificationUseCase.updateStreak()
-            } catch (_: Exception) { /* gamification non-blocking */ }
+            } catch (e: Exception) { Log.w("GamificationVM", "Action failed", e) }
         }
     }
 
@@ -138,7 +139,7 @@ class GamificationViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 gamificationUseCase.onBudgetAdhered()
-            } catch (_: Exception) { /* gamification non-blocking */ }
+            } catch (e: Exception) { Log.w("GamificationVM", "Action failed", e) }
         }
     }
 
@@ -148,7 +149,7 @@ class GamificationViewModel @Inject constructor(
             try {
                 repository.updateQuestProgress(quest.id, quest.targetValue, true)
                 gamificationUseCase.onQuestCompleted(quest.name, quest.xpReward)
-            } catch (_: Exception) { /* gamification non-blocking */ }
+            } catch (e: Exception) { Log.w("GamificationVM", "Action failed", e) }
         }
     }
 
@@ -158,7 +159,7 @@ class GamificationViewModel @Inject constructor(
             try {
                 repository.updateChallengeProgress(challenge.id, challenge.targetValue, true)
                 gamificationUseCase.onChallengeCompleted(challenge.name, challenge.xpReward)
-            } catch (_: Exception) { /* gamification non-blocking */ }
+            } catch (e: Exception) { Log.w("GamificationVM", "Action failed", e) }
         }
     }
 
@@ -167,7 +168,7 @@ class GamificationViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 gamificationUseCase.useFreeze()
-            } catch (_: Exception) { /* gamification non-blocking */ }
+            } catch (e: Exception) { Log.w("GamificationVM", "Action failed", e) }
         }
     }
 }
