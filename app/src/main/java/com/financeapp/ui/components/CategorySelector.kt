@@ -56,7 +56,7 @@ fun CategorySelector(
                 contentAlignment = Alignment.CenterStart
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(FinanceIcons.getIcon(selectedCategory.name), contentDescription = null, modifier = Modifier.size(20.dp))
+                            Icon(FinanceIcons.getIcon(selectedCategory.name), contentDescription = selectedCategory.name, modifier = Modifier.size(20.dp))
                             Spacer(Modifier.width(6.dp))
                             Text(selectedCategory.name, fontWeight = FontWeight.Bold)
                         }
