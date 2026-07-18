@@ -97,7 +97,8 @@ fun GamificationScreen(
                     tint = MaterialTheme.colorScheme.error
                 )
                 Spacer(modifier = Modifier.height(16.dp))
-                Text(state.errorMessage, style = MaterialTheme.typography.bodyLarge, textAlign = TextAlign.Center)
+                val msg = state.errorMessage
+                Text(msg, style = MaterialTheme.typography.bodyLarge, textAlign = TextAlign.Center)
                 Spacer(modifier = Modifier.height(16.dp))
                 Button(
                     onClick = { },

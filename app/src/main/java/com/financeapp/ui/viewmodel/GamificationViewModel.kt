@@ -74,7 +74,7 @@ class GamificationViewModel @Inject constructor(
                     repository.getCompletedChallenges(),
                     repository.getRecentXpHistory(20),
                     achievementRepository.getAllAchievements()
-                ) { progress, quests, activeChallenges, completedChallenges, xpHistory, achievements ->
+                ) { progress: UserProgress?, quests: List<DailyQuest>, activeChallenges: List<Challenge>, completedChallenges: List<Challenge>, xpHistory: List<XpHistory>, achievements: List<Achievement> ->
                     GamificationUiState(
                         userProgress = progress,
                         dailyQuests = quests,

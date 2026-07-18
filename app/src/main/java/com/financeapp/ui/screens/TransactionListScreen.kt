@@ -254,7 +254,6 @@ fun TransactionListScreen(
             onDismiss = { viewModel.hideFilterDialog() }
         )
     }
-    }
 }
 
 @Composable

@@ -50,8 +50,8 @@ class AccountRepository @Inject constructor(
             )
             defaults.forEach { accountDao.insert(it) }
         }
+    }
 
     suspend fun getAllAccountsOnce(): List<Account> = accountDao.getAll().first()
-    }
 }
 
