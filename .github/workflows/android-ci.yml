@@ -23,7 +23,7 @@ jobs:
       run: chmod +x gradlew
 
     - name: Build Debug APK
-      run: ./gradlew assembleDebug --no-daemon --stacktrace 2>&1 | tail -100
+      run: ./gradlew assembleDebug --no-daemon
 
     - name: Run unit tests
       run: ./gradlew testDebugUnitTest --no-daemon 2>&1 | tail -50
