@@ -160,7 +160,7 @@ fun OnboardingScreen(
                             .padding(horizontal = Spacing.xs)
                             .size(if (pagerState.currentPage == index) Spacing.lg else Spacing.sm)
                             .height(Spacing.sm)
-                            .clip(RoundedCornerShape(Spacing.xs))
+                            .clip(MaterialTheme.shapes.extraSmall)
                             .background(
                                 if (pagerState.currentPage == index)
                                     MaterialTheme.colorScheme.primary

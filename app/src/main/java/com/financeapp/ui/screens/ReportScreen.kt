@@ -232,7 +232,7 @@ fun ReportScreen(viewModel: ReportViewModel = hiltViewModel()) {
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .height(6.dp)
-                                    .clip(RoundedCornerShape(3.dp)),
+                                    .clip(RoundedCornerShape(Spacing.xs)),
                                 color = try {
                                     Color(android.graphics.Color.parseColor(summary.category.color))
                                 } catch (e: Exception) {

@@ -129,7 +129,7 @@ fun AchievementBadge(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(4.dp)
-                            .clip(RoundedCornerShape(2.dp)),
+                            .clip(RoundedCornerShape(Spacing.xs)),
                         color = MaterialTheme.colorScheme.primary
                     )
                     Text(

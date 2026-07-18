@@ -92,7 +92,7 @@ fun DailyQuestCard(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(6.dp)
-                    .clip(RoundedCornerShape(3.dp)),
+                    .clip(RoundedCornerShape(Spacing.xs)),
                 color = if (completedCount == totalCount) MaterialTheme.colorScheme.financeColors.income
                 else MaterialTheme.colorScheme.primary,
                 trackColor = MaterialTheme.colorScheme.surfaceVariant,
@@ -147,7 +147,7 @@ private fun QuestItem(quest: DailyQuest) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(4.dp)
-                    .clip(RoundedCornerShape(2.dp)),
+                    .clip(RoundedCornerShape(Spacing.xs)),
                 color = if (quest.isCompleted) MaterialTheme.colorScheme.financeColors.income
                 else MaterialTheme.colorScheme.primary.copy(alpha = 0.7f),
                 trackColor = MaterialTheme.colorScheme.surfaceVariant,

@@ -333,7 +333,7 @@ private fun BudgetSummaryCard(summary: com.financeapp.data.model.BudgetSummary) 
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(Spacing.sm)
-                        .clip(RoundedCornerShape(Spacing.xs)),
+                        .clip(MaterialTheme.shapes.extraSmall),
                     color = MaterialTheme.colorScheme.onPrimary,
                     trackColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.3f)
                 )
@@ -373,7 +373,7 @@ private fun QuickStatsRow(summary: com.financeapp.data.model.BudgetSummary) {
             label = "Over Budget",
             value = "${summary.exceedingBudgets.size}",
             icon = Icons.Filled.Warning,
-            color = if (summary.exceedingBudgets.isNotEmpty()) Color(0xFFFFF3E0) else MaterialTheme.colorScheme.surfaceVariant
+            color = if (summary.exceedingBudgets.isNotEmpty()) MaterialTheme.colorScheme.financeColors.warningContainer else MaterialTheme.colorScheme.surfaceVariant
         )
         
         // Health
@@ -389,9 +389,9 @@ private fun QuickStatsRow(summary: com.financeapp.data.model.BudgetSummary) {
             value = "${String.format("%.0f", summary.budgetHealth)}%",
             icon = healthIcon,
             color = when {
-                summary.budgetHealth > 70 -> Color(0xFFE8F5E9)
-                summary.budgetHealth > 40 -> Color(0xFFFFF8E1)
-                else -> Color(0xFFFFEBEE)
+                summary.budgetHealth > 70 -> MaterialTheme.colorScheme.financeColors.incomeContainer
+                summary.budgetHealth > 40 -> MaterialTheme.colorScheme.financeColors.warningContainer
+                else -> MaterialTheme.colorScheme.financeColors.expenseContainer
             }
         )
     }
@@ -544,10 +544,10 @@ private fun BudgetItem(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(Spacing.sm)
-                    .clip(RoundedCornerShape(Spacing.xs)),
+                    .clip(MaterialTheme.shapes.extraSmall),
                 color = when {
                     budget.isExceeded() -> MaterialTheme.colorScheme.financeColors.expense
-                    budget.isAlertThreshold() -> Color(0xFFFF9800)
+                    budget.isAlertThreshold() -> MaterialTheme.colorScheme.financeColors.warning
                     else -> MaterialTheme.colorScheme.financeColors.income
                 },
                 trackColor = MaterialTheme.colorScheme.surfaceVariant
@@ -576,7 +576,7 @@ private fun BudgetItem(
                         modifier = Modifier.size(14.dp),
                         tint = when {
                             budget.isExceeded() -> MaterialTheme.colorScheme.financeColors.expense
-                            budget.isAlertThreshold() -> Color(0xFFFF9800)
+                            budget.isAlertThreshold() -> MaterialTheme.colorScheme.financeColors.warning
                             else -> MaterialTheme.colorScheme.financeColors.income
                         }
                     )
@@ -590,7 +590,7 @@ private fun BudgetItem(
                         style = MaterialTheme.typography.labelMedium,
                         color = when {
                             budget.isExceeded() -> MaterialTheme.colorScheme.financeColors.expense
-                            budget.isAlertThreshold() -> Color(0xFFFF9800)
+                            budget.isAlertThreshold() -> MaterialTheme.colorScheme.financeColors.warning
                             else -> MaterialTheme.colorScheme.financeColors.income
                         }
                     )

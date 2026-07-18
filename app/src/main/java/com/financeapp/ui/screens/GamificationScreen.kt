@@ -354,7 +354,7 @@ private fun StatCard(level: Int, totalXpEarned: Int, bestStreak: Int) {
         ) {
             StatItem(Icons.Filled.CheckCircle, "$level", "Level", MaterialTheme.colorScheme.financeColors.income)
             StatItem(Icons.Filled.Star, "$totalXpEarned", "Total XP", MaterialTheme.colorScheme.financeColors.accent)
-            StatItem(Icons.Filled.LocalFireDepartment, "$bestStreak", "Best Streak", Color(0xFFE65100))
+            StatItem(Icons.Filled.LocalFireDepartment, "$bestStreak", "Best Streak", MaterialTheme.colorScheme.financeColors.accent)
         }
     }
 }
@@ -383,9 +383,9 @@ private fun ChallengeCard(challenge: Challenge) {
     else 0f
 
     val typeColor = when {
-        challenge.challengeType.contains("weekly", ignoreCase = true) -> Color(0xFF1565C0)
-        challenge.challengeType.contains("monthly", ignoreCase = true) -> Color(0xFF7B1FA2)
-        else -> Color(0xFFE65100)
+        challenge.challengeType.contains("weekly", ignoreCase = true) -> MaterialTheme.colorScheme.primary
+        challenge.challengeType.contains("monthly", ignoreCase = true) -> MaterialTheme.colorScheme.financeColors.accent
+        else -> MaterialTheme.colorScheme.financeColors.accent
     }
 
     Card(
@@ -402,7 +402,7 @@ private fun ChallengeCard(challenge: Challenge) {
                     fontWeight = FontWeight.Bold,
                     color = typeColor,
                     modifier = Modifier
-                        .background(typeColor.copy(alpha = 0.12f), RoundedCornerShape(Spacing.xs))
+                        .background(typeColor.copy(alpha = 0.12f), MaterialTheme.shapes.extraSmall)
                         .padding(horizontal = 6.dp, vertical = 2.dp)
                 )
                 Spacer(modifier = Modifier.width(Spacing.sm))
@@ -423,7 +423,7 @@ private fun ChallengeCard(challenge: Challenge) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(6.dp)
-                    .clip(RoundedCornerShape(3.dp)),
+                    .clip(RoundedCornerShape(Spacing.xs)),
                 color = if (challenge.isCompleted) MaterialTheme.colorScheme.financeColors.income else typeColor,
                 trackColor = MaterialTheme.colorScheme.surfaceVariant,
                 strokeCap = StrokeCap.Round
@@ -450,7 +450,7 @@ private fun ChallengeCard(challenge: Challenge) {
                 Text(
                     text = "Deadline: ${challenge.endDate}",
                     style = MaterialTheme.typography.labelSmall,
-                    color = Color(0xFFE65100).copy(alpha = 0.7f)
+                    color = MaterialTheme.colorScheme.financeColors.accent.copy(alpha = 0.7f)
                 )
             }
         }

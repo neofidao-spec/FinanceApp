@@ -57,7 +57,7 @@ fun Modifier.shimmerEffect(): Modifier = composed {
     this.then(
         Modifier.background(
             shimmerBrush,
-            RoundedCornerShape(8.dp)
+            RoundedCornerShape(Spacing.xs)
         )
     )
 }
@@ -76,7 +76,7 @@ fun ShimmerBalanceCard(modifier: Modifier = Modifier) {
             modifier = Modifier
                 .fillMaxWidth(0.5f)
                 .height(Spacing.md)
-                .clip(RoundedCornerShape(4.dp))
+                .clip(RoundedCornerShape(Spacing.xs))
                 .shimmerEffect()
         )
         Spacer(modifier = Modifier.height(Spacing.sm))
@@ -84,7 +84,7 @@ fun ShimmerBalanceCard(modifier: Modifier = Modifier) {
             modifier = Modifier
                 .fillMaxWidth(0.7f)
                 .height(Spacing.lg)
-                .clip(RoundedCornerShape(4.dp))
+                .clip(RoundedCornerShape(Spacing.xs))
                 .shimmerEffect()
         )
         Spacer(modifier = Modifier.height(Spacing.xs))
@@ -92,7 +92,7 @@ fun ShimmerBalanceCard(modifier: Modifier = Modifier) {
             modifier = Modifier
                 .fillMaxWidth(0.4f)
                 .height(Spacing.smd)
-                .clip(RoundedCornerShape(4.dp))
+                .clip(RoundedCornerShape(Spacing.xs))
                 .shimmerEffect()
         )
     }
