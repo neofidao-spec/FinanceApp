@@ -18,11 +18,9 @@
       android:pathData="M30,30C26.686,30 24,32.686 24,36L24,42L84,42L84,36C84,32.686 81.314,30 78,30L30,30Z"/>
   
   <!-- Inner accent circle (success highlight) -->
-  <circle
-      android:cx="60"
-      android:cy="54"
-      android:r="8"
-      android:fillColor="#22C55E"/>
+  <path
+      android:fillColor="#22C55E"
+      android:pathData="M60,46 C64.418,46 68,49.582 68,54 C68,58.418 64.418,62 60,62 C55.582,62 52,58.418 52,54 C52,49.582 55.582,46 60,46 Z"/>
   
   <!-- Subtle shine/highlight -->
   <path
