@@ -48,7 +48,11 @@ fun CategorySelector(
                     .padding(12.dp),
                 contentAlignment = Alignment.CenterStart
             ) {
-                Text("${selectedCategory.icon} ${selectedCategory.name}", fontWeight = FontWeight.Bold)
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(FinanceIcons.getIcon(selectedCategory.name), contentDescription = null, modifier = Modifier.size(20.dp))
+                            Spacer(Modifier.width(6.dp))
+                            Text(selectedCategory.name, fontWeight = FontWeight.Bold)
+                        }
             }
         } else {
             OutlinedButton(
@@ -108,7 +112,7 @@ fun CategoryItem(
         contentAlignment = Alignment.Center
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(category.icon, fontSize = 24.sp)
+            Icon(FinanceIcons.getIcon(category.name), contentDescription = category.name, modifier = Modifier.size(24.dp))
             Text(category.name, fontSize = 10.sp, maxLines = 1)
         }
     }

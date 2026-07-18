@@ -104,7 +104,7 @@ fun GamificationScreen(
                     onClick = { },
                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
                 ) {
-                    Icon(Icons.Filled.Refresh, contentDescription = null, modifier = Modifier.padding(end = 8.dp))
+                    Icon(Icons.Filled.Refresh, contentDescription = "Muat ulang", modifier = Modifier.padding(end = 8.dp))
                     Text("Coba Lagi")
                 }
             }

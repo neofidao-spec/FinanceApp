@@ -78,9 +78,8 @@ class EditTransactionViewModel @Inject constructor(
     private fun loadCategories() {
         viewModelScope.launch {
             try {
-                categoryRepository.getAllCategories().collect { categories ->
+                val categories = categoryRepository.getAllCategoriesOnce()
                     _uiState.value = _uiState.value.copy(categories = categories)
-                }
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(errorMessage = e.message)
             }
@@ -90,7 +89,7 @@ class EditTransactionViewModel @Inject constructor(
     private fun loadAccounts() {
         viewModelScope.launch {
             try {
-                accountRepository.getAllAccounts().collect { accounts ->
+                val accounts = accountRepository.getAllAccountsOnce()
                     val defaultId = accounts.firstOrNull { it.isDefault }?.id
                         ?: accounts.firstOrNull()?.id ?: 1L
                     _uiState.value = _uiState.value.copy(
@@ -98,7 +97,6 @@ class EditTransactionViewModel @Inject constructor(
                         selectedAccountId = _uiState.value.selectedAccountId
                             .takeIf { id -> accounts.any { it.id == id } } ?: defaultId
                     )
-                }
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(errorMessage = "Gagal memuat akun: ${e.message}")
             }

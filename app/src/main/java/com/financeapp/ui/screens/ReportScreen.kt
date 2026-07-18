@@ -204,7 +204,12 @@ fun ReportScreen(viewModel: ReportViewModel = hiltViewModel()) {
                             .padding(12.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text(summary.category.icon, fontSize = 24.sp)
+                        Icon(
+                            imageVector = FinanceIcons.getIcon(summary.category.name),
+                            contentDescription = summary.category.name,
+                            modifier = Modifier.size(24.dp),
+                            tint = MaterialTheme.colorScheme.onSurface
+                        )
                         Spacer(modifier = Modifier.width(12.dp))
 
                         Column(modifier = Modifier.weight(1f)) {

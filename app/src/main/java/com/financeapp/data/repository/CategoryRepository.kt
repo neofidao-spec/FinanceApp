@@ -5,6 +5,7 @@ import com.financeapp.data.model.Category
 import com.financeapp.data.model.DefaultCategories
 import com.financeapp.data.model.TransactionType
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 
 class CategoryRepository(private val dao: CategoryDao) {
     fun getAllCategories(): Flow<List<Category>> = dao.getAll()
@@ -25,3 +26,5 @@ class CategoryRepository(private val dao: CategoryDao) {
         }
     }
 }
+
+    suspend fun getAllCategoriesOnce(): List<Category> = dao.getAll().first()

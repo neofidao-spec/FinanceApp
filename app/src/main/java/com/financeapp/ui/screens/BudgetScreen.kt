@@ -337,7 +337,6 @@ private fun QuickStatsRow(summary: com.financeapp.data.model.BudgetSummary) {
             label = "Over Budget",
             value = "${summary.exceedingBudgets.size}",
             icon = Icons.Filled.Warning,
-            contentDescription = "Over budget",
             color = if (summary.exceedingBudgets.isNotEmpty()) Color(0xFFFFF3E0) else MaterialTheme.colorScheme.surfaceVariant
         )
         
@@ -711,7 +710,7 @@ private fun AddBudgetDialog(viewModel: BudgetViewModel) {
         },
         confirmButton = {
             Button(
-                onClick = { viewModel.addBudget() },
+                onClick = { focusManager.clearFocus(); viewModel.addBudget() },
                 shape = RoundedCornerShape(12.dp)
             ) {
                 Text("Simpan")

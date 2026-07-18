@@ -4,6 +4,7 @@ import com.financeapp.data.database.AccountDao
 import com.financeapp.data.model.Account
 import com.financeapp.data.model.AccountType
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 
 class AccountRepository @Inject constructor(
@@ -51,3 +52,5 @@ class AccountRepository @Inject constructor(
         }
     }
 }
+
+    suspend fun getAllAccountsOnce(): List<Account> = accountDao.getAll().first()
