@@ -1,6 +1,7 @@
 package com.financeapp.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.financeapp.data.model.Account
 import com.financeapp.data.model.Category
@@ -41,6 +42,10 @@ class EditTransactionViewModel @Inject constructor(
     private val categoryRepository: CategoryRepository,
     private val accountRepository: AccountRepository
 ) : ViewModel() {
+    companion object {
+        private const val TAG = "EditTransactionVM"
+    }
+
     private val _uiState = MutableStateFlow(EditTransactionUiState())
     val uiState: StateFlow<EditTransactionUiState> = _uiState.asStateFlow()
 
@@ -67,8 +72,9 @@ class EditTransactionViewModel @Inject constructor(
                     validateForm()
                 }
             } catch (e: Exception) {
+                Log.e(TAG, "Failed to load transaction details", e)
                 _uiState.value = _uiState.value.copy(
-                    errorMessage = e.message,
+                    errorMessage = "Gagal memuat data transaksi. Silakan coba lagi.",
                     isLoading = false
                 )
             }
@@ -81,7 +87,8 @@ class EditTransactionViewModel @Inject constructor(
                 val categories = categoryRepository.getAllCategoriesOnce()
                     _uiState.value = _uiState.value.copy(categories = categories)
             } catch (e: Exception) {
-                _uiState.value = _uiState.value.copy(errorMessage = e.message)
+                Log.e(TAG, "Failed to load categories", e)
+                _uiState.value = _uiState.value.copy(errorMessage = "Gagal memuat kategori. Silakan coba lagi.")
             }
         }
     }
@@ -98,7 +105,8 @@ class EditTransactionViewModel @Inject constructor(
                             .takeIf { id -> accounts.any { it.id == id } } ?: defaultId
                     )
             } catch (e: Exception) {
-                _uiState.value = _uiState.value.copy(errorMessage = "Gagal memuat akun: ${e.message}")
+                Log.e(TAG, "Failed to load accounts", e)
+                _uiState.value = _uiState.value.copy(errorMessage = "Gagal memuat akun. Silakan coba lagi.")
             }
         }
     }
@@ -164,8 +172,9 @@ class EditTransactionViewModel @Inject constructor(
                 )
                 clearMessages()
             } catch (e: Exception) {
+                Log.e(TAG, "Failed to update transaction", e)
                 _uiState.value = _uiState.value.copy(
-                    errorMessage = e.message,
+                    errorMessage = "Gagal memperbarui transaksi. Silakan coba lagi.",
                     isLoading = false
                 )
             }
@@ -197,7 +206,8 @@ class EditTransactionViewModel @Inject constructor(
                 )
                 clearMessages()
             } catch (e: Exception) {
-                _uiState.value = _uiState.value.copy(errorMessage = e.message)
+                Log.e(TAG, "Failed to delete transaction", e)
+                _uiState.value = _uiState.value.copy(errorMessage = "Gagal menghapus transaksi. Silakan coba lagi.")
             }
         }
     }

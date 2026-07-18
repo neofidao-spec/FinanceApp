@@ -33,6 +33,10 @@ class ReportViewModel @Inject constructor(
     private val transactionRepository: TransactionRepository,
     private val categoryRepository: CategoryRepository
 ) : ViewModel() {
+    companion object {
+        private const val TAG = "ReportVM"
+    }
+
     private val _uiState = MutableStateFlow(ReportUiState())
     val uiState: StateFlow<ReportUiState> = _uiState.asStateFlow()
 
@@ -44,8 +48,9 @@ class ReportViewModel @Inject constructor(
                     loadMonthlyReport()
                 }
             } catch (e: Exception) {
+                Log.e(TAG, "Failed to initialize report observer", e)
                 _uiState.value = _uiState.value.copy(
-                    errorMessage = e.message,
+                    errorMessage = "Gagal memuat laporan. Silakan coba lagi.",
                     isLoading = false
                 )
             }
@@ -80,8 +85,9 @@ class ReportViewModel @Inject constructor(
                     isLoading = false
                 )
             } catch (e: Exception) {
+                Log.e(TAG, "Failed to load monthly report", e)
                 _uiState.value = _uiState.value.copy(
-                    errorMessage = e.message,
+                    errorMessage = "Gagal memuat laporan bulanan. Silakan coba lagi.",
                     isLoading = false
                 )
             }

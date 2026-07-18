@@ -1,6 +1,7 @@
 package com.financeapp.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.financeapp.data.model.Budget
 import com.financeapp.data.model.BudgetSummary
@@ -39,6 +40,9 @@ class BudgetViewModel @Inject constructor(
     private val categoryRepository: CategoryRepository,
     private val transactionRepository: TransactionRepository
 ) : ViewModel() {
+    companion object {
+        private const val TAG = "BudgetVM"
+    }
 
     private val _uiState = MutableStateFlow(BudgetUiState())
     val uiState: StateFlow<BudgetUiState> = _uiState.asStateFlow()
@@ -65,8 +69,9 @@ class BudgetViewModel @Inject constructor(
                     )
                 }
             } catch (e: Exception) {
+                Log.e(TAG, "Failed to load budget data", e)
                 _uiState.value = _uiState.value.copy(
-                    errorMessage = e.message,
+                    errorMessage = "Gagal memuat anggaran. Silakan coba lagi.",
                     isLoading = false
                 )
             }
@@ -130,7 +135,8 @@ class BudgetViewModel @Inject constructor(
                 )
                 clearMessages()
             } catch (e: Exception) {
-                _uiState.value = _uiState.value.copy(errorMessage = e.message)
+                Log.e(TAG, "Failed to add budget", e)
+                _uiState.value = _uiState.value.copy(errorMessage = "Gagal menyimpan anggaran. Silakan coba lagi.")
                 clearMessages()
             }
         }
@@ -143,7 +149,8 @@ class BudgetViewModel @Inject constructor(
                 _uiState.value = _uiState.value.copy(successMessage = "Budget berhasil dihapus")
                 clearMessages()
             } catch (e: Exception) {
-                _uiState.value = _uiState.value.copy(errorMessage = e.message)
+                Log.e(TAG, "Failed to delete budget", e)
+                _uiState.value = _uiState.value.copy(errorMessage = "Gagal menghapus anggaran. Silakan coba lagi.")
                 clearMessages()
             }
         }
@@ -167,7 +174,8 @@ class BudgetViewModel @Inject constructor(
                 val summary = budgetRepository.getBudgetSummary(_uiState.value.selectedMonth)
                 _uiState.value = _uiState.value.copy(budgetSummary = summary)
             } catch (e: Exception) {
-                _uiState.value = _uiState.value.copy(errorMessage = e.message)
+                Log.e(TAG, "Failed to load budgets", e)
+                _uiState.value = _uiState.value.copy(errorMessage = "Gagal memuat anggaran. Silakan coba lagi.")
             }
         }
     }

@@ -39,7 +39,10 @@ class GamificationViewModel @Inject constructor(
     private val repository: GamificationRepository,
     private val gamificationUseCase: GamificationUseCase,
     private val achievementRepository: AchievementRepository
-) : ViewModel() {
+    ) : ViewModel() {
+    companion object {
+        private const val TAG = "GamificationVM"
+    }
 
     private val _uiState = MutableStateFlow(GamificationUiState())
     val uiState: StateFlow<GamificationUiState> = _uiState.asStateFlow()
@@ -69,7 +72,8 @@ class GamificationViewModel @Inject constructor(
                 repository.saveDailyQuests(DailyQuest.generateForDate(today))
             }
         } catch (e: Exception) {
-            _uiState.value = _uiState.value.copy(errorMessage = e.message)
+            Log.e(TAG, "Failed to initialize gamification", e)
+            _uiState.value = _uiState.value.copy(errorMessage = "Gagal memuat data gamifikasi. Silakan coba lagi.")
         }
     }
 
@@ -104,8 +108,9 @@ class GamificationViewModel @Inject constructor(
                     _uiState.value = state
                 }
             } catch (e: Exception) {
+                Log.e(TAG, "Failed to observe gamification data", e)
                 _uiState.value = _uiState.value.copy(
-                    errorMessage = e.message,
+                    errorMessage = "Gagal memuat data gamifikasi. Silakan coba lagi.",
                     isLoading = false
                 )
             }

@@ -1,6 +1,7 @@
 package com.financeapp.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.financeapp.data.model.BudgetWithCategory
 import com.financeapp.data.model.CategorySummary
@@ -50,8 +51,12 @@ class DashboardViewModel @Inject constructor(
     private val transactionRepository: TransactionRepository,
     private val budgetRepository: BudgetRepository,
     private val getHealthScoreUseCase: GetHealthScoreUseCase
-) : ViewModel() {
-    private val _uiState = MutableStateFlow(DashboardUiState())
+ ) : ViewModel() {
+     companion object {
+         private const val TAG = "DashboardVM"
+     }
+
+     private val _uiState = MutableStateFlow(DashboardUiState())
     private var allTransactions: List<TransactionWithCategory> = emptyList()
     val uiState: StateFlow<DashboardUiState> = _uiState.asStateFlow()
 
@@ -72,8 +77,9 @@ class DashboardViewModel @Inject constructor(
                     loadHealthScore()
                 }
             } catch (e: Exception) {
+                Log.e(TAG, "Failed to load dashboard data from combine", e)
                 _uiState.value = _uiState.value.copy(
-                    errorMessage = "Failed to load data: ${e.message}",
+                    errorMessage = "Gagal memuat data. Silakan coba lagi.",
                     isLoading = false
                 )
             }
@@ -153,8 +159,9 @@ class DashboardViewModel @Inject constructor(
 
                 _uiState.value = _uiState.value.copy(monthlyTrend = trendData)
             } catch (e: Exception) {
+                Log.e(TAG, "Failed to load monthly trend data", e)
                 _uiState.value = _uiState.value.copy(
-                    errorMessage = "Failed to load trend data: ${e.message}"
+                    errorMessage = "Gagal memuat tren bulanan. Silakan coba lagi."
                 )
             }
     }
@@ -164,8 +171,9 @@ class DashboardViewModel @Inject constructor(
                 val summary = budgetRepository.getBudgetSummary(_uiState.value.selectedMonth)
                 _uiState.value = _uiState.value.copy(budgetSummaries = summary.budgets)
             } catch (e: Exception) {
+                Log.e(TAG, "Failed to load budget summaries", e)
                 _uiState.value = _uiState.value.copy(
-                    errorMessage = "Failed to load budgets: ${e.message}"
+                    errorMessage = "Gagal memuat anggaran. Silakan coba lagi."
                 )
             }
     }
@@ -191,8 +199,9 @@ class DashboardViewModel @Inject constructor(
                 val score = getHealthScoreUseCase()
                 _uiState.value = _uiState.value.copy(healthScore = score)
             } catch (e: Exception) {
+                Log.e(TAG, "Failed to calculate health score", e)
                 _uiState.value = _uiState.value.copy(
-                    errorMessage = "Failed to calculate health score: ${e.message}"
+                    errorMessage = "Gagal menghitung skor kesehatan. Silakan coba lagi."
                 )
             }
     }

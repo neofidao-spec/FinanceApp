@@ -46,6 +46,10 @@ class TransactionViewModel @Inject constructor(
     private val transactionRepository: TransactionRepository,
     private val categoryRepository: CategoryRepository
 ) : ViewModel() {
+    companion object {
+        private const val TAG = "TransactionVM"
+    }
+
     private val _uiState = MutableStateFlow(TransactionUiState())
     val uiState: StateFlow<TransactionUiState> = _uiState.asStateFlow()
     private val _searchFlow = MutableStateFlow("")
@@ -88,8 +92,9 @@ class TransactionViewModel @Inject constructor(
                     applyFilters()
                 }
             } catch (e: Exception) {
+                Log.e(TAG, "Failed to load transactions", e)
                 _uiState.value = _uiState.value.copy(
-                    errorMessage = e.message,
+                    errorMessage = "Gagal memuat transaksi. Silakan coba lagi.",
                     isLoading = false
                 )
             }
@@ -103,7 +108,8 @@ class TransactionViewModel @Inject constructor(
                     _uiState.value = _uiState.value.copy(categories = categories)
                 }
             } catch (e: Exception) {
-                _uiState.value = _uiState.value.copy(errorMessage = e.message)
+                Log.e(TAG, "Failed to load categories", e)
+                _uiState.value = _uiState.value.copy(errorMessage = "Gagal memuat kategori. Silakan coba lagi.")
             }
         }
     }
@@ -238,7 +244,8 @@ class TransactionViewModel @Inject constructor(
                 _uiState.value = _uiState.value.copy(successMessage = "Transaksi berhasil ditambahkan")
                 clearMessages()
             } catch (e: Exception) {
-                _uiState.value = _uiState.value.copy(errorMessage = e.message)
+                Log.e(TAG, "Failed to add transaction", e)
+                _uiState.value = _uiState.value.copy(errorMessage = "Gagal menyimpan transaksi. Silakan coba lagi.")
             }
         }
     }
@@ -253,7 +260,8 @@ class TransactionViewModel @Inject constructor(
                 )
                 clearMessages()
             } catch (e: Exception) {
-                _uiState.value = _uiState.value.copy(errorMessage = e.message)
+                Log.e(TAG, "Failed to update transaction", e)
+                _uiState.value = _uiState.value.copy(errorMessage = "Gagal memperbarui transaksi. Silakan coba lagi.")
             }
         }
     }
@@ -265,7 +273,8 @@ class TransactionViewModel @Inject constructor(
                 _uiState.value = _uiState.value.copy(successMessage = "Transaksi berhasil dihapus")
                 clearMessages()
             } catch (e: Exception) {
-                _uiState.value = _uiState.value.copy(errorMessage = e.message)
+                Log.e(TAG, "Failed to delete transaction", e)
+                _uiState.value = _uiState.value.copy(errorMessage = "Gagal menghapus transaksi. Silakan coba lagi.")
             }
         }
     }
@@ -295,7 +304,8 @@ class TransactionViewModel @Inject constructor(
                     )
                 }
             } catch (e: Exception) {
-                _uiState.value = _uiState.value.copy(errorMessage = e.message)
+                Log.e(TAG, "Failed to swipe-delete transaction", e)
+                _uiState.value = _uiState.value.copy(errorMessage = "Gagal menghapus transaksi. Silakan coba lagi.")
             }
         }
     }
@@ -313,7 +323,8 @@ class TransactionViewModel @Inject constructor(
                 )
                 clearMessages()
             } catch (e: Exception) {
-                _uiState.value = _uiState.value.copy(errorMessage = e.message)
+                Log.e(TAG, "Failed to undo delete", e)
+                _uiState.value = _uiState.value.copy(errorMessage = "Gagal memulihkan transaksi. Silakan coba lagi.")
             }
         }
     }
@@ -336,7 +347,8 @@ class TransactionViewModel @Inject constructor(
                     applyFilters()
                 }
             } catch (e: Exception) {
-                _uiState.value = _uiState.value.copy(errorMessage = e.message)
+                Log.e(TAG, "Failed to filter transactions by type", e)
+                _uiState.value = _uiState.value.copy(errorMessage = "Gagal memuat transaksi. Silakan coba lagi.")
             }
         }
     }

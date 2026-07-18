@@ -1,6 +1,7 @@
 package com.financeapp.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.financeapp.data.model.Account
 import com.financeapp.data.model.Category
@@ -39,7 +40,11 @@ class AddTransactionViewModel @Inject constructor(
     private val categoryRepository: CategoryRepository,
     private val accountRepository: AccountRepository,
     private val gamificationUseCase: GamificationUseCase
-) : ViewModel() {
+    ) : ViewModel() {
+    companion object {
+        private const val TAG = "AddTransactionVM"
+    }
+
     private val _uiState = MutableStateFlow(AddTransactionUiState())
     val uiState: StateFlow<AddTransactionUiState> = _uiState.asStateFlow()
 
@@ -55,8 +60,9 @@ class AddTransactionViewModel @Inject constructor(
                     _uiState.value = _uiState.value.copy(categories = categories)
                 }
             } catch (e: Exception) {
-                _uiState.value = _uiState.value.copy(errorMessage = e.message)
-            }
+                Log.e(TAG, "Failed to load categories", e)
+                _uiState.value = _uiState.value.copy(errorMessage = "Gagal memuat kategori. Silakan coba lagi.")
+                }
         }
     }
 
@@ -71,8 +77,9 @@ class AddTransactionViewModel @Inject constructor(
                     )
                 }
             } catch (e: Exception) {
-                _uiState.value = _uiState.value.copy(errorMessage = "Gagal memuat akun: ${e.message}")
-            }
+                Log.e(TAG, "Failed to load accounts", e)
+                _uiState.value = _uiState.value.copy(errorMessage = "Gagal memuat akun. Silakan coba lagi.")
+                }
         }
     }
 
@@ -158,8 +165,9 @@ class AddTransactionViewModel @Inject constructor(
                 )
                 clearMessages()
             } catch (e: Exception) {
+                Log.e(TAG, "Failed to submit transaction", e)
                 _uiState.value = _uiState.value.copy(
-                    errorMessage = e.message,
+                    errorMessage = "Gagal menyimpan transaksi. Silakan coba lagi.",
                     isLoading = false
                 )
             }

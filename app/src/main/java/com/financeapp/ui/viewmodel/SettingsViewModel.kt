@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import androidx.core.content.FileProvider
 import androidx.lifecycle.ViewModel
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.financeapp.data.preferences.AppPreferences
 import com.financeapp.data.repository.AccountRepository
@@ -34,7 +35,10 @@ class SettingsViewModel @Inject constructor(
     private val appPreferences: AppPreferences,
     private val transactionRepository: TransactionRepository,
     private val accountRepository: AccountRepository
-) : ViewModel() {
+    ) : ViewModel() {
+    companion object {
+        private const val TAG = "SettingsVM"
+    }
 
     private val _uiState = MutableStateFlow(SettingsUiState())
     val uiState: StateFlow<SettingsUiState> = _uiState.asStateFlow()
@@ -57,11 +61,12 @@ class SettingsViewModel @Inject constructor(
                     _uiState.value = state
                 }
             } catch (e: Exception) {
+                Log.e(TAG, "Failed to load settings", e)
                 _uiState.value = _uiState.value.copy(
-                    errorMessage = e.message,
+                    errorMessage = "Gagal memuat pengaturan. Silakan coba lagi.",
                     isLoading = false
                 )
-            }
+                }
         }
     }
 
@@ -70,8 +75,9 @@ class SettingsViewModel @Inject constructor(
             try {
                 appPreferences.setDarkMode(enabled)
             } catch (e: Exception) {
-                _uiState.value = _uiState.value.copy(errorMessage = e.message)
-            }
+                Log.e(TAG, "Failed to toggle dark mode", e)
+                _uiState.value = _uiState.value.copy(errorMessage = "Gagal mengubah tema. Silakan coba lagi.")
+                }
         }
     }
 
