@@ -68,19 +68,26 @@ class GamificationViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val today = LocalDate.now()
-                val progressFlow = repository.getUserProgress()
-                val questsFlow = repository.getDailyQuests(today)
-                val activeFlow = repository.getActiveChallenges()
-                val completedFlow = repository.getCompletedChallenges()
-                val xpFlow = repository.getRecentXpHistory(20)
-                val achievementsFlow = achievementRepository.getAllAchievements()
-                combine(progressFlow, questsFlow, activeFlow, completedFlow, xpFlow, achievementsFlow) {
-                    progress, quests, activeChallenges, completedChallenges, xpHistory, achievements ->
+                val firstThree = combine(
+                    repository.getUserProgress(),
+                    repository.getDailyQuests(today),
+                    repository.getActiveChallenges()
+                ) { progress, quests, active ->
+                    Triple(progress, quests, active)
+                }
+                val lastThree = combine(
+                    repository.getCompletedChallenges(),
+                    repository.getRecentXpHistory(20),
+                    achievementRepository.getAllAchievements()
+                ) { completed, xpHistory, achievements ->
+                    Triple(completed, xpHistory, achievements)
+                }
+                combine(firstThree, lastThree) { (progress, quests, active), (completed, xpHistory, achievements) ->
                     GamificationUiState(
                         userProgress = progress,
                         dailyQuests = quests,
-                        activeChallenges = activeChallenges,
-                        completedChallenges = completedChallenges,
+                        activeChallenges = active,
+                        completedChallenges = completed,
                         recentXpHistory = xpHistory,
                         achievements = achievements,
                         isLoading = false
