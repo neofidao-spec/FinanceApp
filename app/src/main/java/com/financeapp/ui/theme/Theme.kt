@@ -13,149 +13,202 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
+// ── Old Money Palette ─────────────────────────────────────────
+// Elegant, warm, sophisticated. Tidak ada warna neon/terang.
+// Cream backgrounds, charcoal text, copper/gold accents.
+
+object FinancePalette {
+    // Primary — Deep navy/slate (trust, authority)
+    val Navy = Color(0xFF1B2A4A)
+    val Slate = Color(0xFF2D4059)
+    val SteelBlue = Color(0xFF4A6580)
+
+    // Surface — Warm whites (NOT cold #FFFFFF)
+    val Cream = Color(0xFFFAF8F5)
+    val Ivory = Color(0xFFF5F0EB)
+    val Parchment = Color(0xFFEDE8E0)
+    val WarmWhite = Color(0xFFFDFCFA)
+
+    // Text — Charcoal family (NOT pure black)
+    val Charcoal = Color(0xFF2C2A28)
+    val WarmGray = Color(0xFF6B5A4D)
+    val LightGray = Color(0xFF9E9488)
+    val Divider = Color(0xFFD4CFC8)
+
+    // Accent — Copper/Gold (premium, sparingly)
+    val Copper = Color(0xFFB87333)
+    val Champagne = Color(0xFFC9A86A)
+    val GoldLight = Color(0xFFE8D5B0)
+
+    // Semantic — Income/Expense (muted, sophisticated)
+    val ForestGreen = Color(0xFF2E6B4F)
+    val ForestGreenLight = Color(0xFF4A8B6A)
+    val Burgundy = Color(0xFF7A2E3B)
+    val BurgundyLight = Color(0xFFA04858)
+
+    // Warning — Amber muted
+    val Amber = Color(0xFFC49A3C)
+    val AmberLight = Color(0xFFE8C878)
+
+    // Error — Deep red
+    val DeepRed = Color(0xFF8B2E3B)
+    val DeepRedLight = Color(0xFFB84858)
+
+    // Dark mode variants
+    val DarkNavy = Color(0xFF0D1520)
+    val DarkSurface = Color(0xFF1A1E28)
+    val DarkSurfaceVariant = Color(0xFF252A36)
+    val DarkText = Color(0xFFE8E4DE)
+    val DarkTextSecondary = Color(0xFF9E9488)
+    val DarkCopper = Color(0xFFD4956A)
+    val DarkChampagne = Color(0xFFE8C878)
+}
+
 // ── Semantic Finance Colors ────────────────────────────────────
 
-/**
- * App-specific semantic colors for finance domain.
- * Access via MaterialTheme.financeColors.income etc.
- */
 data class FinanceColors(
-    /** Hijau — income, positive balance, savings */
     val income: Color,
     val onIncome: Color,
     val incomeContainer: Color,
     val onIncomeContainer: Color,
-
-    /** Merah — expense, negative balance, overspend */
     val expense: Color,
     val onExpense: Color,
     val expenseContainer: Color,
     val onExpenseContainer: Color,
-
-    /** Kuning/amber — budget approaching limit */
     val warning: Color,
     val onWarning: Color,
     val warningContainer: Color,
     val onWarningContainer: Color,
-
-    /** Neutral — disabled, placeholder, divider */
+    val accent: Color,
+    val onAccent: Color,
     val neutral: Color,
     val onNeutral: Color
 )
 
 val LightFinanceColors = FinanceColors(
-    income = Color(0xFF2E7D32),
-    onIncome = Color.White,
-    incomeContainer = Color(0xFFC8E6C9),
-    onIncomeContainer = Color(0xFF1B5E20),
+    income = FinancePalette.ForestGreen,
+    onIncome = FinancePalette.WarmWhite,
+    incomeContainer = Color(0xFFD7E7DD),
+    onIncomeContainer = Color(0xFF1A3D2E),
 
-    expense = Color(0xFFC62828),
-    onExpense = Color.White,
-    expenseContainer = Color(0xFFFFCDD2),
-    onExpenseContainer = Color(0xFFB71C1C),
+    expense = FinancePalette.Burgundy,
+    onExpense = FinancePalette.WarmWhite,
+    expenseContainer = Color(0xFFF0D5D8),
+    onExpenseContainer = Color(0xFF5A1E2B),
 
-    warning = Color(0xFFF57F17),
-    onWarning = Color.White,
-    warningContainer = Color(0xFFFFF9C4),
-    onWarningContainer = Color(0xFFF57F17),
+    warning = FinancePalette.Amber,
+    onWarning = FinancePalette.WarmWhite,
+    warningContainer = FinancePalette.AmberLight,
+    onWarningContainer = Color(0xFF6B4A10),
 
-    neutral = Color(0xFF9E9E9E),
-    onNeutral = Color.White
+    accent = FinancePalette.Copper,
+    onAccent = FinancePalette.WarmWhite,
+    neutral = FinancePalette.WarmGray,
+    onNeutral = FinancePalette.WarmWhite
 )
 
 val DarkFinanceColors = FinanceColors(
-    income = Color(0xFF81C784),
-    onIncome = Color(0xFF1B5E20),
-    incomeContainer = Color(0xFF2E7D32),
-    onIncomeContainer = Color(0xFFC8E6C9),
+    income = Color(0xFF6ABF8A),
+    onIncome = Color(0xFF1A3D2E),
+    incomeContainer = Color(0xFF2E6B4F),
+    onIncomeContainer = Color(0xFFD7E7DD),
 
-    expense = Color(0xFFEF9A9A),
-    onExpense = Color(0xFFB71C1C),
-    expenseContainer = Color(0xFFC62828),
-    onExpenseContainer = Color(0xFFFFCDD2),
+    expense = Color(0xFFD4788A),
+    onExpense = Color(0xFF5A1E2B),
+    expenseContainer = Color(0xFF7A2E3B),
+    onExpenseContainer = Color(0xFFF0D5D8),
 
-    warning = Color(0xFFFFF176),
-    onWarning = Color(0xFFF57F17),
-    warningContainer = Color(0xFFF57F17),
-    onWarningContainer = Color(0xFFFFF9C4),
+    warning = FinancePalette.AmberLight,
+    onWarning = Color(0xFF6B4A10),
+    warningContainer = FinancePalette.Amber,
+    onWarningContainer = FinancePalette.AmberLight,
 
-    neutral = Color(0xFF757575),
-    onNeutral = Color(0xFFE0E0E0)
+    accent = FinancePalette.DarkCopper,
+    onAccent = Color(0xFF2C2A28),
+    neutral = FinancePalette.DarkTextSecondary,
+    onNeutral = FinancePalette.DarkText
 )
 
 val LocalFinanceColors = staticCompositionLocalOf { LightFinanceColors }
 
-/** Access finance colors: `MaterialTheme.financeColors.income` */
 val androidx.compose.material3.ColorScheme.financeColors: FinanceColors
     @Composable
     get() = LocalFinanceColors.current
 
-// ── Material3 Color Schemes ────────────────────────────────────
+// ── Material3 Color Schemes — Old Money ────────────────────────
 
 private val LightColorScheme = lightColorScheme(
-    primary = Color(0xFF1565C0),
-    onPrimary = Color.White,
-    primaryContainer = Color(0xFFBBDEFB),
-    onPrimaryContainer = Color(0xFF0D47A1),
+    primary = FinancePalette.Navy,
+    onPrimary = FinancePalette.WarmWhite,
+    primaryContainer = FinancePalette.SteelBlue,
+    onPrimaryContainer = FinancePalette.WarmWhite,
 
-    secondary = Color(0xFF43A047),
-    onSecondary = Color.White,
-    secondaryContainer = Color(0xFFC8E6C9),
-    onSecondaryContainer = Color(0xFF1B5E20),
+    secondary = FinancePalette.Copper,
+    onSecondary = FinancePalette.WarmWhite,
+    secondaryContainer = FinancePalette.GoldLight,
+    onSecondaryContainer = FinancePalette.Charcoal,
 
-    tertiary = Color(0xFFFF8F00),
-    onTertiary = Color.White,
-    tertiaryContainer = Color(0xFFFFE0B2),
-    onTertiaryContainer = Color(0xFFE65100),
+    tertiary = FinancePalette.Champagne,
+    onTertiary = FinancePalette.Charcoal,
+    tertiaryContainer = Color(0xFFF0E8D8),
+    onTertiaryContainer = FinancePalette.Charcoal,
 
-    background = Color(0xFFFAFAFA),
-    onBackground = Color(0xFF212121),
+    background = FinancePalette.Cream,
+    onBackground = FinancePalette.Charcoal,
 
-    surface = Color.White,
-    onSurface = Color(0xFF212121),
-    surfaceVariant = Color(0xFFF5F5F5),
-    onSurfaceVariant = Color(0xFF616161),
+    surface = FinancePalette.WarmWhite,
+    onSurface = FinancePalette.Charcoal,
+    surfaceVariant = FinancePalette.Ivory,
+    onSurfaceVariant = FinancePalette.WarmGray,
 
-    error = Color(0xFFD32F2F),
-    onError = Color.White,
-    errorContainer = Color(0xFFFFCDD2),
-    onErrorContainer = Color(0xFFB71C1C),
+    error = FinancePalette.DeepRed,
+    onError = FinancePalette.WarmWhite,
+    errorContainer = Color(0xFFF0D5D8),
+    onErrorContainer = FinancePalette.DeepRed,
 
-    outline = Color(0xFFBDBDBD),
-    outlineVariant = Color(0xFFE0E0E0)
+    outline = FinancePalette.Divider,
+    outlineVariant = FinancePalette.Parchment,
+
+    inverseSurface = FinancePalette.Charcoal,
+    inverseOnSurface = FinancePalette.Cream,
+    inversePrimary = FinancePalette.SteelBlue
 )
 
 private val DarkColorScheme = darkColorScheme(
-    primary = Color(0xFF90CAF9),
-    onPrimary = Color(0xFF0D47A1),
-    primaryContainer = Color(0xFF1565C0),
-    onPrimaryContainer = Color(0xFFBBDEFB),
+    primary = Color(0xFF8AAFCF),
+    onPrimary = FinancePalette.DarkNavy,
+    primaryContainer = FinancePalette.Slate,
+    onPrimaryContainer = Color(0xFFD4E0F0),
 
-    secondary = Color(0xFFA5D6A7),
-    onSecondary = Color(0xFF1B5E20),
-    secondaryContainer = Color(0xFF43A047),
-    onSecondaryContainer = Color(0xFFC8E6C9),
+    secondary = FinancePalette.DarkCopper,
+    onSecondary = FinancePalette.DarkNavy,
+    secondaryContainer = Color(0xFF5A4030),
+    onSecondaryContainer = FinancePalette.GoldLight,
 
-    tertiary = Color(0xFFFFCC80),
-    onTertiary = Color(0xFFE65100),
-    tertiaryContainer = Color(0xFFFF8F00),
-    onTertiaryContainer = Color(0xFFFFE0B2),
+    tertiary = FinancePalette.DarkChampagne,
+    onTertiary = FinancePalette.DarkNavy,
+    tertiaryContainer = Color(0xFF4A3A20),
+    onTertiaryContainer = FinancePalette.GoldLight,
 
-    background = Color(0xFF121212),
-    onBackground = Color(0xFFE0E0E0),
+    background = FinancePalette.DarkNavy,
+    onBackground = FinancePalette.DarkText,
 
-    surface = Color(0xFF1E1E1E),
-    onSurface = Color(0xFFE0E0E0),
-    surfaceVariant = Color(0xFF2C2C2C),
-    onSurfaceVariant = Color(0xFFBDBDBD),
+    surface = FinancePalette.DarkSurface,
+    onSurface = FinancePalette.DarkText,
+    surfaceVariant = FinancePalette.DarkSurfaceVariant,
+    onSurfaceVariant = FinancePalette.DarkTextSecondary,
 
-    error = Color(0xFFEF9A9A),
-    onError = Color(0xFFB71C1C),
-    errorContainer = Color(0xFFC62828),
-    onErrorContainer = Color(0xFFFFCDD2),
+    error = FinancePalette.DeepRedLight,
+    onError = FinancePalette.WarmWhite,
+    errorContainer = FinancePalette.DeepRed,
+    onErrorContainer = Color(0xFFF0D5D8),
 
-    outline = Color(0xFF616161),
-    outlineVariant = Color(0xFF424242)
+    outline = Color(0xFF3A3E4A),
+    outlineVariant = FinancePalette.DarkSurfaceVariant,
+
+    inverseSurface = FinancePalette.DarkText,
+    inverseOnSurface = FinancePalette.DarkNavy,
+    inversePrimary = FinancePalette.Navy
 )
 
 // ── Theme Entry Point ──────────────────────────────────────────
