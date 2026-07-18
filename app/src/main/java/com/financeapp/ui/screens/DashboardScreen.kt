@@ -33,6 +33,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -78,6 +79,16 @@ fun DashboardScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val gamificationState by gamificationViewModel.uiState.collectAsState()
+
+    // Complete "Cek Dashboard" quest on first visit
+    LaunchedEffect(gamificationState.dailyQuests) {
+        val dashboardQuest = gamificationState.dailyQuests.find {
+            it.questType == "DASHBOARD_VISIT" && !it.isCompleted
+        }
+        if (dashboardQuest != null) {
+            gamificationViewModel.completeQuest(dashboardQuest)
+        }
+    }
 
     DashboardContent(
         uiState = uiState,

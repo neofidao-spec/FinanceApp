@@ -77,6 +77,7 @@ import com.financeapp.data.model.TransactionType
 import com.financeapp.ui.utils.FinanceIcons
 import com.financeapp.ui.utils.FormatterUtil
 import com.financeapp.ui.viewmodel.BudgetViewModel
+import com.financeapp.ui.viewmodel.GamificationViewModel
 import com.financeapp.ui.theme.financeColors
 import com.financeapp.ui.theme.Spacing
 import androidx.compose.ui.res.stringResource
@@ -84,10 +85,27 @@ import com.financeapp.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BudgetScreen(viewModel: BudgetViewModel = hiltViewModel()) {
+fun BudgetScreen(
+    viewModel: BudgetViewModel = hiltViewModel(),
+    gamificationViewModel: GamificationViewModel = hiltViewModel()
+) {
     val uiState by viewModel.uiState.collectAsState()
+    val gamificationState by gamificationViewModel.uiState.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
     val focusManager = LocalFocusManager.current
+
+    // Complete "Budget Check" quest when all budgets are healthy
+    LaunchedEffect(uiState.budgetSummary, gamificationState.dailyQuests) {
+        val summary = uiState.budgetSummary
+        if (summary != null && summary.exceedingBudgets.isEmpty() && summary.budgets.isNotEmpty()) {
+            val budgetQuest = gamificationState.dailyQuests.find {
+                it.questType == "BUDGET_CHECK" && !it.isCompleted
+            }
+            if (budgetQuest != null) {
+                gamificationViewModel.completeQuest(budgetQuest)
+            }
+        }
+    }
 
     LaunchedEffect(uiState.successMessage, uiState.errorMessage) {
         uiState.successMessage?.let {

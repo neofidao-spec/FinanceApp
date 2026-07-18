@@ -42,6 +42,7 @@ import com.financeapp.ui.components.CategorySelector
 import com.financeapp.ui.components.DatePickerField
 import com.financeapp.ui.components.HapticButton
 import com.financeapp.ui.viewmodel.AddTransactionViewModel
+import com.financeapp.ui.viewmodel.GamificationViewModel
 import com.financeapp.ui.theme.financeColors
 import com.financeapp.ui.theme.Spacing
 import androidx.compose.ui.res.stringResource
@@ -51,11 +52,26 @@ import com.financeapp.R
 @Composable
 fun AddTransactionScreen(
     viewModel: AddTransactionViewModel = hiltViewModel(),
+    gamificationViewModel: GamificationViewModel = hiltViewModel(),
     onNavigateBack: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val gamificationState by gamificationViewModel.uiState.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
     val focusManager = LocalFocusManager.current
+
+    // Update quest progress after successful transaction
+    LaunchedEffect(uiState.successMessage) {
+        if (uiState.successMessage != null) {
+            gamificationViewModel.onTransactionRecorded()
+            val txQuest = gamificationState.dailyQuests.find {
+                it.questType == "TRANSACTION_COUNT" && !it.isCompleted
+            }
+            if (txQuest != null) {
+                gamificationViewModel.completeQuest(txQuest)
+            }
+        }
+    }
 
     uiState.successMessage?.let {
         LaunchedEffect(it) {
