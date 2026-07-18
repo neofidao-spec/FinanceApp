@@ -80,6 +80,7 @@ fun BudgetProgressRing(
             modifier = Modifier.size(ringSize.dp),
             contentAlignment = Alignment.Center
         ) {
+            val trackColor = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f)
             Canvas(modifier = Modifier.size(ringSize.dp)) {
                 val canvasSize = size.minDimension
                 val radius = (canvasSize - strokeWidth) / 2
@@ -87,7 +88,7 @@ fun BudgetProgressRing(
 
                 // Background track
                 drawCircle(
-                    color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f),
+                    color = trackColor,
                     radius = radius,
                     center = center,
                     style = Stroke(width = strokeWidth, cap = StrokeCap.Round)
