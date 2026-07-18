@@ -24,6 +24,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -101,9 +102,13 @@ fun OnboardingScreen(
     val scope = rememberCoroutineScope()
     val pagerState = rememberPagerState(pageCount = { onboardingPages.size })
 
+    Scaffold(
+        containerColor = MaterialTheme.colorScheme.background
+    ) { paddingValues ->
     Box(
         modifier = Modifier
             .fillMaxSize()
+            .padding(paddingValues)
             .background(
                 Brush.verticalGradient(
                     colors = listOf(
@@ -203,6 +208,7 @@ fun OnboardingScreen(
 
             Spacer(modifier = Modifier.height(Spacing.xl))
         }
+    }
     }
 }
 

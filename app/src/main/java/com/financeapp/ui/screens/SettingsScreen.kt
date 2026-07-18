@@ -16,6 +16,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -65,17 +66,21 @@ fun SettingsScreen(
         return
     }
 
+    Scaffold(
+        containerColor = MaterialTheme.colorScheme.background
+    ) { paddingValues ->
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .padding(paddingValues)
             .verticalScroll(rememberScrollState())
             .padding(Spacing.md)
     ) {
-        Text("Pengaturan", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.displaySmall)
+        Text("Pengaturan", style = MaterialTheme.typography.headlineSmall)
         Spacer(modifier = Modifier.height(Spacing.lg))
 
         // Section 1: Tampilan
-        Text("Tampilan", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text("Tampilan", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
         Spacer(modifier = Modifier.height(Spacing.sm))
 
         Card(modifier = Modifier.fillMaxWidth(), elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)) {
@@ -99,7 +104,7 @@ fun SettingsScreen(
         Spacer(modifier = Modifier.height(Spacing.lg))
 
         // Section 2: Akun
-        Text("Akun", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text("Akun", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
         Spacer(modifier = Modifier.height(Spacing.sm))
 
         Card(modifier = Modifier.fillMaxWidth(), elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)) {
@@ -124,7 +129,7 @@ fun SettingsScreen(
         Spacer(modifier = Modifier.height(Spacing.lg))
 
         // Section 3: Data
-        Text("Data", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text("Data", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
         Spacer(modifier = Modifier.height(Spacing.sm))
 
         Card(modifier = Modifier.fillMaxWidth(), elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)) {
@@ -177,7 +182,7 @@ fun SettingsScreen(
         Spacer(modifier = Modifier.height(Spacing.lg))
 
         // Section 4: Tentang
-        Text("Tentang", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text("Tentang", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
         Spacer(modifier = Modifier.height(Spacing.sm))
 
         Card(modifier = Modifier.fillMaxWidth(), elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)) {
@@ -217,6 +222,7 @@ fun SettingsScreen(
         }
 
         Spacer(modifier = Modifier.height(Spacing.xl))
+    }
     }
 }
 

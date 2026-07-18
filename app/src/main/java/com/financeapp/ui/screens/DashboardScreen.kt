@@ -30,6 +30,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -91,11 +92,15 @@ private fun DashboardContent(
     onRetry: () -> Unit,
     onUseFreeze: () -> Unit
 ) {
+    Scaffold(
+        containerColor = MaterialTheme.colorScheme.background
+    ) { paddingValues ->
     // Loading state — shimmer skeleton
     if (uiState.isLoading) {
         LazyColumn(
             modifier = Modifier
                 .fillMaxWidth()
+                .padding(paddingValues)
                 .padding(horizontal = Spacing.md),
             contentPadding = PaddingValues(vertical = Spacing.md),
             verticalArrangement = Arrangement.spacedBy(Spacing.md)
@@ -105,7 +110,7 @@ private fun DashboardContent(
             item { ShimmerTransactionItem() }
             item { ShimmerTransactionItem() }
         }
-        return
+        return@Scaffold
     }
 
     // Error state
@@ -113,6 +118,7 @@ private fun DashboardContent(
         Box(
             modifier = Modifier
                 .fillMaxSize()
+                .padding(paddingValues)
                 .padding(Spacing.xl),
             contentAlignment = Alignment.Center
         ) {
@@ -145,12 +151,13 @@ private fun DashboardContent(
                 }
             }
         }
-        return
+        return@Scaffold
     }
 
     LazyColumn(
         modifier = Modifier
             .fillMaxWidth()
+            .padding(paddingValues)
             .padding(horizontal = Spacing.md),
         contentPadding = PaddingValues(vertical = Spacing.md),
         verticalArrangement = Arrangement.spacedBy(Spacing.md)
@@ -309,6 +316,7 @@ private fun DashboardContent(
                 TransactionItem(transaction = transaction)
             }
         }
+    }
     }
 }
 
