@@ -361,6 +361,12 @@ class TransactionViewModel @Inject constructor(
         _uiState.value = _uiState.value.copy(selectedTransaction = null)
     }
 
+    fun retry() {
+        _uiState.value = TransactionUiState(isLoading = true)
+        loadTransactions()
+        loadCategories()
+    }
+
     private fun clearMessages() {
         viewModelScope.launch {
             kotlinx.coroutines.delay(2000)
