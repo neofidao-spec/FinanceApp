@@ -14,6 +14,7 @@ import com.financeapp.data.model.TransactionType
 import com.financeapp.data.repository.RecurringTransactionRepository
 import com.financeapp.data.repository.TransactionRepository
 import dagger.assisted.Assisted
+import dagger.assisted.AssistedInject
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.concurrent.TimeUnit
@@ -22,7 +23,7 @@ import java.util.concurrent.TimeUnit
  * Periodic worker that runs daily to generate transactions from recurring schedules.
  */
 @HiltWorker
-class RecurringTransactionWorker @Inject constructor(
+class RecurringTransactionWorker @AssistedInject constructor(
     @Assisted context: Context,
     @Assisted workerParams: WorkerParameters,
     private val recurringRepo: RecurringTransactionRepository,
