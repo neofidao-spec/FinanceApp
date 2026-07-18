@@ -14,7 +14,6 @@ import androidx.compose.material.icons.filled.TrendingUp
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Payments
 import androidx.compose.material.icons.outlined.Savings
-import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material.icons.outlined.TrendingUp
 import androidx.compose.material3.FloatingActionButton
@@ -28,13 +27,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavHostController
-import com.financeapp.ui.navigation.NavigationRoutes
 import com.financeapp.ui.theme.Spacing
 
 private data class NavigationItem(
@@ -48,14 +46,19 @@ fun MainScreen(
     navController: NavHostController
 ) {
     var selectedTab by remember { mutableIntStateOf(0) }
+    var showSettings by remember { mutableStateOf(false) }
+
+    if (showSettings) {
+        SettingsScreen(onBack = { showSettings = false })
+        return
+    }
 
     val navigationItems = listOf(
         NavigationItem("Dashboard", Icons.Filled.Home, Icons.Outlined.Home),
         NavigationItem("Transaksi", Icons.Filled.Payments, Icons.Outlined.Payments),
         NavigationItem("Laporan", Icons.Filled.TrendingUp, Icons.Outlined.TrendingUp),
         NavigationItem("Budget", Icons.Filled.Savings, Icons.Outlined.Savings),
-        NavigationItem("Profil", Icons.Filled.Star, Icons.Outlined.Star),
-        NavigationItem("Pengaturan", Icons.Filled.Settings, Icons.Outlined.Settings)
+        NavigationItem("Profil", Icons.Filled.Star, Icons.Outlined.Star)
     )
 
     Scaffold(
@@ -90,7 +93,10 @@ fun MainScreen(
             if (selectedTab == 1) {
                 FloatingActionButton(
                     onClick = {
-                        navController.navigate(NavigationRoutes.AddTransaction::class.simpleName ?: "AddTransaction")
+                        navController.navigate(
+                            com.financeapp.ui.navigation.NavigationRoutes.AddTransaction::class.simpleName
+                                ?: "AddTransaction"
+                        )
                     },
                     containerColor = MaterialTheme.colorScheme.primary
                 ) {
@@ -113,8 +119,7 @@ fun MainScreen(
                 )
                 2 -> ReportScreen()
                 3 -> BudgetScreen()
-                4 -> GamificationScreen()
-                5 -> SettingsScreen()
+                4 -> GamificationScreen(onSettingsClick = { showSettings = true })
             }
         }
     }

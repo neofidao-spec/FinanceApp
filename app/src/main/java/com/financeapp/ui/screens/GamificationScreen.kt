@@ -27,6 +27,7 @@ import androidx.compose.material.icons.filled.LocalFireDepartment
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.TrendingUp
 import androidx.compose.material.icons.filled.WorkspacePremium
 import androidx.compose.material3.Button
@@ -35,6 +36,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -72,7 +74,8 @@ import com.financeapp.ui.theme.Spacing
 
 @Composable
 fun GamificationScreen(
-    viewModel: GamificationViewModel = hiltViewModel()
+    viewModel: GamificationViewModel = hiltViewModel(),
+    onSettingsClick: () -> Unit = {}
 ) {
     val state by viewModel.uiState.collectAsState()
 
@@ -121,12 +124,24 @@ fun GamificationScreen(
         containerColor = MaterialTheme.colorScheme.background
     ) { paddingValues ->
     Column(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
-        // Title
-        Text(
-            text = "Profil & Prestasi",
-            style = MaterialTheme.typography.headlineLarge,
-            modifier = Modifier.padding(start = Spacing.md, top = Spacing.md, end = Spacing.md, bottom = Spacing.sm)
-        )
+        // Title with settings icon
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(start = Spacing.md, top = Spacing.md, end = Spacing.md, bottom = Spacing.sm),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                text = "Profil & Prestasi",
+                style = MaterialTheme.typography.headlineLarge
+            )
+            IconButton(onClick = onSettingsClick) {
+                Icon(
+                    imageVector = Icons.Filled.Settings,
+                    contentDescription = "Pengaturan",
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        }
 
         // Tab bar
         TabRow(
