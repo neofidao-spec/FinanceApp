@@ -22,6 +22,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.draw.clip
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -30,7 +31,7 @@ import com.financeapp.ui.theme.Spacing
 
 /**
  * Modifier that applies a shimmer effect — a moving gradient highlight.
- * Note: Uses RoundedCornerShape(8.dp) directly since this is not a @Composable context.
+ * Note: Uses RoundedCornerShape(Spacing.xs) since composed{} is not a @Composable context.
  */
 fun Modifier.shimmerEffect(): Modifier = composed {
     val transition = rememberInfiniteTransition(label = "shimmer")
@@ -114,7 +115,7 @@ fun ShimmerTransactionItem(modifier: Modifier = Modifier) {
             modifier = Modifier
                 .width(40.dp)
                 .height(40.dp)
-                .clip(RoundedCornerShape(8.dp))
+                .clip(MaterialTheme.shapes.extraSmall)
                 .shimmerEffect()
         )
         Column(modifier = Modifier.weight(1f)) {
@@ -122,7 +123,7 @@ fun ShimmerTransactionItem(modifier: Modifier = Modifier) {
                 modifier = Modifier
                     .fillMaxWidth(0.6f)
                     .height(Spacing.smd)
-                    .clip(RoundedCornerShape(4.dp))
+                    .clip(RoundedCornerShape(Spacing.xs))
                     .shimmerEffect()
             )
             Spacer(modifier = Modifier.height(Spacing.xs))
@@ -130,7 +131,7 @@ fun ShimmerTransactionItem(modifier: Modifier = Modifier) {
                 modifier = Modifier
                     .fillMaxWidth(0.4f)
                     .height(Spacing.smd)
-                    .clip(RoundedCornerShape(4.dp))
+                    .clip(RoundedCornerShape(Spacing.xs))
                     .shimmerEffect()
             )
         }
@@ -139,7 +140,7 @@ fun ShimmerTransactionItem(modifier: Modifier = Modifier) {
             modifier = Modifier
                 .width(80.dp)
                 .height(Spacing.md)
-                .clip(RoundedCornerShape(4.dp))
+                .clip(RoundedCornerShape(Spacing.xs))
                 .shimmerEffect()
         )
     }

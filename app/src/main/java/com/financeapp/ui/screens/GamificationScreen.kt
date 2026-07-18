@@ -120,8 +120,7 @@ fun GamificationScreen(
         // Title
         Text(
             text = "Profil & Prestasi",
-            style = MaterialTheme.typography.headlineSmall,
-            fontWeight = FontWeight.Bold,
+            style = MaterialTheme.typography.headlineLarge,
             modifier = Modifier.padding(start = Spacing.md, top = Spacing.md, end = Spacing.md, bottom = Spacing.sm)
         )
 
@@ -274,8 +273,7 @@ private fun AchievementTab(state: com.financeapp.ui.viewmodel.GamificationUiStat
                     Spacer(modifier = Modifier.height(Spacing.sm))
                     Text(
                         text = "$unlockedCount / $totalCount",
-                        style = MaterialTheme.typography.headlineMedium,
-                        fontWeight = FontWeight.Bold
+                        style = MaterialTheme.typography.headlineLarge
                     )
                     Text(
                         text = "Pencapaian Terbuka",
@@ -332,8 +330,7 @@ private fun AchievementTab(state: com.financeapp.ui.viewmodel.GamificationUiStat
 private fun SectionTitle(title: String) {
     Text(
         text = title,
-        style = MaterialTheme.typography.titleMedium,
-        fontWeight = FontWeight.Bold,
+        style = MaterialTheme.typography.titleLarge,
         modifier = Modifier.padding(bottom = Spacing.xs)
     )
 }
@@ -371,7 +368,7 @@ private fun StatItem(icon: ImageVector, value: String, label: String, color: Col
             Icon(icon, contentDescription = "Statistik", tint = color, modifier = Modifier.size(18.dp))
         }
         Spacer(modifier = Modifier.height(6.dp))
-        Text(text = value, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Bold)
+        Text(text = value, style = MaterialTheme.typography.titleMedium)
         Text(text = label, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
 }
@@ -416,7 +413,7 @@ private fun ChallengeCard(challenge: Challenge) {
                 }
             }
             Spacer(modifier = Modifier.height(Spacing.sm))
-            Text(text = challenge.name, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold)
+            Text(text = challenge.name, style = MaterialTheme.typography.titleSmall)
             Spacer(modifier = Modifier.height(6.dp))
             LinearProgressIndicator(
                 progress = progress,
@@ -440,8 +437,7 @@ private fun ChallengeCard(challenge: Challenge) {
                 )
                 Text(
                     text = "+${challenge.xpReward} XP",
-                    style = MaterialTheme.typography.bodySmall,
-                    fontWeight = FontWeight.SemiBold,
+                    style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.financeColors.accent
                 )
             }
@@ -493,7 +489,7 @@ private fun XpHistoryRow(xp: XpHistory, dateFormatter: DateTimeFormatter) {
         )
         Spacer(modifier = Modifier.width(10.dp))
         Column(modifier = Modifier.weight(1f)) {
-            Text(text = sourceLabel, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Medium)
+            Text(text = sourceLabel, style = MaterialTheme.typography.titleSmall)
             Text(
                 text = xp.createdAt.format(dateFormatter),
                 style = MaterialTheme.typography.bodySmall,
@@ -502,8 +498,7 @@ private fun XpHistoryRow(xp: XpHistory, dateFormatter: DateTimeFormatter) {
         }
         Text(
             text = "+${xp.amount} XP",
-            style = MaterialTheme.typography.bodyMedium,
-            fontWeight = FontWeight.SemiBold,
+            style = MaterialTheme.typography.titleSmall,
             color = MaterialTheme.colorScheme.financeColors.accent
         )
     }
