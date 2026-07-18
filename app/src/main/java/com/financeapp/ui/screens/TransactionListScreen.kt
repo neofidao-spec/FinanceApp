@@ -1,12 +1,6 @@
 package com.financeapp.ui.screens
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.shape.RoundedCornerShape
-import com.financeapp.ui.utils.FinanceIcons
-import com.financeapp.ui.components.SwipeableTransactionItem
-
-
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,15 +8,17 @@ import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.clickable
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
@@ -57,9 +53,10 @@ import com.financeapp.data.model.TransactionType
 import com.financeapp.data.model.TransactionWithCategory
 import com.financeapp.ui.components.FilterDialog
 import com.financeapp.ui.components.SearchBar
+import com.financeapp.ui.components.SwipeableTransactionItem
+import com.financeapp.ui.utils.FinanceIcons
 import com.financeapp.ui.utils.FormatterUtil
 import com.financeapp.ui.viewmodel.TransactionViewModel
-import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -71,7 +68,6 @@ fun TransactionListScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
-    val scope = rememberCoroutineScope()
 
     // Show undo snackbar when a transaction is deleted via swipe
     LaunchedEffect(uiState.deletedTransactionId) {
@@ -93,141 +89,142 @@ fun TransactionListScreen(
                 .fillMaxSize()
                 .padding(horizontal = 16.dp)
         ) {
-        // Search Bar
-        SearchBar(
-            query = uiState.searchQuery,
-            onSearchChange = { viewModel.updateSearchQuery(it) },
-            onFilterClick = { viewModel.showFilterDialog() },
-            modifier = Modifier.padding(top = 8.dp)
-        )
+            // Search Bar
+            SearchBar(
+                query = uiState.searchQuery,
+                onSearchChange = { viewModel.updateSearchQuery(it) },
+                onFilterClick = { viewModel.showFilterDialog() },
+                modifier = Modifier.padding(top = 8.dp)
+            )
 
-        // Active filter summary chips
-        if (uiState.activeFilter != null) {
+            // Active filter summary chips
+            if (uiState.activeFilter != null) {
+                Spacer(modifier = Modifier.height(8.dp))
+                FlowRow(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    uiState.activeFilter?.type?.let { type ->
+                        FilterChip(
+                            selected = true,
+                            onClick = { viewModel.clearFilter() },
+                            label = {
+                                Text(
+                                    if (type == TransactionType.INCOME) "Pemasukan" else "Pengeluaran"
+                                )
+                            },
+                            trailingIcon = {
+                                Icon(
+                                    imageVector = Icons.Filled.Close,
+                                    contentDescription = "Hapus filter",
+                                    modifier = Modifier.size(16.dp)
+                                )
+                            }
+                        )
+                    }
+                    uiState.activeFilter?.startDate?.let {
+                        FilterChip(
+                            selected = true,
+                            onClick = {},
+                            label = { Text("Dari: ${it.toLocalDate()}") }
+                        )
+                    }
+                    uiState.activeFilter?.endDate?.let {
+                        FilterChip(
+                            selected = true,
+                            onClick = {},
+                            label = { Text("Sampai: ${it.toLocalDate()}") }
+                        )
+                    }
+                    uiState.activeFilter?.minAmount?.let {
+                        FilterChip(
+                            selected = true,
+                            onClick = {},
+                            label = { Text("Min: ${FormatterUtil.formatCurrency(it)}") }
+                        )
+                    }
+                    uiState.activeFilter?.maxAmount?.let {
+                        FilterChip(
+                            selected = true,
+                            onClick = {},
+                            label = { Text("Max: ${FormatterUtil.formatCurrency(it)}") }
+                        )
+                    }
+                }
+            }
+
             Spacer(modifier = Modifier.height(8.dp))
-            FlowRow(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
-            ) {
-                uiState.activeFilter?.type?.let { type ->
-                    FilterChip(
-                        selected = true,
-                        onClick = { viewModel.clearFilter() },
-                        label = {
+
+            // Content
+            if (uiState.isLoading) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
+            } else if (uiState.filteredTransactions.isEmpty()) {
+                EmptyTransactionState(
+                    isFiltered = uiState.searchQuery.isNotBlank() || uiState.activeFilter != null
+                )
+            } else {
+                val groupedTransactions = groupTransactionsByDate(uiState.filteredTransactions.take(uiState.visibleCount))
+                val listState = rememberLazyListState()
+
+                // Infinite scroll: load more when reaching the last visible item
+                val shouldLoadMore by remember {
+                    derivedStateOf {
+                        val lastVisibleItem = listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
+                        val totalItems = listState.layoutInfo.totalItemsCount
+                        lastVisibleItem >= totalItems - 3 && uiState.hasMore && !uiState.isLoadingMore
+                    }
+                }
+                LaunchedEffect(shouldLoadMore) {
+                    if (shouldLoadMore) viewModel.loadMore()
+                }
+
+                LazyColumn(
+                    state = listState,
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    groupedTransactions.forEach { (dateLabel, transactions) ->
+                        item {
                             Text(
-                                if (type == TransactionType.INCOME) "Pemasukan" else "Pengeluaran"
-                            )
-                        },
-                        trailingIcon = {
-                            Icon(
-                                imageVector = Icons.Filled.Close,
-                                contentDescription = "Hapus filter",
-                                modifier = Modifier.size(16.dp)
+                                text = dateLabel,
+                                style = MaterialTheme.typography.titleSmall,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.Gray,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 8.dp)
                             )
                         }
-                    )
-                }
-                uiState.activeFilter?.startDate?.let {
-                    FilterChip(
-                        selected = true,
-                        onClick = {},
-                        label = { Text("Dari: ${it.toLocalDate()}") }
-                    )
-                }
-                uiState.activeFilter?.endDate?.let {
-                    FilterChip(
-                        selected = true,
-                        onClick = {},
-                        label = { Text("Sampai: ${it.toLocalDate()}") }
-                    )
-                }
-                uiState.activeFilter?.minAmount?.let {
-                    FilterChip(
-                        selected = true,
-                        onClick = {},
-                        label = { Text("Min: ${FormatterUtil.formatCurrency(it)}") }
-                    )
-                }
-                uiState.activeFilter?.maxAmount?.let {
-                    FilterChip(
-                        selected = true,
-                        onClick = {},
-                        label = { Text("Max: ${FormatterUtil.formatCurrency(it)}") }
-                    )
-                }
-            }
-        }
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        // Content
-        if (uiState.isLoading) {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator()
-            }
-        } else if (uiState.filteredTransactions.isEmpty()) {
-            EmptyTransactionState(
-                isFiltered = uiState.searchQuery.isNotBlank() || uiState.activeFilter != null
-            )
-        } else {
-            val groupedTransactions = groupTransactionsByDate(uiState.filteredTransactions.take(uiState.visibleCount))
-            val listState = rememberLazyListState()
-
-            // Infinite scroll: load more when reaching the last visible item
-            val shouldLoadMore by remember {
-                derivedStateOf {
-                    val lastVisibleItem = listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
-                    val totalItems = listState.layoutInfo.totalItemsCount
-                    lastVisibleItem >= totalItems - 3 && uiState.hasMore && !uiState.isLoadingMore
-                }
-            }
-            LaunchedEffect(shouldLoadMore) {
-                if (shouldLoadMore) viewModel.loadMore()
-            }
-
-            LazyColumn(
-                state = listState,
-                modifier = Modifier.fillMaxSize()
-            ) {
-                groupedTransactions.forEach { (dateLabel, transactions) ->
-                    item {
-                        Text(
-                            text = dateLabel,
-                            style = MaterialTheme.typography.titleSmall,
-                            fontWeight = FontWeight.Bold,
-                            color = Color.Gray,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 8.dp)
-                        )
+                        items(transactions) { txn ->
+                            SwipeableTransactionItem(
+                                transaction = txn,
+                                onSwipeEdit = { onTransactionClick(txn.transaction.id) },
+                                onSwipeDelete = { viewModel.swipeDeleteTransaction(txn) },
+                                onClick = { onTransactionClick(txn.transaction.id) }
+                            )
+                        }
+                        item {
+                            Divider(
+                                modifier = Modifier.padding(vertical = 4.dp),
+                                color = MaterialTheme.colorScheme.outlineVariant
+                            )
+                        }
                     }
-                    items(transactions) { txn ->
-                        SwipeableTransactionItem(
-                            transaction = txn,
-                            onSwipeEdit = { onTransactionClick(txn.transaction.id) },
-                            onSwipeDelete = { viewModel.swipeDeleteTransaction(txn) },
-                            onClick = { onTransactionClick(txn.transaction.id) }
-                        )
-                    }
-                    item {
-                        Divider(
-                            modifier = Modifier.padding(vertical = 4.dp),
-                            color = MaterialTheme.colorScheme.outlineVariant
-                        )
-                    }
-                }
-                // Loading more indicator
-                if (uiState.isLoadingMore) {
-                    item {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(16.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            CircularProgressIndicator(modifier = Modifier.size(24.dp))
+                    // Loading more indicator
+                    if (uiState.isLoadingMore) {
+                        item {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(16.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                CircularProgressIndicator(modifier = Modifier.size(24.dp))
+                            }
                         }
                     }
                 }
@@ -253,81 +250,6 @@ fun TransactionListScreen(
             },
             onDismiss = { viewModel.hideFilterDialog() }
         )
-    }
-}
-
-@Composable
-private fun TransactionCard(
-    transaction: TransactionWithCategory,
-    onClick: () -> Unit
-) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 4.dp)
-            .clickable { onClick() },
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            // Category icon
-            val icon = FinanceIcons.getIcon(transaction.category.name)
-            val iconColor = FinanceIcons.getColorFromHex(transaction.category.color)
-            Box(
-                modifier = Modifier
-                    .size(40.dp)
-                    .background(
-                        color = iconColor.copy(alpha = 0.15f),
-                        shape = RoundedCornerShape(10.dp)
-                    ),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    imageVector = icon,
-                    contentDescription = null,
-                    tint = iconColor,
-                    modifier = Modifier.size(20.dp)
-                )
-            }
-            Spacer(modifier = Modifier.width(12.dp))
-
-            // Category name + description
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = transaction.category.name,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 14.sp
-                )
-                if (transaction.transaction.description.isNotBlank()) {
-                    Text(
-                        text = transaction.transaction.description,
-                        fontSize = 12.sp,
-                        color = Color.Gray
-                    )
-                }
-            }
-
-            // Amount + time
-            Column(horizontalAlignment = Alignment.End) {
-                val amountPrefix = if (transaction.transaction.type == TransactionType.INCOME) "+" else "-"
-                Text(
-                    text = "$amountPrefix ${FormatterUtil.formatCurrency(transaction.transaction.amount)}",
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 14.sp,
-                    color = if (transaction.transaction.type == TransactionType.INCOME)
-                        Color(0xFF4CAF50) else Color(0xFFFF5722)
-                )
-                Text(
-                    text = transaction.transaction.date.format(DateTimeFormatter.ofPattern("HH:mm")),
-                    fontSize = 12.sp,
-                    color = Color.Gray
-                )
-            }
-        }
     }
 }
 
