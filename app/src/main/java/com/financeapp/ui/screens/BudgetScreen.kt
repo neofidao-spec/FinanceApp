@@ -258,34 +258,25 @@ private fun BudgetSummaryCard(summary: com.financeapp.data.model.BudgetSummary) 
             .padding(horizontal = Spacing.md, vertical = Spacing.sm),
         shape = MaterialTheme.shapes.large,
         colors = CardDefaults.cardColors(
-            containerColor = Color.Transparent
+            containerColor = MaterialTheme.colorScheme.surface
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(
-                    brush = Brush.linearGradient(
-                        colors = listOf(
-                            MaterialTheme.colorScheme.primary,
-                            MaterialTheme.colorScheme.primary.copy(alpha = 0.85f),
-                            MaterialTheme.colorScheme.primary.copy(alpha = 0.7f)
-                        )
-                    )
-                )
                 .padding(Spacing.lg)
         ) {
             Column {
                 Text(
                     text = "Total Budget",
-                    color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     style = MaterialTheme.typography.bodyMedium
                 )
                 Spacer(modifier = Modifier.height(Spacing.xs))
                 Text(
                     text = FormatterUtil.formatCurrency(summary.totalBudget),
-                    color = MaterialTheme.colorScheme.onPrimary,
+                    color = MaterialTheme.colorScheme.onSurface,
                     style = MaterialTheme.typography.displayMedium,
                     fontWeight = FontWeight.Bold
                 )
@@ -298,19 +289,19 @@ private fun BudgetSummaryCard(summary: com.financeapp.data.model.BudgetSummary) 
                     Column {
                         Text(
                             text = "Terpakai",
-                            color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f),
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                             style = MaterialTheme.typography.bodySmall
                         )
                         Text(
                             text = FormatterUtil.formatCurrency(summary.totalSpent),
-                            color = MaterialTheme.colorScheme.onPrimary,
+                            color = MaterialTheme.colorScheme.onSurface,
                             style = MaterialTheme.typography.titleMedium
                         )
                     }
                     Column(horizontalAlignment = Alignment.End) {
                         Text(
                             text = "Sisa",
-                            color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f),
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                             style = MaterialTheme.typography.bodySmall
                         )
                         Text(
@@ -332,17 +323,21 @@ private fun BudgetSummaryCard(summary: com.financeapp.data.model.BudgetSummary) 
                     progress = { progress },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(Spacing.sm)
+                        .height(12.dp)
                         .clip(MaterialTheme.shapes.extraSmall),
-                    color = MaterialTheme.colorScheme.onPrimary,
-                    trackColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.3f)
+                    color = when {
+                        progress > 0.8f -> MaterialTheme.colorScheme.financeColors.expense
+                        progress > 0.5f -> MaterialTheme.colorScheme.financeColors.warning
+                        else -> MaterialTheme.colorScheme.financeColors.income
+                    },
+                    trackColor = MaterialTheme.colorScheme.surfaceVariant
                 )
                 
                 Spacer(modifier = Modifier.height(Spacing.sm))
                 
                 Text(
                     text = "${String.format("%.0f", progress * 100)}% terpakai",
-                    color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     style = MaterialTheme.typography.bodySmall
                 )
             }
@@ -364,7 +359,7 @@ private fun QuickStatsRow(summary: com.financeapp.data.model.BudgetSummary) {
             label = "Budget",
             value = "${summary.budgets.size}",
             icon = Icons.Filled.Savings,
-            color = MaterialTheme.colorScheme.primaryContainer
+            color = MaterialTheme.colorScheme.surface
         )
         
         // Over budget count
@@ -373,7 +368,7 @@ private fun QuickStatsRow(summary: com.financeapp.data.model.BudgetSummary) {
             label = "Over Budget",
             value = "${summary.exceedingBudgets.size}",
             icon = Icons.Filled.Warning,
-            color = if (summary.exceedingBudgets.isNotEmpty()) MaterialTheme.colorScheme.financeColors.warningContainer else MaterialTheme.colorScheme.surfaceVariant
+            color = MaterialTheme.colorScheme.surface
         )
         
         // Health
@@ -388,11 +383,7 @@ private fun QuickStatsRow(summary: com.financeapp.data.model.BudgetSummary) {
             label = "Kesehatan",
             value = "${String.format("%.0f", summary.budgetHealth)}%",
             icon = healthIcon,
-            color = when {
-                summary.budgetHealth > 70 -> MaterialTheme.colorScheme.financeColors.incomeContainer
-                summary.budgetHealth > 40 -> MaterialTheme.colorScheme.financeColors.warningContainer
-                else -> MaterialTheme.colorScheme.financeColors.expenseContainer
-            }
+            color = MaterialTheme.colorScheme.surface
         )
     }
 }
@@ -539,19 +530,35 @@ private fun BudgetItem(
                 label = "budget_progress"
             )
             
-            LinearProgressIndicator(
-                progress = { animatedProgress },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(Spacing.sm)
-                    .clip(MaterialTheme.shapes.extraSmall),
-                color = when {
-                    budget.isExceeded() -> MaterialTheme.colorScheme.financeColors.expense
-                    budget.isAlertThreshold() -> MaterialTheme.colorScheme.financeColors.warning
-                    else -> MaterialTheme.colorScheme.financeColors.income
-                },
-                trackColor = MaterialTheme.colorScheme.surfaceVariant
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(Spacing.sm)
+            ) {
+                LinearProgressIndicator(
+                    progress = { animatedProgress },
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(12.dp)
+                        .clip(MaterialTheme.shapes.extraSmall),
+                    color = when {
+                        animatedProgress > 0.8f -> MaterialTheme.colorScheme.financeColors.expense
+                        animatedProgress > 0.5f -> MaterialTheme.colorScheme.financeColors.warning
+                        else -> MaterialTheme.colorScheme.financeColors.income
+                    },
+                    trackColor = MaterialTheme.colorScheme.surfaceVariant
+                )
+                Text(
+                    text = "${String.format("%.0f", budget.percentage)}%",
+                    style = MaterialTheme.typography.labelMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = when {
+                        animatedProgress > 0.8f -> MaterialTheme.colorScheme.financeColors.expense
+                        animatedProgress > 0.5f -> MaterialTheme.colorScheme.financeColors.warning
+                        else -> MaterialTheme.colorScheme.financeColors.income
+                    }
+                )
+            }
             
             Spacer(modifier = Modifier.height(Spacing.sm))
             
@@ -640,8 +647,8 @@ private fun EmptyBudgetState() {
         Icon(
             imageVector = Icons.Filled.Savings,
             contentDescription = "Belum ada budget",
-            modifier = Modifier.size(Spacing.iconXl),
-            tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
+            modifier = Modifier.size(48.dp),
+            tint = MaterialTheme.colorScheme.tertiary
         )
         Spacer(modifier = Modifier.height(Spacing.md))
         Text(
@@ -649,10 +656,10 @@ private fun EmptyBudgetState() {
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold
         )
-        Spacer(modifier = Modifier.height(Spacing.sm))
+        Spacer(modifier = Modifier.height(Spacing.xs))
         Text(
             text = "Buat budget untuk mengontrol pengeluaranmu",
-            style = MaterialTheme.typography.bodyMedium,
+            style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center
         )

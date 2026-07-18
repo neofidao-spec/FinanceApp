@@ -503,10 +503,10 @@ private fun EmptyTransactionsState() {
             Icon(
                 imageVector = Icons.Filled.Savings,
                 contentDescription = "Belum ada transaksi",
-                modifier = Modifier.size(Spacing.iconLg),
-                tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
+                modifier = Modifier.size(48.dp),
+                tint = MaterialTheme.colorScheme.tertiary
             )
-            Spacer(modifier = Modifier.height(Spacing.sm))
+            Spacer(modifier = Modifier.height(Spacing.md))
             Text(
                 text = "Belum ada transaksi",
                 style = MaterialTheme.typography.titleMedium

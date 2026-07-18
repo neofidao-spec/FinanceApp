@@ -2,6 +2,7 @@ package com.financeapp.ui.screens
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,6 +17,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.Receipt
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.TrendingUp
 import androidx.compose.material3.Card
@@ -35,6 +37,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -132,32 +135,42 @@ fun ReportScreen(viewModel: ReportViewModel = hiltViewModel()) {
         item {
             val report = uiState.monthlyReport
             if (report != null) {
-                Card(modifier = Modifier.fillMaxWidth(), elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)) {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+                ) {
                     Column(modifier = Modifier.padding(Spacing.md)) {
                         Text("Ringkasan ${report.month}", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.bodyLarge)
-                        Spacer(modifier = Modifier.height(Spacing.smd))
-
+                        Spacer(modifier = Modifier.height(Spacing.md))
+                        androidx.compose.material3.HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                        Spacer(modifier = Modifier.height(Spacing.md))
                         Row(modifier = Modifier.fillMaxWidth()) {
                             Column(modifier = Modifier.weight(1f)) {
-                                Text("Pemasukan", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                Text("Pemasukan", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant, fontWeight = FontWeight.SemiBold)
+                                Spacer(modifier = Modifier.height(Spacing.xs))
                                 Text(
                                     FormatterUtil.formatCurrency(report.income),
                                     fontWeight = FontWeight.Bold,
+                                    style = MaterialTheme.typography.titleMedium,
                                     color = MaterialTheme.colorScheme.financeColors.income
                                 )
                             }
                             Column(modifier = Modifier.weight(1f)) {
-                                Text("Pengeluaran", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                Text("Pengeluaran", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant, fontWeight = FontWeight.SemiBold)
+                                Spacer(modifier = Modifier.height(Spacing.xs))
                                 Text(
                                     FormatterUtil.formatCurrency(report.expense),
                                     fontWeight = FontWeight.Bold,
+                                    style = MaterialTheme.typography.titleMedium,
                                     color = MaterialTheme.colorScheme.financeColors.expense
                                 )
                             }
                         }
-
-                        Spacer(modifier = Modifier.height(Spacing.smd))
-                        Text("Saldo", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Spacer(modifier = Modifier.height(Spacing.md))
+                        androidx.compose.material3.HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                        Spacer(modifier = Modifier.height(Spacing.md))
+                        Text("Saldo", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant, fontWeight = FontWeight.SemiBold)
                         Text(
                             FormatterUtil.formatCurrency(report.balance),
                             style = MaterialTheme.typography.titleLarge,
@@ -175,23 +188,30 @@ fun ReportScreen(viewModel: ReportViewModel = hiltViewModel()) {
                 ) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Icon(
-                            imageVector = Icons.Default.TrendingUp,
+                            imageVector = Icons.Filled.Receipt,
                             contentDescription = "Tidak ada data",
-                            modifier = Modifier.size(Spacing.iconXl),
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f)
+                            modifier = Modifier.size(48.dp),
+                            tint = MaterialTheme.colorScheme.tertiary
                         )
                         Spacer(modifier = Modifier.height(Spacing.md))
                         Text(
                             "Belum Ada Data",
                             style = MaterialTheme.typography.titleMedium
                         )
-                        Spacer(modifier = Modifier.height(Spacing.sm))
+                        Spacer(modifier = Modifier.height(Spacing.xs))
                         Text(
                             "Tidak ada transaksi di bulan ini",
-                            style = MaterialTheme.typography.bodyMedium,
+                            style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             textAlign = TextAlign.Center
                         )
+                        Spacer(modifier = Modifier.height(Spacing.md))
+                        Button(
+                            onClick = { },
+                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                        ) {
+                            Text("Mulai Catat Transaksi")
+                        }
                     }
                 }
             }
@@ -212,7 +232,8 @@ fun ReportScreen(viewModel: ReportViewModel = hiltViewModel()) {
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = Spacing.xs),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
                 ) {
                     Row(
                         modifier = Modifier
@@ -231,18 +252,34 @@ fun ReportScreen(viewModel: ReportViewModel = hiltViewModel()) {
                         Column(modifier = Modifier.weight(1f)) {
                             Text(summary.category.name, fontWeight = FontWeight.Bold)
                             Spacer(modifier = Modifier.height(Spacing.xs))
-                            LinearProgressIndicator(
-                                progress = (summary.percentage / 100f).coerceIn(0f, 1f),
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(6.dp)
-                                    .clip(RoundedCornerShape(Spacing.xs)),
-                                color = try {
-                                    Color(android.graphics.Color.parseColor(summary.category.color))
-                                } catch (e: Exception) {
-                                    MaterialTheme.colorScheme.primary
-                                }
-                            )
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(Spacing.sm)
+                            ) {
+                                LinearProgressIndicator(
+                                    progress = (summary.percentage / 100f).coerceIn(0f, 1f),
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .height(12.dp)
+                                        .clip(RoundedCornerShape(Spacing.xs)),
+                                    color = when {
+                                        summary.percentage > 80 -> MaterialTheme.colorScheme.financeColors.expense
+                                        summary.percentage > 50 -> MaterialTheme.colorScheme.financeColors.warning
+                                        else -> MaterialTheme.colorScheme.financeColors.income
+                                    }
+                                )
+                                Text(
+                                    text = "${String.format("%.0f", summary.percentage)}%",
+                                    style = MaterialTheme.typography.labelMedium,
+                                    fontWeight = FontWeight.Bold,
+                                    color = when {
+                                        summary.percentage > 80 -> MaterialTheme.colorScheme.financeColors.expense
+                                        summary.percentage > 50 -> MaterialTheme.colorScheme.financeColors.warning
+                                        else -> MaterialTheme.colorScheme.financeColors.income
+                                    }
+                                )
+                            }
                         }
 
                         Spacer(modifier = Modifier.width(Spacing.smd))

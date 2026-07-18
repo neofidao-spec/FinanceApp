@@ -77,19 +77,19 @@ private val onboardingPages = listOf(
         title = "Kelola Keuanganmu",
         subtitle = "Pantau pemasukan dan pengeluaran dengan mudah. Atur keuanganmu dengan lebih bijak.",
         icon = Icons.Filled.Money,
-        color = FinancePalette.ForestGreen
+        color = FinancePalette.Success
     ),
     OnboardingPage(
         title = "Analisa Pengeluaran",
         subtitle = "Lihat grafik dan laporan untuk memahami pola pengeluaranmu.",
         icon = Icons.Filled.BarChart,
-        color = FinancePalette.Navy
+        color = FinancePalette.Primary
     ),
     OnboardingPage(
         title = "Capai Tujuan Finansial",
         subtitle = "Atur budget dan pantau progress menuju kebebasan finansial.",
         icon = Icons.Filled.Savings,
-        color = FinancePalette.Copper
+        color = FinancePalette.Accent
     )
 )
 

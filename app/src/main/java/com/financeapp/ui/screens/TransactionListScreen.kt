@@ -302,8 +302,8 @@ private fun EmptyTransactionState(
             Icon(
                 imageVector = Icons.Default.Search,
                 contentDescription = "Tidak ada transaksi",
-                modifier = Modifier.size(Spacing.iconXl),
-                tint = MaterialTheme.colorScheme.onSurfaceVariant
+                modifier = Modifier.size(48.dp),
+                tint = MaterialTheme.colorScheme.tertiary
             )
             Spacer(modifier = Modifier.height(Spacing.md))
             Text(
@@ -311,7 +311,7 @@ private fun EmptyTransactionState(
                 style = MaterialTheme.typography.titleMedium,
                 textAlign = TextAlign.Center
             )
-            Spacer(modifier = Modifier.height(Spacing.sm))
+            Spacer(modifier = Modifier.height(Spacing.xs))
             Text(
                 text = if (isFiltered) "Coba ubah filter atau kata kunci pencarian"
                 else "Mulai dengan menambahkan transaksi baru",

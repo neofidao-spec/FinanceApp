@@ -307,11 +307,26 @@ private fun AchievementTab(state: com.financeapp.ui.viewmodel.GamificationUiStat
                         .padding(Spacing.xl),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text(
-                        text = "Belum ada pencapaian",
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Icon(
+                            imageVector = Icons.Filled.EmojiEvents,
+                            contentDescription = "Belum ada pencapaian",
+                            modifier = Modifier.size(48.dp),
+                            tint = MaterialTheme.colorScheme.tertiary
+                        )
+                        Spacer(modifier = Modifier.height(Spacing.md))
+                        Text(
+                            text = "Belum Ada Pencapaian",
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                        Spacer(modifier = Modifier.height(Spacing.xs))
+                        Text(
+                            text = "Mulai catat transaksi untuk membuka pencapaian",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            textAlign = TextAlign.Center
+                        )
+                    }
                 }
             }
         }
