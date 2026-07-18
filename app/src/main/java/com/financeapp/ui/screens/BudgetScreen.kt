@@ -79,6 +79,8 @@ import com.financeapp.ui.utils.FormatterUtil
 import com.financeapp.ui.viewmodel.BudgetViewModel
 import com.financeapp.ui.theme.financeColors
 import com.financeapp.ui.theme.Spacing
+import androidx.compose.ui.res.stringResource
+import com.financeapp.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -106,7 +108,7 @@ fun BudgetScreen(viewModel: BudgetViewModel = hiltViewModel()) {
                 containerColor = MaterialTheme.colorScheme.primary,
                 shape = CircleShape
             ) {
-                Icon(Icons.Filled.Add, contentDescription = "Tambah Budget")
+                Icon(Icons.Filled.Add, contentDescription = stringResource(R.string.budget_add_title))
             }
         }
     ) { innerPadding ->
@@ -129,13 +131,13 @@ fun BudgetScreen(viewModel: BudgetViewModel = hiltViewModel()) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Icon(
                         imageVector = Icons.Filled.Error,
-                        contentDescription = "Kesalahan",
+                        contentDescription = stringResource(R.string.common_error_occurred),
                         modifier = Modifier.size(Spacing.iconXl),
                         tint = MaterialTheme.colorScheme.error
                     )
                     Spacer(modifier = Modifier.height(Spacing.md))
                     Text(
-                        text = uiState.errorMessage ?: "Terjadi kesalahan",
+                        text = uiState.errorMessage ?: stringResource(R.string.common_error_occurred),
                         color = MaterialTheme.colorScheme.error
                     )
                     Spacer(modifier = Modifier.height(Spacing.md))
@@ -143,8 +145,8 @@ fun BudgetScreen(viewModel: BudgetViewModel = hiltViewModel()) {
                         onClick = { viewModel.retry() },
                         colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
                     ) {
-                        Icon(Icons.Filled.Refresh, contentDescription = "Muat ulang", modifier = Modifier.padding(end = Spacing.sm))
-                        Text("Coba Lagi")
+                        Icon(Icons.Filled.Refresh, contentDescription = stringResource(R.string.common_retry), modifier = Modifier.padding(end = Spacing.sm))
+                        Text(stringResource(R.string.common_retry))
                     }
                 }
             }
@@ -184,7 +186,7 @@ fun BudgetScreen(viewModel: BudgetViewModel = hiltViewModel()) {
             item {
                 Spacer(modifier = Modifier.height(Spacing.md))
                 Text(
-                    text = "Budget Saya",
+                    text = stringResource(R.string.budget_my_budgets),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(horizontal = Spacing.md)
@@ -230,7 +232,7 @@ private fun MonthSelector(
         IconButton(onClick = onPrevious) {
             Icon(
                 Icons.Filled.KeyboardArrowLeft,
-                contentDescription = "Bulan Sebelumnya",
+                contentDescription = stringResource(R.string.budget_previous_month),
                 tint = MaterialTheme.colorScheme.onSurface
             )
         }
@@ -242,7 +244,7 @@ private fun MonthSelector(
         IconButton(onClick = onNext) {
             Icon(
                 Icons.Filled.KeyboardArrowRight,
-                contentDescription = "Bulan Berikutnya",
+                contentDescription = stringResource(R.string.budget_next_month),
                 tint = MaterialTheme.colorScheme.onSurface
             )
         }
@@ -268,7 +270,7 @@ private fun BudgetSummaryCard(summary: com.financeapp.data.model.BudgetSummary) 
         ) {
             Column {
                 Text(
-                    text = "Total Budget",
+                    text = stringResource(R.string.budget_total),
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     style = MaterialTheme.typography.bodyMedium
                 )
@@ -287,7 +289,7 @@ private fun BudgetSummaryCard(summary: com.financeapp.data.model.BudgetSummary) 
                 ) {
                     Column {
                         Text(
-                            text = "Terpakai",
+                            text = stringResource(R.string.budget_used),
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             style = MaterialTheme.typography.bodySmall
                         )
@@ -299,7 +301,7 @@ private fun BudgetSummaryCard(summary: com.financeapp.data.model.BudgetSummary) 
                     }
                     Column(horizontalAlignment = Alignment.End) {
                         Text(
-                            text = "Sisa",
+                            text = stringResource(R.string.budget_remaining_label),
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             style = MaterialTheme.typography.bodySmall
                         )
@@ -355,7 +357,7 @@ private fun QuickStatsRow(summary: com.financeapp.data.model.BudgetSummary) {
         // Budget count
         StatCard(
             modifier = Modifier.weight(1f),
-            label = "Budget",
+            label = stringResource(R.string.budget_count),
             value = "${summary.budgets.size}",
             icon = Icons.Filled.Savings,
             color = MaterialTheme.colorScheme.surface
@@ -364,7 +366,7 @@ private fun QuickStatsRow(summary: com.financeapp.data.model.BudgetSummary) {
         // Over budget count
         StatCard(
             modifier = Modifier.weight(1f),
-            label = "Over Budget",
+            label = stringResource(R.string.budget_over_budget),
             value = "${summary.exceedingBudgets.size}",
             icon = Icons.Filled.Warning,
             color = MaterialTheme.colorScheme.surface
@@ -379,7 +381,7 @@ private fun QuickStatsRow(summary: com.financeapp.data.model.BudgetSummary) {
         
         StatCard(
             modifier = Modifier.weight(1f),
-            label = "Kesehatan",
+            label = stringResource(R.string.budget_health),
             value = "${String.format("%.0f", summary.budgetHealth)}%",
             icon = healthIcon,
             color = MaterialTheme.colorScheme.surface
@@ -409,7 +411,7 @@ private fun StatCard(
         ) {
             Icon(
                 imageVector = icon,
-                contentDescription = "Ikon kategori",
+                contentDescription = stringResource(R.string.budget_category_icon),
                 modifier = Modifier.size(Spacing.iconXs),
                 tint = MaterialTheme.colorScheme.onSurface
             )
@@ -495,7 +497,7 @@ private fun BudgetItem(
                 IconButton(onClick = { showDeleteConfirm = true }) {
                     Icon(
                         Icons.Filled.Delete,
-                        contentDescription = "Hapus",
+                        contentDescription = stringResource(R.string.common_delete),
                         tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
                     )
                 }
@@ -575,9 +577,9 @@ private fun BudgetItem(
                             else -> Icons.Filled.CheckCircle
                         },
                         contentDescription = when {
-                            budget.isExceeded() -> "Melebihi batas"
-                            budget.isAlertThreshold() -> "Mendekati batas"
-                            else -> "Aman"
+                            budget.isExceeded() -> stringResource(R.string.budget_exceeded_cd)
+                            budget.isAlertThreshold() -> stringResource(R.string.budget_approaching_limit)
+                            else -> stringResource(R.string.budget_safe)
                         },
                         modifier = Modifier.size(14.dp),
                         tint = when {
@@ -589,9 +591,9 @@ private fun BudgetItem(
                     Spacer(modifier = Modifier.width(Spacing.xs))
                     Text(
                         text = when {
-                            budget.isExceeded() -> "Melebihi batas!"
-                            budget.isAlertThreshold() -> "Mendekati batas"
-                            else -> "Aman"
+                            budget.isExceeded() -> stringResource(R.string.budget_exceeded)
+                            budget.isAlertThreshold() -> stringResource(R.string.budget_approaching_limit)
+                            else -> stringResource(R.string.budget_safe)
                         },
                         style = MaterialTheme.typography.labelMedium,
                         color = when {
@@ -613,7 +615,7 @@ private fun BudgetItem(
     if (showDeleteConfirm) {
         AlertDialog(
             onDismissRequest = { showDeleteConfirm = false },
-            title = { Text("Hapus Budget") },
+            title = { Text(stringResource(R.string.budget_delete_title)) },
             text = { Text("Yakin ingin menghapus budget untuk ${budget.category.name}?") },
             confirmButton = {
                 Button(
@@ -623,12 +625,12 @@ private fun BudgetItem(
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.financeColors.expense)
                 ) {
-                    Text("Hapus")
+                    Text(stringResource(R.string.common_delete))
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showDeleteConfirm = false }) {
-                    Text("Batal")
+                    Text(stringResource(R.string.common_cancel))
                 }
             }
         )
@@ -645,26 +647,26 @@ private fun EmptyBudgetState(onAdd: () -> Unit = {}) {
     ) {
         Icon(
             imageVector = Icons.Filled.Savings,
-            contentDescription = "Belum ada budget",
+            contentDescription = stringResource(R.string.budget_no_budget_cd),
             modifier = Modifier.size(48.dp),
             tint = MaterialTheme.colorScheme.tertiary
         )
         Spacer(modifier = Modifier.height(Spacing.md))
         Text(
-            text = "Belum Ada Budget",
+            text = stringResource(R.string.budget_no_budget),
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold
         )
         Spacer(modifier = Modifier.height(Spacing.xs))
         Text(
-            text = "Buat budget untuk mengontrol pengeluaranmu",
+            text = stringResource(R.string.budget_no_budget_hint),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center
         )
         Spacer(modifier = Modifier.height(Spacing.md))
         Button(onClick = onAdd) {
-            Text("Buat Budget")
+            Text(stringResource(R.string.budget_create))
         }
     }
 }
@@ -682,7 +684,7 @@ private fun AddBudgetDialog(viewModel: BudgetViewModel) {
 
     AlertDialog(
         onDismissRequest = { viewModel.hideAddDialog() },
-        title = { Text("Tambah Budget", fontWeight = FontWeight.Bold) },
+        title = { Text(stringResource(R.string.budget_add_title), fontWeight = FontWeight.Bold) },
         text = {
             Column {
                 // Category dropdown
@@ -695,7 +697,7 @@ private fun AddBudgetDialog(viewModel: BudgetViewModel) {
                         value = selectedCategory?.let { "${it.name}" } ?: "",
                         onValueChange = {},
                         readOnly = true,
-                        label = { Text("Kategori") },
+                        label = { Text(stringResource(R.string.budget_category)) },
                         trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
                         modifier = Modifier
                             .fillMaxWidth()
@@ -723,7 +725,7 @@ private fun AddBudgetDialog(viewModel: BudgetViewModel) {
                 OutlinedTextField(
                     value = uiState.addMonthlyLimit,
                     onValueChange = { viewModel.updateAddMonthlyLimit(it) },
-                    label = { Text("Batas Bulanan (Rp)") },
+                    label = { Text(stringResource(R.string.budget_monthly_limit)) },
                     prefix = { Text("Rp ") },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
@@ -735,7 +737,7 @@ private fun AddBudgetDialog(viewModel: BudgetViewModel) {
                 OutlinedTextField(
                     value = uiState.addDescription,
                     onValueChange = { viewModel.updateAddDescription(it) },
-                    label = { Text("Deskripsi (opsional)") },
+                    label = { Text(stringResource(R.string.budget_description_optional)) },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                     shape = MaterialTheme.shapes.small
@@ -746,7 +748,7 @@ private fun AddBudgetDialog(viewModel: BudgetViewModel) {
                 OutlinedTextField(
                     value = uiState.addAlertThreshold,
                     onValueChange = { viewModel.updateAddAlertThreshold(it) },
-                    label = { Text("Alert Threshold (%)") },
+                    label = { Text(stringResource(R.string.budget_alert_threshold)) },
                     suffix = { Text("%") },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
@@ -759,12 +761,12 @@ private fun AddBudgetDialog(viewModel: BudgetViewModel) {
                 onClick = { focusManager.clearFocus(); viewModel.addBudget() },
                 shape = MaterialTheme.shapes.small
             ) {
-                Text("Simpan")
+                Text(stringResource(R.string.common_save))
             }
         },
         dismissButton = {
             TextButton(onClick = { viewModel.hideAddDialog() }) {
-                Text("Batal")
+                Text(stringResource(R.string.common_cancel))
             }
         }
     )
