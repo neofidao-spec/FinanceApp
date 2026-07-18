@@ -168,6 +168,11 @@ class BudgetViewModel @Inject constructor(
         loadBudgets()
     }
 
+    fun retry() {
+        _uiState.value = _uiState.value.copy(errorMessage = null)
+        loadBudgets()
+    }
+
     private fun loadBudgets() {
         viewModelScope.launch {
             try {

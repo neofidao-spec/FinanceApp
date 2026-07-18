@@ -139,4 +139,9 @@ class ReportViewModel @Inject constructor(
         val newMonth = _uiState.value.currentMonth.plusMonths(1)
         selectMonth(newMonth)
     }
+
+    fun retry() {
+        _uiState.value = _uiState.value.copy(errorMessage = null)
+        viewModelScope.launch { loadMonthlyReport() }
+    }
 }

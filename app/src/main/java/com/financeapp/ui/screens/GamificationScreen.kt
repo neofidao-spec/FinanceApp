@@ -92,7 +92,7 @@ fun GamificationScreen(
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Icon(
                     imageVector = Icons.Filled.TrendingUp,
-                    contentDescription = "Error memuat data",
+                    contentDescription = "Kesalahan memuat data",
                     modifier = Modifier.size(64.dp),
                     tint = MaterialTheme.colorScheme.error
                 )
