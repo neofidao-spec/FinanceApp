@@ -24,23 +24,16 @@ jobs:
 
     - name: Build Debug APK
       run: |
-        echo "::group::Gradle Build"
         ./gradlew assembleDebug --no-daemon 2>&1 | tee build.log
         EXIT_CODE=${PIPESTATUS[0]}
         if [ $EXIT_CODE -ne 0 ]; then
-          echo "::error::Gradle build FAILED (exit $EXIT_CODE)"
-          echo "=== KOTLIN COMPILE ERRORS ==="
-          grep -E "^e:|error: " build.log | head -20
-          echo "=== DAGGER ERRORS ==="
-          grep -E "Duplicate|Dagger|MissingBinding" build.log | head -10
-          echo "=== WHAT WENT WRONG ==="
-          grep -A3 "What went wrong:" build.log | head -20
-          echo "=== LAST 10 LINES ==="
-          tail -10 build.log
-          echo "::endgroup::"
+          echo "### BUILD FAILED (exit $EXIT_CODE)" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          grep -E "^e:|error:|Duplicate|MissingBinding|What went wrong|FAILURE" build.log | head -50 >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          tail -5 build.log >> $GITHUB_STEP_SUMMARY
           exit 1
         fi
-        echo "::endgroup::"
 
     - name: Upload build log on failure
       if: failure()
