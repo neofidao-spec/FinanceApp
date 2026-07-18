@@ -48,6 +48,7 @@ class TransactionViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(TransactionUiState())
     val uiState: StateFlow<TransactionUiState> = _uiState.asStateFlow()
     private val _searchFlow = MutableStateFlow("")
+    private var filterJob: Job? = null
 
     init {
         loadTransactions()
@@ -317,7 +318,8 @@ class TransactionViewModel @Inject constructor(
     }
 
     fun filterByType(type: TransactionType?) {
-        viewModelScope.launch {
+        filterJob?.cancel()
+        filterJob = viewModelScope.launch {
             try {
                 val filtered = if (type != null) {
                     transactionRepository.getTransactionsByType(type)
