@@ -25,18 +25,16 @@ android {
     signingConfigs {
         create("release") {
             val keystorePath = System.getenv("KEYSTORE_PATH")
-                ?: throw GradleException("KEYSTORE_PATH environment variable not set")
             val keystorePassword = System.getenv("KEYSTORE_PASSWORD")
-                ?: throw GradleException("KEYSTORE_PASSWORD environment variable not set")
             val keyAlias = System.getenv("KEY_ALIAS")
-                ?: throw GradleException("KEY_ALIAS environment variable not set")
             val keyPassword = System.getenv("KEY_PASSWORD")
-                ?: throw GradleException("KEY_PASSWORD environment variable not set")
 
-            storeFile = file(keystorePath)
-            storePassword = keystorePassword
-            this.keyAlias = keyAlias
-            this.keyPassword = keyPassword
+            if (keystorePath != null && keystorePassword != null && keyAlias != null && keyPassword != null) {
+                storeFile = file(keystorePath)
+                storePassword = keystorePassword
+                this.keyAlias = keyAlias
+                this.keyPassword = keyPassword
+            }
         }
     }
 
