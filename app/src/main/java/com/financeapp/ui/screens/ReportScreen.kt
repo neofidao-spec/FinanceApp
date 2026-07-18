@@ -36,6 +36,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.financeapp.ui.utils.FinanceIcons
 import com.financeapp.ui.utils.FormatterUtil
 import com.financeapp.ui.viewmodel.ReportViewModel
 
