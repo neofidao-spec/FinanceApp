@@ -1,25 +1,36 @@
 package com.financeapp.ui.theme
 
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Shapes
 import androidx.compose.ui.unit.dp
 
 /**
- * FinanceApp Design System — Shape scale.
+ * FinanceApp — Shape scale with variation.
  *
- * Four tiers only. Every shape in the app MUST come from
- * MaterialTheme.shapes — never use raw RoundedCornerShape() in screens.
+ * Hero Card: 24dp (premium feel)
+ * Card: 18dp (standard)
+ * Small Card: 16dp (compact)
+ * Button: 14dp (rounded)
+ * Chip/Badge: 8dp (small tags)
+ * FAB: Circle
  */
 val FinanceShapes = Shapes(
     /** 8.dp — chips, badges, small tags */
     extraSmall = RoundedCornerShape(8.dp),
 
-    /** 12.dp — text fields, list items, small cards */
-    small = RoundedCornerShape(12.dp),
+    /** 14.dp — buttons, input fields */
+    small = RoundedCornerShape(14.dp),
 
-    /** 16.dp — primary cards, dialogs */
-    medium = RoundedCornerShape(16.dp),
+    /** 18.dp — standard cards, list items */
+    medium = RoundedCornerShape(18.dp),
 
-    /** 24.dp — bottom sheets, large dialogs, hero cards */
-    large = RoundedCornerShape(24.dp)
+    /** 24.dp — hero cards, summary cards, bottom sheets */
+    large = RoundedCornerShape(24.dp),
+
+    /** 16.dp — compact cards, mini stat cards */
+    extraLarge = RoundedCornerShape(16.dp)
 )
+
+/** FAB shape — perfect circle */
+val FabShape = CircleShape

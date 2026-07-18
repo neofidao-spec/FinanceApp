@@ -7,30 +7,28 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 
 /**
- * FinanceApp — Premium Typography Scale.
+ * FinanceApp — Typography with clear hierarchy.
  *
- * Old money aesthetic: tight tracking on numbers, clear hierarchy,
- * comfortable reading. All 15 Material3 roles defined.
- *
- * Key decisions:
- * - display/headline: tight letter-spacing for financial numbers
- * - body: generous line-height for comfortable reading
- * - label: slightly wider tracking for small text legibility
+ * Display (36sp): Hero balance amount
+ * Headline (24sp): Screen titles, section headers
+ * Title (20sp): Card titles, important numbers
+ * Subtitle (18sp): Sub-section headers
+ * Body (16sp): Primary reading text
+ * Caption (13sp): Secondary text, timestamps, labels
  */
 val Typography = Typography(
-    // ── Display — Hero numbers (total balance) ───────────────
     displayLarge = TextStyle(
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.Bold,
         fontSize = 36.sp,
-        lineHeight = 42.sp,
-        letterSpacing = (-0.5).sp  // Tight for large numbers
+        lineHeight = 44.sp,
+        letterSpacing = (-0.5).sp
     ),
     displayMedium = TextStyle(
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.Bold,
         fontSize = 30.sp,
-        lineHeight = 36.sp,
+        lineHeight = 38.sp,
         letterSpacing = (-0.3).sp
     ),
     displaySmall = TextStyle(
@@ -40,20 +38,18 @@ val Typography = Typography(
         lineHeight = 32.sp,
         letterSpacing = (-0.2).sp
     ),
-
-    // ── Headline — Section titles ────────────────────────────
     headlineLarge = TextStyle(
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.Bold,
-        fontSize = 22.sp,
-        lineHeight = 28.sp,
+        fontSize = 24.sp,
+        lineHeight = 32.sp,
         letterSpacing = (-0.2).sp
     ),
     headlineMedium = TextStyle(
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.SemiBold,
         fontSize = 20.sp,
-        lineHeight = 26.sp,
+        lineHeight = 28.sp,
         letterSpacing = (-0.1).sp
     ),
     headlineSmall = TextStyle(
@@ -63,20 +59,18 @@ val Typography = Typography(
         lineHeight = 24.sp,
         letterSpacing = 0.sp
     ),
-
-    // ── Title — Card titles, amounts ─────────────────────────
     titleLarge = TextStyle(
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.Bold,
         fontSize = 20.sp,
-        lineHeight = 26.sp,
-        letterSpacing = (-0.2).sp  // Tight for amount displays
+        lineHeight = 28.sp,
+        letterSpacing = (-0.2).sp
     ),
     titleMedium = TextStyle(
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.Medium,
         fontSize = 16.sp,
-        lineHeight = 22.sp,
+        lineHeight = 24.sp,
         letterSpacing = 0.sp
     ),
     titleSmall = TextStyle(
@@ -86,8 +80,6 @@ val Typography = Typography(
         lineHeight = 20.sp,
         letterSpacing = 0.1.sp
     ),
-
-    // ── Body — Reading text ──────────────────────────────────
     bodyLarge = TextStyle(
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.Normal,
@@ -105,12 +97,10 @@ val Typography = Typography(
     bodySmall = TextStyle(
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.Normal,
-        fontSize = 12.sp,
-        lineHeight = 16.sp,
+        fontSize = 13.sp,
+        lineHeight = 18.sp,
         letterSpacing = 0.3.sp
     ),
-
-    // ── Label — Buttons, chips, timestamps ───────────────────
     labelLarge = TextStyle(
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.Medium,
@@ -128,7 +118,7 @@ val Typography = Typography(
     labelSmall = TextStyle(
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.Medium,
-        fontSize = 10.sp,
+        fontSize = 11.sp,
         lineHeight = 14.sp,
         letterSpacing = 0.5.sp
     )
