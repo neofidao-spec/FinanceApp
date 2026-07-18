@@ -1,8 +1,5 @@
 package com.financeapp.ui.screens
 
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -19,9 +16,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountBalance
 import androidx.compose.material.icons.filled.ArrowDownward
 import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material.icons.filled.Refresh
@@ -33,9 +28,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -44,20 +37,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.financeapp.data.model.CategorySummary
 import com.financeapp.data.model.TransactionType
 import com.financeapp.data.model.TransactionWithCategory
 import com.financeapp.ui.components.AnimatedNumber
@@ -70,7 +56,8 @@ import com.financeapp.ui.components.LevelCard
 import com.financeapp.ui.components.MonthlyData
 import com.financeapp.ui.components.MonthlyTrendChart
 import com.financeapp.ui.components.StreakCard
-import com.financeapp.ui.theme.FinanceAppTheme
+import com.financeapp.ui.theme.Spacing
+import com.financeapp.ui.theme.financeColors
 import com.financeapp.ui.utils.FinanceIcons
 import com.financeapp.ui.utils.FormatterUtil
 import com.financeapp.ui.viewmodel.DashboardUiState
@@ -107,7 +94,7 @@ private fun DashboardContent(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(32.dp),
+                .padding(Spacing.xl),
             contentAlignment = Alignment.Center
         ) {
             CircularProgressIndicator()
@@ -120,7 +107,7 @@ private fun DashboardContent(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(32.dp),
+                .padding(Spacing.xl),
             contentAlignment = Alignment.Center
         ) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -130,13 +117,13 @@ private fun DashboardContent(
                     modifier = Modifier.size(64.dp),
                     tint = MaterialTheme.colorScheme.error
                 )
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(Spacing.md))
                 Text(
                     text = uiState.errorMessage,
                     style = MaterialTheme.typography.bodyLarge,
                     textAlign = TextAlign.Center
                 )
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(Spacing.md))
                 Button(
                     onClick = onRetry,
                     colors = ButtonDefaults.buttonColors(
@@ -146,7 +133,7 @@ private fun DashboardContent(
                     Icon(
                         imageVector = Icons.Filled.Refresh,
                         contentDescription = "Coba lagi",
-                        modifier = Modifier.padding(end = 8.dp)
+                        modifier = Modifier.padding(end = Spacing.sm)
                     )
                     Text("Coba Lagi")
                 }
@@ -158,9 +145,9 @@ private fun DashboardContent(
     LazyColumn(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp),
-        contentPadding = PaddingValues(vertical = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+            .padding(horizontal = Spacing.md),
+        contentPadding = PaddingValues(vertical = Spacing.md),
+        verticalArrangement = Arrangement.spacedBy(Spacing.md)
     ) {
         // 1. Balance Card - Premium gradient design
         item {
@@ -176,7 +163,7 @@ private fun DashboardContent(
             item {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    horizontalArrangement = Arrangement.spacedBy(Spacing.sm)
                 ) {
                     LevelCard(
                         progress = gamificationState.userProgress,
@@ -216,26 +203,26 @@ private fun DashboardContent(
         item {
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
+                horizontalArrangement = Arrangement.spacedBy(Spacing.sm)
             ) {
                 IncomeExpenseCard(
                     modifier = Modifier.weight(1f),
                     label = "Pemasukan",
                     amount = uiState.totalIncome,
                     icon = Icons.Filled.ArrowUpward,
-                    color = Color(0xFF2E7D32)
+                    color = MaterialTheme.colorScheme.financeColors.income
                 )
                 IncomeExpenseCard(
                     modifier = Modifier.weight(1f),
                     label = "Pengeluaran",
                     amount = uiState.totalExpense,
                     icon = Icons.Filled.ArrowDownward,
-                    color = Color(0xFFC62828)
+                    color = MaterialTheme.colorScheme.financeColors.expense
                 )
             }
         }
 
-        // 5. DonutChart - Expense breakdown
+        // 6. DonutChart - Expense breakdown
         if (uiState.categoryBreakdown.isNotEmpty()) {
             item {
                 SectionHeader(title = "Pengeluaran per Kategori")
@@ -248,18 +235,19 @@ private fun DashboardContent(
                         )
                     },
                     centerText = FormatterUtil.formatCurrency(uiState.totalExpense),
-                    modifier = Modifier.padding(bottom = 8.dp)
+                    modifier = Modifier.padding(bottom = Spacing.sm)
                 )
             }
         }
 
-        // 6. Monthly Trend Chart
+        // 7. Monthly Trend Chart
         if (uiState.monthlyTrend.isNotEmpty()) {
             item {
                 SectionHeader(title = "Tren Bulanan")
                 Card(
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(16.dp),
+                    shape = MaterialTheme.shapes.medium,
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
                     colors = CardDefaults.cardColors(
                         containerColor = MaterialTheme.colorScheme.surface
                     )
@@ -272,13 +260,13 @@ private fun DashboardContent(
                                 expense = trend.expense
                             )
                         },
-                        modifier = Modifier.padding(16.dp)
+                        modifier = Modifier.padding(Spacing.md)
                     )
                 }
             }
         }
 
-        // 7. Budget Overview
+        // 8. Budget Overview
         if (uiState.budgetSummaries.isNotEmpty()) {
             item {
                 SectionHeader(title = "Budget Overview")
@@ -286,7 +274,7 @@ private fun DashboardContent(
             item {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    horizontalArrangement = Arrangement.spacedBy(Spacing.sm)
                 ) {
                     uiState.budgetSummaries.take(3).forEach { budget ->
                         BudgetProgressRing(
@@ -301,7 +289,7 @@ private fun DashboardContent(
             }
         }
 
-        // 8. Recent Transactions
+        // 9. Recent Transactions
         item {
             SectionHeader(title = "Transaksi Terbaru")
         }
@@ -326,11 +314,11 @@ private fun BalanceCard(
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(20.dp),
+        shape = MaterialTheme.shapes.large,
         colors = CardDefaults.cardColors(
-            containerColor = Color.Transparent
+            containerColor = MaterialTheme.colorScheme.surface
         ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Box(
             modifier = Modifier
@@ -344,27 +332,23 @@ private fun BalanceCard(
                         )
                     )
                 )
-                .padding(24.dp)
+                .padding(Spacing.lg)
         ) {
             Column {
                 Text(
                     text = "Total Saldo",
-                    color = Color.White.copy(alpha = 0.7f),
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Medium
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f)
                 )
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(Spacing.sm))
                 AnimatedNumber(
                     value = balance,
-                    style = MaterialTheme.typography.headlineLarge.copy(
-                        fontSize = 36.sp,
-                        fontWeight = FontWeight.Bold
-                    ),
-                    color = Color.White,
+                    style = MaterialTheme.typography.displayLarge,
+                    color = MaterialTheme.colorScheme.onPrimary,
                     format = { FormatterUtil.formatCurrency(it) }
                 )
-                Spacer(modifier = Modifier.height(24.dp))
-                
+                Spacer(modifier = Modifier.height(Spacing.lg))
+
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
@@ -374,44 +358,42 @@ private fun BalanceCard(
                             Icon(
                                 imageVector = Icons.Filled.TrendingUp,
                                 contentDescription = "Pemasukan",
-                                tint = Color(0xFF81C784),
+                                tint = MaterialTheme.colorScheme.financeColors.income,
                                 modifier = Modifier.size(16.dp)
                             )
-                            Spacer(modifier = Modifier.width(4.dp))
+                            Spacer(modifier = Modifier.width(Spacing.xs))
                             Text(
                                 text = "Pemasukan",
-                                color = Color.White.copy(alpha = 0.7f),
-                                fontSize = 12.sp
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f)
                             )
                         }
                         Text(
                             text = FormatterUtil.formatCurrency(totalIncome),
-                            color = Color(0xFF81C784),
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.SemiBold
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.financeColors.income
                         )
                     }
-                    
+
                     Column(horizontalAlignment = Alignment.End) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Icon(
                                 imageVector = Icons.Filled.TrendingDown,
                                 contentDescription = "Pengeluaran",
-                                tint = Color(0xFFEF9A9A),
+                                tint = MaterialTheme.colorScheme.financeColors.expense,
                                 modifier = Modifier.size(16.dp)
                             )
-                            Spacer(modifier = Modifier.width(4.dp))
+                            Spacer(modifier = Modifier.width(Spacing.xs))
                             Text(
                                 text = "Pengeluaran",
-                                color = Color.White.copy(alpha = 0.7f),
-                                fontSize = 12.sp
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f)
                             )
                         }
                         Text(
                             text = FormatterUtil.formatCurrency(totalExpense),
-                            color = Color(0xFFEF9A9A),
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.SemiBold
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.financeColors.expense
                         )
                     }
                 }
@@ -426,11 +408,12 @@ private fun IncomeExpenseCard(
     label: String,
     amount: Double,
     icon: ImageVector,
-    color: Color
+    color: androidx.compose.ui.graphics.Color
 ) {
     Card(
         modifier = modifier,
-        shape = RoundedCornerShape(16.dp),
+        shape = MaterialTheme.shapes.medium,
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         colors = CardDefaults.cardColors(
             containerColor = color.copy(alpha = 0.08f)
         )
@@ -438,7 +421,7 @@ private fun IncomeExpenseCard(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
+                .padding(Spacing.md)
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Box(
@@ -457,16 +440,16 @@ private fun IncomeExpenseCard(
                         modifier = Modifier.size(18.dp)
                     )
                 }
-                Spacer(modifier = Modifier.width(8.dp))
+                Spacer(modifier = Modifier.width(Spacing.sm))
                 Text(
                     text = label,
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
-            
-            Spacer(modifier = Modifier.height(12.dp))
-            
+
+            Spacer(modifier = Modifier.height(Spacing.sm))
+
             AnimatedNumber(
                 value = amount,
                 style = MaterialTheme.typography.titleMedium.copy(
@@ -484,8 +467,7 @@ private fun SectionHeader(title: String) {
     Text(
         text = title,
         style = MaterialTheme.typography.titleMedium,
-        fontWeight = FontWeight.Bold,
-        modifier = Modifier.padding(bottom = 8.dp)
+        modifier = Modifier.padding(bottom = Spacing.sm)
     )
 }
 
@@ -493,7 +475,7 @@ private fun SectionHeader(title: String) {
 private fun EmptyTransactionsState() {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp),
+        shape = MaterialTheme.shapes.medium,
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
         )
@@ -501,7 +483,7 @@ private fun EmptyTransactionsState() {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(32.dp),
+                .padding(Spacing.xl),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Icon(
@@ -510,13 +492,12 @@ private fun EmptyTransactionsState() {
                 modifier = Modifier.size(48.dp),
                 tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
             )
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(Spacing.sm))
             Text(
                 text = "Belum ada transaksi",
-                style = MaterialTheme.typography.bodyLarge,
-                fontWeight = FontWeight.Medium
+                style = MaterialTheme.typography.titleMedium
             )
-            Spacer(modifier = Modifier.height(4.dp))
+            Spacer(modifier = Modifier.height(Spacing.xs))
             Text(
                 text = "Mulai tambahkan transaksi pertamamu!",
                 style = MaterialTheme.typography.bodySmall,
@@ -529,14 +510,16 @@ private fun EmptyTransactionsState() {
 @Composable
 private fun TransactionItem(transaction: TransactionWithCategory) {
     val isIncome = transaction.transaction.type == TransactionType.INCOME
-    val amountColor = if (isIncome) Color(0xFF2E7D32) else Color(0xFFC62828)
+    val amountColor = if (isIncome) MaterialTheme.colorScheme.financeColors.income
+        else MaterialTheme.colorScheme.financeColors.expense
     val prefix = if (isIncome) "+" else "-"
     val icon = FinanceIcons.getIcon(transaction.category.name)
     val iconColor = FinanceIcons.getColorFromHex(transaction.category.color)
 
     Card(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(12.dp),
+        shape = MaterialTheme.shapes.small,
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
         )
@@ -544,7 +527,7 @@ private fun TransactionItem(transaction: TransactionWithCategory) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(12.dp),
+                .padding(Spacing.sm),
             verticalAlignment = Alignment.CenterVertically
         ) {
             // Category icon
@@ -553,7 +536,7 @@ private fun TransactionItem(transaction: TransactionWithCategory) {
                     .size(40.dp)
                     .background(
                         color = iconColor.copy(alpha = 0.15f),
-                        shape = RoundedCornerShape(10.dp)
+                        shape = MaterialTheme.shapes.extraSmall
                     ),
                 contentAlignment = Alignment.Center
             ) {
@@ -564,14 +547,13 @@ private fun TransactionItem(transaction: TransactionWithCategory) {
                     modifier = Modifier.size(20.dp)
                 )
             }
-            
-            Spacer(modifier = Modifier.width(12.dp))
-            
+
+            Spacer(modifier = Modifier.width(Spacing.sm))
+
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = transaction.category.name,
-                    fontWeight = FontWeight.Medium,
-                    fontSize = 14.sp,
+                    style = MaterialTheme.typography.titleSmall,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
@@ -583,12 +565,11 @@ private fun TransactionItem(transaction: TransactionWithCategory) {
                     overflow = TextOverflow.Ellipsis
                 )
             }
-            
+
             Text(
                 text = "$prefix${FormatterUtil.formatCurrency(transaction.transaction.amount)}",
-                fontWeight = FontWeight.SemiBold,
-                color = amountColor,
-                fontSize = 14.sp
+                style = MaterialTheme.typography.titleSmall,
+                color = amountColor
             )
         }
     }
