@@ -22,17 +22,15 @@ android {
         }
     }
 
-    signingConfigs {
-        create("release") {
-            val keystorePath = System.getenv("KEYSTORE_PATH") ?: "keystore/release.jks"
-            val keystorePassword = System.getenv("KEYSTORE_PASSWORD") ?: throw GradleException("KEYSTORE_PASSWORD not set")
-            val keyAlias = System.getenv("KEY_ALIAS") ?: throw GradleException("KEY_ALIAS not set")
-            val keyPassword = System.getenv("KEY_PASSWORD") ?: throw GradleException("KEY_PASSWORD not set")
-
-            storeFile = file(keystorePath)
-            storePassword = keystorePassword
-            this.keyAlias = keyAlias
-            this.keyPassword = keyPassword
+    val keystorePassword = System.getenv("KEYSTORE_PASSWORD")
+    if (keystorePassword != null) {
+        signingConfigs {
+            create("release") {
+                storeFile = file(System.getenv("KEYSTORE_PATH") ?: "keystore/release.jks")
+                storePassword = keystorePassword
+                keyAlias = System.getenv("KEY_ALIAS") ?: "financeapp"
+                keyPassword = System.getenv("KEY_PASSWORD") ?: keystorePassword
+            }
         }
     }
 
@@ -44,7 +42,9 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            signingConfig = signingConfigs.getByName("release")
+            if (keystorePassword != null) {
+                signingConfig = signingConfigs.getByName("release")
+            }
         }
         debug {
             isMinifyEnabled = false
