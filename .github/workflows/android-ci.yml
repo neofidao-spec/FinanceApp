@@ -27,7 +27,9 @@ jobs:
         ./gradlew assembleDebug --no-daemon 2>&1 | tee build.log
         if [ ${PIPESTATUS[0]} -ne 0 ]; then
           echo "=== BUILD FAILED ==="
-          tail -100 build.log
+          grep -E "^e:|error:|FAILURE|Unresolved|cannot find|Type mismatch|Duplicate" build.log | head -30
+          echo "=== LAST 20 LINES ==="
+          tail -20 build.log
           exit 1
         fi
 
