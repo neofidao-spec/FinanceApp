@@ -1,8 +1,6 @@
 package com.financeapp.data.database
 
-import android.content.Context
 import androidx.room.Database
-import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import androidx.room.migration.Migration
@@ -23,8 +21,8 @@ import com.financeapp.data.model.RecurringTransaction
     entities = [Transaction::class, Category::class, Budget::class, Account::class, Achievement::class,
                UserProgress::class, DailyQuest::class, Challenge::class, XpHistory::class,
                TransactionFts::class, RecurringTransaction::class],
-    version = 11,
-    exportSchema = false
+    version = 12,
+    exportSchema = true
 )
 @TypeConverters(Converters::class)
 abstract class FinanceDatabase : RoomDatabase() {
@@ -41,9 +39,6 @@ abstract class FinanceDatabase : RoomDatabase() {
     abstract fun recurringTransactionDao(): RecurringTransactionDao
 
     companion object {
-        @Volatile
-        private var INSTANCE: FinanceDatabase? = null
-
         internal val MIGRATION_1_2 = object : Migration(1, 2) {
             override fun migrate(database: SupportSQLiteDatabase) {
                 // Migration from v1 to v2 - add Budget table
@@ -255,28 +250,90 @@ abstract class FinanceDatabase : RoomDatabase() {
             }
         }
 
-        fun getInstance(context: Context): FinanceDatabase {
-            return INSTANCE ?: synchronized(this) {
-                val instance = Room.databaseBuilder(
-                    context.applicationContext,
-                    FinanceDatabase::class.java,
-                    "finance_database"
-                )
-                    .addMigrations(
-                        MIGRATION_1_2,
-                        MIGRATION_2_3,
-                        MIGRATION_3_4,
-                        MIGRATION_4_5,
-                        MIGRATION_5_6,
-                        MIGRATION_6_7,
-                        MIGRATION_7_8,
-                        MIGRATION_8_9,
-                        MIGRATION_9_10,
-                        MIGRATION_10_11
+        internal val MIGRATION_11_12 = object : Migration(11, 12) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                // Add DEFAULT '' to createdAt/updatedAt columns that were NOT NULL without DEFAULT
+                // SQLite doesn't support ALTER COLUMN, so we rebuild each table.
+
+                // budgets: createdAt, updatedAt
+                database.execSQL("""
+                    CREATE TABLE budgets_new (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                        categoryId INTEGER NOT NULL,
+                        monthlyLimit REAL NOT NULL,
+                        description TEXT NOT NULL DEFAULT '',
+                        alertThreshold REAL NOT NULL DEFAULT 80.0,
+                        isActive INTEGER NOT NULL DEFAULT 1,
+                        createdAt TEXT NOT NULL DEFAULT '',
+                        updatedAt TEXT NOT NULL DEFAULT '',
+                        FOREIGN KEY(categoryId) REFERENCES categories(id) ON DELETE CASCADE
                     )
-                    .build()
-                INSTANCE = instance
-                instance
+                """)
+                database.execSQL("INSERT INTO budgets_new SELECT * FROM budgets")
+                database.execSQL("DROP TABLE budgets")
+                database.execSQL("ALTER TABLE budgets_new RENAME TO budgets")
+                database.execSQL("CREATE INDEX IF NOT EXISTS index_budgets_categoryId ON budgets(categoryId)")
+
+                // user_progress: updatedAt
+                database.execSQL("""
+                    CREATE TABLE user_progress_new (
+                        id INTEGER PRIMARY KEY NOT NULL,
+                        totalXp INTEGER NOT NULL DEFAULT 0,
+                        currentLevel INTEGER NOT NULL DEFAULT 1,
+                        bestStreak INTEGER NOT NULL DEFAULT 0,
+                        currentStreak INTEGER NOT NULL DEFAULT 0,
+                        streakFreezes INTEGER NOT NULL DEFAULT 1,
+                        lastActivityDate TEXT,
+                        healthScore REAL NOT NULL DEFAULT 0.0,
+                        updatedAt TEXT NOT NULL DEFAULT ''
+                    )
+                """)
+                database.execSQL("INSERT INTO user_progress_new SELECT * FROM user_progress")
+                database.execSQL("DROP TABLE user_progress")
+                database.execSQL("ALTER TABLE user_progress_new RENAME TO user_progress")
+
+                // xp_history: createdAt
+                database.execSQL("""
+                    CREATE TABLE xp_history_new (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                        amount INTEGER NOT NULL,
+                        source TEXT NOT NULL,
+                        description TEXT NOT NULL,
+                        createdAt TEXT NOT NULL DEFAULT ''
+                    )
+                """)
+                database.execSQL("INSERT INTO xp_history_new SELECT * FROM xp_history")
+                database.execSQL("DROP TABLE xp_history")
+                database.execSQL("ALTER TABLE xp_history_new RENAME TO xp_history")
+
+                // recurring_transactions: createdAt
+                database.execSQL("""
+                    CREATE TABLE recurring_transactions_new (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                        amount REAL NOT NULL,
+                        description TEXT NOT NULL,
+                        type TEXT NOT NULL,
+                        categoryId INTEGER NOT NULL,
+                        accountId INTEGER NOT NULL DEFAULT 1,
+                        interval TEXT NOT NULL,
+                        intervalValue INTEGER NOT NULL DEFAULT 1,
+                        startDate TEXT NOT NULL,
+                        endDate TEXT,
+                        endType TEXT NOT NULL DEFAULT 'NEVER',
+                        maxOccurrences INTEGER NOT NULL DEFAULT 0,
+                        occurrencesGenerated INTEGER NOT NULL DEFAULT 0,
+                        nextDueDate TEXT NOT NULL,
+                        isActive INTEGER NOT NULL DEFAULT 1,
+                        createdAt TEXT NOT NULL DEFAULT '',
+                        FOREIGN KEY (categoryId) REFERENCES categories(id) ON DELETE CASCADE
+                    )
+                """)
+                database.execSQL("INSERT INTO recurring_transactions_new SELECT * FROM recurring_transactions")
+                database.execSQL("DROP TABLE recurring_transactions")
+                database.execSQL("ALTER TABLE recurring_transactions_new RENAME TO recurring_transactions")
+                database.execSQL("CREATE INDEX IF NOT EXISTS index_recurring_transactions_categoryId ON recurring_transactions(categoryId)")
+                database.execSQL("CREATE INDEX IF NOT EXISTS index_recurring_transactions_nextDueDate ON recurring_transactions(nextDueDate)")
+                database.execSQL("CREATE INDEX IF NOT EXISTS index_recurring_transactions_accountId ON recurring_transactions(accountId)")
             }
         }
     }

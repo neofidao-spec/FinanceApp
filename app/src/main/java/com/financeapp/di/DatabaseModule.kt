@@ -50,7 +50,8 @@ object DatabaseModule {
             FinanceDatabase.MIGRATION_7_8,
             FinanceDatabase.MIGRATION_8_9,
             FinanceDatabase.MIGRATION_9_10,
-            FinanceDatabase.MIGRATION_10_11
+            FinanceDatabase.MIGRATION_10_11,
+            FinanceDatabase.MIGRATION_11_12
         )
         .addCallback(object : RoomDatabase.Callback() {
             override fun onCreate(db: SupportSQLiteDatabase) {
@@ -64,12 +65,13 @@ object DatabaseModule {
                     )
                 }
                 // Insert default accounts
-                db.execSQL("INSERT INTO accounts (name, type, balance, icon, color, isDefault) VALUES (?, ?, ?, ?, ?, ?)",
-                    arrayOf("Cash", "CASH", 0.0, "attach_money", "#4CAF50", 1))
-                db.execSQL("INSERT INTO accounts (name, type, balance, icon, color, isDefault) VALUES (?, ?, ?, ?, ?, ?)",
-                    arrayOf("Bank", "BANK", 0.0, "account_balance", "#2196F3", 0))
-                db.execSQL("INSERT INTO accounts (name, type, balance, icon, color, isDefault) VALUES (?, ?, ?, ?, ?, ?)",
-                    arrayOf("E-Wallet", "EWALLET", 0.0, "account_balance_wallet", "#FF9800", 0))
+                val now = java.time.LocalDateTime.now().toString()
+                db.execSQL("INSERT INTO accounts (name, type, balance, icon, color, isDefault, createdAt) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                    arrayOf("Cash", "CASH", 0.0, "attach_money", "#4CAF50", 1, now))
+                db.execSQL("INSERT INTO accounts (name, type, balance, icon, color, isDefault, createdAt) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                    arrayOf("Bank", "BANK", 0.0, "account_balance", "#2196F3", 0, now))
+                db.execSQL("INSERT INTO accounts (name, type, balance, icon, color, isDefault, createdAt) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                    arrayOf("E-Wallet", "EWALLET", 0.0, "account_balance_wallet", "#FF9800", 0, now))
                 // Insert default achievements
                 val achievements = DefaultAchievements.getDefault()
                 achievements.forEach { achievement ->
