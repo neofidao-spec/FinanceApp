@@ -60,11 +60,9 @@ import com.financeapp.data.model.Achievement
 import com.financeapp.data.model.Challenge
 import com.financeapp.data.model.DefaultAchievements
 import com.financeapp.data.model.XpHistory
-import com.financeapp.data.model.XpSource
 import com.financeapp.ui.components.AchievementBadge
 import com.financeapp.ui.components.LevelCard
 import com.financeapp.ui.components.StreakCard
-import com.financeapp.ui.components.resolveAchievementIcon
 import com.financeapp.ui.viewmodel.GamificationViewModel
 import com.financeapp.ui.utils.FormatterUtil
 import java.time.format.DateTimeFormatter
@@ -455,23 +453,25 @@ private fun ChallengeCard(challenge: Challenge) {
 @Composable
 private fun XpHistoryRow(xp: XpHistory, dateFormatter: DateTimeFormatter) {
     val sourceLabel = when (xp.source) {
-        XpSource.TRANSACTION -> "Mencatat Transaksi"
-        XpSource.STREAK_BONUS -> "Streak Bonus"
-        XpSource.BUDGET_ADHERENCE -> "Patuh Budget"
-        XpSource.SAVINGS_BONUS -> "Bonus Menabung"
-        XpSource.QUEST_COMPLETED -> "Quest Selesai"
-        XpSource.CHALLENGE_COMPLETED -> "Tantangan Selesai"
-        XpSource.DAILY_LOGIN -> "Login Harian"
+        "TRANSACTION" -> "Mencatat Transaksi"
+        "STREAK" -> "Streak Bonus"
+        "BUDGET_ADHERENCE" -> "Patuh Budget"
+        "ACHIEVEMENT" -> "Bonus Menabung"
+        "QUEST" -> "Quest Selesai"
+        "CHALLENGE" -> "Tantangan Selesai"
+        "DAILY_LOGIN" -> "Login Harian"
+        else -> xp.source
     }
 
     val icon = when (xp.source) {
-        XpSource.TRANSACTION -> Icons.Filled.CheckCircle
-        XpSource.STREAK_BONUS -> Icons.Filled.LocalFireDepartment
-        XpSource.BUDGET_ADHERENCE -> Icons.Filled.Star
-        XpSource.SAVINGS_BONUS -> Icons.Filled.TrendingUp
-        XpSource.QUEST_COMPLETED -> Icons.Filled.EmojiEvents
-        XpSource.CHALLENGE_COMPLETED -> Icons.Filled.EmojiEvents
-        XpSource.DAILY_LOGIN -> Icons.Filled.Star
+        "TRANSACTION" -> Icons.Filled.CheckCircle
+        "STREAK" -> Icons.Filled.LocalFireDepartment
+        "BUDGET_ADHERENCE" -> Icons.Filled.Star
+        "ACHIEVEMENT" -> Icons.Filled.TrendingUp
+        "QUEST" -> Icons.Filled.EmojiEvents
+        "CHALLENGE" -> Icons.Filled.EmojiEvents
+        "DAILY_LOGIN" -> Icons.Filled.Star
+        else -> Icons.Filled.Help
     }
 
     Row(
