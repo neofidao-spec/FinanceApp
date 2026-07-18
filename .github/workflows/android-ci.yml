@@ -27,11 +27,14 @@ jobs:
         ./gradlew assembleDebug --no-daemon 2>&1 | tee build.log
         EXIT_CODE=${PIPESTATUS[0]}
         if [ $EXIT_CODE -ne 0 ]; then
-          echo "### BUILD FAILED (exit $EXIT_CODE)" >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          grep -E "^e:|error:|Duplicate|MissingBinding|What went wrong|FAILURE" build.log | head -50 >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          tail -5 build.log >> $GITHUB_STEP_SUMMARY
+          echo "BUILD FAILED (exit $EXIT_CODE)"
+          grep -E "^e:|error:|Duplicate|MissingBinding|cannot find|Unresolved|Type mismatch" build.log | head -30
+          echo "=== WHAT WENT WRONG ==="
+          grep -A5 "What went wrong:" build.log | head -20
+          echo "=== FAILED TASK ==="
+          grep "FAILED" build.log | head -5
+          echo "=== LAST 5 LINES ==="
+          tail -5 build.log
           exit 1
         fi
 
