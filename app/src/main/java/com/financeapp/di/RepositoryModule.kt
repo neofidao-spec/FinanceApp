@@ -8,6 +8,7 @@ import com.financeapp.data.database.TransactionFtsDao
 import com.financeapp.data.database.UserProgressDao
 import com.financeapp.data.database.DailyQuestDao
 import com.financeapp.data.database.ChallengeDao
+import com.financeapp.data.database.RecurringTransactionDao
 import com.financeapp.data.database.XpHistoryDao
 import com.financeapp.data.repository.AccountRepository
 import com.financeapp.data.repository.AchievementRepository
