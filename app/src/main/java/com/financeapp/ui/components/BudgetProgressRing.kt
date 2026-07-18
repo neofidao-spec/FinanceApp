@@ -67,9 +67,9 @@ fun BudgetProgressRing(
 
     // Color based on progress thresholds
     val ringColor = when {
-        clampedProgress < 0.7f -> Color(0xFF4CAF50)  // Green
-        clampedProgress < 0.9f -> Color(0xFFFFC107)  // Yellow
-        else -> Color(0xFFF44336)  // Red
+        clampedProgress < 0.7f -> MaterialTheme.colorScheme.primary       // Green
+        clampedProgress < 0.9f -> MaterialTheme.colorScheme.tertiary      // Yellow
+        else -> MaterialTheme.colorScheme.error                           // Red
     }
 
     Column(
@@ -87,7 +87,7 @@ fun BudgetProgressRing(
 
                 // Background track
                 drawCircle(
-                    color = Color.LightGray.copy(alpha = 0.3f),
+                    color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f),
                     radius = radius,
                     center = center,
                     style = Stroke(width = strokeWidth, cap = StrokeCap.Round)

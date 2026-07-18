@@ -338,9 +338,9 @@ private fun BalanceCard(
                 .background(
                     brush = Brush.linearGradient(
                         colors = listOf(
-                            Color(0xFF1a237e),
-                            Color(0xFF283593),
-                            Color(0xFF3949ab)
+                            MaterialTheme.colorScheme.primary,
+                            MaterialTheme.colorScheme.primary.copy(alpha = 0.85f),
+                            MaterialTheme.colorScheme.primary.copy(alpha = 0.7f)
                         )
                     )
                 )

@@ -178,7 +178,7 @@ fun SwipeableTransactionItem(
                         Text(
                             text = transaction.transaction.description,
                             fontSize = 12.sp,
-                            color = Color.Gray
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }
@@ -193,7 +193,7 @@ fun SwipeableTransactionItem(
                     Text(
                         text = transaction.transaction.date.format(DateTimeFormatter.ofPattern("HH:mm")),
                         fontSize = 12.sp,
-                        color = Color.Gray
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             }

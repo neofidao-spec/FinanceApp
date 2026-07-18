@@ -161,7 +161,7 @@ fun AddTransactionScreen(
 
             // Error message
             uiState.errorMessage?.let {
-                Text(it, color = Color.Red, modifier = Modifier.padding(bottom = 8.dp))
+                Text(it, color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(bottom = 8.dp))
             }
 
             // Save button

@@ -123,7 +123,7 @@ fun ReportScreen(viewModel: ReportViewModel = hiltViewModel()) {
 
                         Row(modifier = Modifier.fillMaxWidth()) {
                             Column(modifier = Modifier.weight(1f)) {
-                                Text("Pemasukan", fontSize = 12.sp, color = Color.Gray)
+                                Text("Pemasukan", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                                 Text(
                                     FormatterUtil.formatCurrency(report.income),
                                     fontWeight = FontWeight.Bold,
@@ -131,7 +131,7 @@ fun ReportScreen(viewModel: ReportViewModel = hiltViewModel()) {
                                 )
                             }
                             Column(modifier = Modifier.weight(1f)) {
-                                Text("Pengeluaran", fontSize = 12.sp, color = Color.Gray)
+                                Text("Pengeluaran", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                                 Text(
                                     FormatterUtil.formatCurrency(report.expense),
                                     fontWeight = FontWeight.Bold,
@@ -141,7 +141,7 @@ fun ReportScreen(viewModel: ReportViewModel = hiltViewModel()) {
                         }
 
                         Spacer(modifier = Modifier.height(12.dp))
-                        Text("Saldo", fontSize = 12.sp, color = Color.Gray)
+                        Text("Saldo", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         Text(
                             FormatterUtil.formatCurrency(report.balance),
                             fontWeight = FontWeight.Bold,
@@ -175,7 +175,7 @@ fun ReportScreen(viewModel: ReportViewModel = hiltViewModel()) {
                         Text(
                             "Tidak ada transaksi di bulan ini",
                             fontSize = 14.sp,
-                            color = Color.Gray,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                             textAlign = TextAlign.Center
                         )
                     }
@@ -239,7 +239,7 @@ fun ReportScreen(viewModel: ReportViewModel = hiltViewModel()) {
                             Text(
                                 "${String.format("%.1f", summary.percentage)}%",
                                 fontSize = 12.sp,
-                                color = Color.Gray
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
                     }

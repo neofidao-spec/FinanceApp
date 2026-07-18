@@ -109,7 +109,7 @@ fun StreakCard(
                         modifier = Modifier
                             .size(28.dp)
                             .background(
-                                color = Color(0xFF42A5F5).copy(alpha = 0.15f),
+                                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f),
                                 shape = CircleShape
                             )
                     ) {
@@ -120,7 +120,7 @@ fun StreakCard(
                             Icon(
                                 imageVector = Icons.Filled.AcUnit,
                                 contentDescription = "Gunakan freeze ($streakFreezes tersisa)",
-                                tint = Color(0xFF42A5F5),
+                                tint = MaterialTheme.colorScheme.primary,
                                 modifier = Modifier.size(16.dp)
                             )
                         }

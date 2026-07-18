@@ -45,10 +45,10 @@ fun HealthScoreCard(
     modifier: Modifier = Modifier
 ) {
     val scoreColor = when {
-        score >= 80 -> Color(0xFF2E7D32)
-        score >= 60 -> Color(0xFF1565C0)
-        score >= 40 -> Color(0xFFE65100)
-        else -> Color(0xFFC62828)
+        score >= 80 -> MaterialTheme.colorScheme.primary
+        score >= 60 -> MaterialTheme.colorScheme.primary
+        score >= 40 -> MaterialTheme.colorScheme.tertiary
+        else -> MaterialTheme.colorScheme.error
     }
 
     val trendIcon = when (trend) {
@@ -143,7 +143,7 @@ fun HealthScoreCard(
                     Icon(
                         imageVector = trendIcon,
                         contentDescription = if (trend == HealthScore.Trend.UP) "Meningkat" else "Menurun",
-                        tint = if (trend == HealthScore.Trend.UP) Color(0xFF2E7D32) else Color(0xFFC62828),
+                        tint = if (trend == HealthScore.Trend.UP) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error,
                         modifier = Modifier.size(16.dp)
                     )
                 }

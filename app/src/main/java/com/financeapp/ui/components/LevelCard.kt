@@ -39,11 +39,11 @@ fun LevelCard(
     modifier: Modifier = Modifier
 ) {
     val levelGradient = when {
-        progress.currentLevel >= 9 -> listOf(Color(0xFFFF6F00), Color(0xFFD84315))
-        progress.currentLevel >= 7 -> listOf(Color(0xFF7B1FA2), Color(0xFF512DA8))
-        progress.currentLevel >= 5 -> listOf(Color(0xFF1565C0), Color(0xFF0D47A1))
-        progress.currentLevel >= 3 -> listOf(Color(0xFF2E7D32), Color(0xFF1B5E20))
-        else -> listOf(Color(0xFF546E7A), Color(0xFF37474F))
+        progress.currentLevel >= 9 -> listOf(Color(0xFFFF6F00), Color(0xFFD84315))  // Keep: orange gamification accent
+        progress.currentLevel >= 7 -> listOf(MaterialTheme.colorScheme.tertiary, MaterialTheme.colorScheme.tertiaryContainer)
+        progress.currentLevel >= 5 -> listOf(MaterialTheme.colorScheme.primary, MaterialTheme.colorScheme.primaryContainer)
+        progress.currentLevel >= 3 -> listOf(MaterialTheme.colorScheme.primary, MaterialTheme.colorScheme.primaryContainer)
+        else -> listOf(MaterialTheme.colorScheme.outlineVariant, MaterialTheme.colorScheme.outline)
     }
 
     val animatedProgress by animateFloatAsState(
