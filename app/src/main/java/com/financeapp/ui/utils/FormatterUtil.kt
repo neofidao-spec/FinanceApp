@@ -2,13 +2,15 @@ package com.financeapp.ui.utils
 
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 object FormatterUtil {
     private val dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
     private val dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")
+    private val indonesiaLocale = Locale("in", "ID")
 
     fun formatCurrency(amount: Double): String {
-        return "Rp ${String.format("%,.0f", amount)}"
+        return "Rp ${String.format(indonesiaLocale, "%,.0f", amount)}"
     }
 
     fun formatDate(date: LocalDateTime): String {
