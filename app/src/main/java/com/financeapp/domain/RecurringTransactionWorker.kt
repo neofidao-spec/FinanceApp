@@ -38,6 +38,10 @@ class RecurringTransactionWorker @AssistedInject constructor(
             for (recurring in dueTransactions) {
                 if (!recurring.isActive) continue
 
+                // Idempotency check: skip if already generated today
+                val today = LocalDate.now()
+                if (recurring.nextDueDate.isAfter(today)) continue
+
                 val transaction = Transaction(
                     amount = recurring.amount,
                     type = recurring.type,
@@ -54,7 +58,7 @@ class RecurringTransactionWorker @AssistedInject constructor(
             if (generated > 0) {
                 Result.success()
             } else {
-                Result.success()
+                Result.success()  // No due transactions — not an error
             }
         } catch (e: Exception) {
             Result.retry()

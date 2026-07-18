@@ -9,11 +9,14 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 
 class GamificationUseCase @Inject constructor(
     private val repository: GamificationRepository
 ) {
     private val dateFormatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME
+    private val xpMutex = Mutex()
 
     // ===================== XP EARNING =====================
 
@@ -153,7 +156,7 @@ class GamificationUseCase @Inject constructor(
 
     // ===================== LEVEL PROGRESSION =====================
 
-    private suspend fun addXp(amount: Int, source: XpSource, description: String) {
+    private suspend fun addXp(amount: Int, source: XpSource, description: String) = xpMutex.withLock {
         // Record XP entry
         repository.addXpEntry(
             XpHistory(
@@ -164,7 +167,7 @@ class GamificationUseCase @Inject constructor(
             )
         )
 
-        // Update user progress
+        // Update user progress (atomic read-modify-write)
         val progress = repository.getUserProgressOnce()
             ?: UserProgress().also { repository.saveUserProgress(it) }
 
