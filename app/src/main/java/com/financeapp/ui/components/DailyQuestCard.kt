@@ -113,7 +113,7 @@ fun DailyQuestCard(
 @Composable
 private fun QuestItem(quest: DailyQuest) {
     val progress = if (quest.targetValue > 0) {
-        quest.currentProgress.toFloat() / quest.targetValue
+        quest.currentValue.toFloat() / quest.targetValue
     } else 0f
 
     Row(

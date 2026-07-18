@@ -21,6 +21,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.EmojiEvents
+import androidx.compose.material.icons.filled.Help
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.LocalFireDepartment
 import androidx.compose.material.icons.filled.Lock
@@ -189,7 +190,7 @@ private fun ProfileTab(
         // 2. Stats summary
         state.userProgress?.let { progress ->
             item {
-                StatCard(progress.totalTransactions, progress.totalXp, progress.bestStreak)
+                StatCard(progress.currentLevel, progress.totalXp, progress.bestStreak)
             }
         }
 
@@ -334,7 +335,7 @@ private fun SectionTitle(title: String) {
 }
 
 @Composable
-private fun StatCard(totalTransactions: Int, totalXpEarned: Int, bestStreak: Int) {
+private fun StatCard(level: Int, totalXpEarned: Int, bestStreak: Int) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
@@ -346,7 +347,7 @@ private fun StatCard(totalTransactions: Int, totalXpEarned: Int, bestStreak: Int
             modifier = Modifier.fillMaxWidth().padding(16.dp),
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
-            StatItem(Icons.Filled.CheckCircle, "$totalTransactions", "Transaksi", Color(0xFF2E7D32))
+            StatItem(Icons.Filled.CheckCircle, "$level", "Level", Color(0xFF2E7D32))
             StatItem(Icons.Filled.Star, "$totalXpEarned", "Total XP", Color(0xFFFF8F00))
             StatItem(Icons.Filled.LocalFireDepartment, "$bestStreak", "Best Streak", Color(0xFFE65100))
         }
@@ -373,7 +374,7 @@ private fun StatItem(icon: ImageVector, value: String, label: String, color: Col
 @Composable
 private fun ChallengeCard(challenge: Challenge) {
     val progress = if (challenge.targetValue > 0)
-        (challenge.currentProgress.toFloat() / challenge.targetValue).coerceIn(0f, 1f)
+        (challenge.currentValue.toFloat() / challenge.targetValue).coerceIn(0f, 1f)
     else 0f
 
     val typeColor = when {
@@ -427,7 +428,7 @@ private fun ChallengeCard(challenge: Challenge) {
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = "${challenge.currentProgress} / ${challenge.targetValue}",
+                    text = "${challenge.currentValue} / ${challenge.targetValue}",
                     fontSize = 11.sp,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -438,10 +439,10 @@ private fun ChallengeCard(challenge: Challenge) {
                     color = Color(0xFFFF8F00)
                 )
             }
-            if (challenge.deadline != null && !challenge.isCompleted) {
+            if (!challenge.isCompleted) {
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = "Deadline: ${challenge.deadline}",
+                    text = "Deadline: ${challenge.endDate}",
                     fontSize = 10.sp,
                     color = Color(0xFFE65100).copy(alpha = 0.7f)
                 )
@@ -488,7 +489,7 @@ private fun XpHistoryRow(xp: XpHistory, dateFormatter: DateTimeFormatter) {
         Column(modifier = Modifier.weight(1f)) {
             Text(text = sourceLabel, fontSize = 13.sp, fontWeight = FontWeight.Medium)
             Text(
-                text = xp.timestamp.format(dateFormatter),
+                text = xp.createdAt.format(dateFormatter),
                 fontSize = 11.sp,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )

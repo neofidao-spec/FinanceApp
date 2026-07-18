@@ -24,7 +24,8 @@ class CategoryRepository(private val dao: CategoryDao) {
         if (dao.count() == 0) {
             dao.insertAll(DefaultCategories.getDefault())
         }
+
+    suspend fun getAllCategoriesOnce(): List<Category> = dao.getAll().first()
     }
 }
 
-    suspend fun getAllCategoriesOnce(): List<Category> = dao.getAll().first()

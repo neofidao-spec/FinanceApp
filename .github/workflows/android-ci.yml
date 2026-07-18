@@ -28,18 +28,17 @@ jobs:
         EXIT_CODE=${PIPESTATUS[0]}
         if [ $EXIT_CODE -ne 0 ]; then
           echo "BUILD FAILED (exit $EXIT_CODE)"
-          grep -E "^e:|error:|Duplicate|MissingBinding|cannot find|Unresolved|Type mismatch" build.log | head -30
-          echo "=== WHAT WENT WRONG ==="
-          grep -A5 "What went wrong:" build.log | head -20
-          echo "=== FAILED TASK ==="
-          grep "FAILED" build.log | head -5
-          echo "=== LAST 5 LINES ==="
-          tail -5 build.log
+          ERROR_MSG=$(grep -E "^e:|error:|Duplicate|MissingBinding|cannot find|Unresolved|Type mismatch" build.log | head -20)
+          echo "$ERROR_MSG"
+          echo "=== LAST 10 LINES ==="
+          tail -10 build.log
+          # Post error to commit status
+          gh api repos/\${{ github.repository }}/statuses/\${{ github.sha }} -f state=failure -f description="Build failed" -f context="build-error" 2>/dev/null || true
           exit 1
         fi
 
-    - name: Upload build log on failure
-      if: failure()
+    - name: Upload Debug APK (on success)
+      if: success()
       uses: actions/upload-artifact@v4
       with:
         name: build-log
