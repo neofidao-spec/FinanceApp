@@ -27,11 +27,11 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import com.financeapp.ui.theme.Spacing
+import com.financeapp.ui.theme.financeColors
 
 /**
  * Data class representing a monthly data point for the trend chart.
@@ -55,11 +55,15 @@ data class MonthlyData(
 fun MonthlyTrendChart(
     data: List<MonthlyData>,
     modifier: Modifier = Modifier,
-    incomeColor: Color = Color(0xFF4CAF50),
-    expenseColor: Color = Color(0xFFF44336),
+    incomeColor: Color = MaterialTheme.colorScheme.financeColors.income,
+    expenseColor: Color = MaterialTheme.colorScheme.financeColors.expense,
     animationDuration: Int = 1500
 ) {
     if (data.isEmpty()) return
+
+    // Capture colors outside Canvas
+    val gridLineColor = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
+    val dotCenterColor = MaterialTheme.colorScheme.surface
 
     // Animated progress for line drawing
     var animationPlayed by remember { mutableFloatStateOf(0f) }
@@ -80,11 +84,11 @@ fun MonthlyTrendChart(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp),
+                .padding(horizontal = Spacing.md),
             horizontalArrangement = Arrangement.End,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Canvas(modifier = Modifier.width(12.dp).height(3.dp)) {
+            Canvas(modifier = Modifier.width(Spacing.smd).height(3.dp)) {
                 drawLine(
                     color = incomeColor,
                     start = Offset.Zero,
@@ -93,14 +97,14 @@ fun MonthlyTrendChart(
                     cap = StrokeCap.Round
                 )
             }
-            Spacer(modifier = Modifier.width(4.dp))
+            Spacer(modifier = Modifier.width(Spacing.xs))
             Text(
                 text = "Pemasukan",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
-            Spacer(modifier = Modifier.width(16.dp))
-            Canvas(modifier = Modifier.width(12.dp).height(3.dp)) {
+            Spacer(modifier = Modifier.width(Spacing.md))
+            Canvas(modifier = Modifier.width(Spacing.smd).height(3.dp)) {
                 drawLine(
                     color = expenseColor,
                     start = Offset.Zero,
@@ -109,7 +113,7 @@ fun MonthlyTrendChart(
                     cap = StrokeCap.Round
                 )
             }
-            Spacer(modifier = Modifier.width(4.dp))
+            Spacer(modifier = Modifier.width(Spacing.xs))
             Text(
                 text = "Pengeluaran",
                 style = MaterialTheme.typography.bodySmall,
@@ -117,13 +121,13 @@ fun MonthlyTrendChart(
             )
         }
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(Spacing.sm))
 
         Canvas(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(200.dp)
-                .padding(horizontal = 16.dp, vertical = 8.dp)
+                .padding(horizontal = Spacing.md, vertical = Spacing.sm)
         ) {
             val chartWidth = size.width
             val chartHeight = size.height
@@ -138,7 +142,7 @@ fun MonthlyTrendChart(
             for (i in 0..gridLines) {
                 val y = chartHeight - (chartHeight / gridLines) * i
                 drawLine(
-                    color = Color.LightGray.copy(alpha = 0.5f),
+                    color = gridLineColor,
                     start = Offset(0f, y),
                     end = Offset(chartWidth, y),
                     strokeWidth = 1f
@@ -203,7 +207,7 @@ fun MonthlyTrendChart(
                         center = point
                     )
                     drawCircle(
-                        color = Color.White,
+                        color = dotCenterColor,
                         radius = 3f,
                         center = point
                     )
@@ -216,7 +220,7 @@ fun MonthlyTrendChart(
                         center = point
                     )
                     drawCircle(
-                        color = Color.White,
+                        color = dotCenterColor,
                         radius = 3f,
                         center = point
                     )
@@ -228,14 +232,13 @@ fun MonthlyTrendChart(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp),
+                .padding(horizontal = Spacing.md),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             data.forEach { monthlyData ->
                 Text(
                     text = monthlyData.month,
-                    style = MaterialTheme.typography.bodySmall,
-                    fontSize = 10.sp,
+                    style = MaterialTheme.typography.labelSmall,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.weight(1f)
                 )
@@ -257,7 +260,7 @@ private fun MonthlyTrendChartPreview() {
                 MonthlyData("Mei", 5200000.0, 3800000.0),
                 MonthlyData("Jun", 5800000.0, 4100000.0)
             ),
-            modifier = Modifier.padding(16.dp)
+            modifier = Modifier.padding(Spacing.md)
         )
     }
 }

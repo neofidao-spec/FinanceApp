@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavHostController
 import com.financeapp.ui.navigation.NavigationRoutes
+import com.financeapp.ui.theme.Spacing
 
 private data class NavigationItem(
     val label: String,
@@ -61,7 +62,7 @@ fun MainScreen(
         bottomBar = {
             NavigationBar(
                 containerColor = MaterialTheme.colorScheme.surface,
-                tonalElevation = 8.dp
+                tonalElevation = Spacing.sm
             ) {
                 navigationItems.forEachIndexed { index, item ->
                     NavigationBarItem(

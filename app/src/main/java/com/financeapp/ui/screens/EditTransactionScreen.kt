@@ -36,11 +36,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.financeapp.data.model.TransactionType
 import com.financeapp.ui.components.AccountSelectorRow
@@ -49,6 +47,7 @@ import com.financeapp.ui.components.CategorySelector
 import com.financeapp.ui.components.DatePickerField
 import com.financeapp.ui.components.HapticButton
 import com.financeapp.ui.viewmodel.EditTransactionViewModel
+import com.financeapp.ui.theme.Spacing
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -112,7 +111,7 @@ fun EditTransactionScreen(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(32.dp),
+                    .padding(Spacing.xl),
                 contentAlignment = Alignment.Center
             ) {
                 CircularProgressIndicator()
@@ -124,13 +123,13 @@ fun EditTransactionScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(innerPadding)
-                .padding(16.dp)
+                .padding(Spacing.md)
                 .verticalScroll(rememberScrollState())
         ) {
             // Transaction type (read-only)
             Text("Tipe: ${if (uiState.transactionType == TransactionType.EXPENSE) "Pengeluaran" else "Pemasukan"}", fontWeight = FontWeight.Bold)
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(Spacing.md))
 
             AmountInput(
                 value = uiState.amount,
@@ -144,7 +143,7 @@ fun EditTransactionScreen(
                 label = { Text("Deskripsi") },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 8.dp),
+                    .padding(bottom = Spacing.sm),
                 singleLine = true
             )
 
@@ -155,7 +154,7 @@ fun EditTransactionScreen(
                 onCategorySelected = { viewModel.selectCategory(it) }
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(Spacing.sm))
 
             DatePickerField(
                 value = uiState.selectedDate,
@@ -164,7 +163,7 @@ fun EditTransactionScreen(
 
             // Account selector
             if (uiState.accounts.isNotEmpty()) {
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(Spacing.sm))
                 AccountSelectorRow(
                     accounts = uiState.accounts,
                     selectedAccountId = uiState.selectedAccountId,
@@ -172,10 +171,10 @@ fun EditTransactionScreen(
                 )
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(Spacing.md))
 
             uiState.errorMessage?.let {
-                Text(it, color = Color.Red, modifier = Modifier.padding(bottom = 8.dp))
+                Text(it, color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(bottom = Spacing.sm))
             }
             // Save button
             HapticButton(

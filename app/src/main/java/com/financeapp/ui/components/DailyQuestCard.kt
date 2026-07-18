@@ -28,12 +28,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.financeapp.data.model.DailyQuest
+import com.financeapp.ui.theme.Spacing
+import com.financeapp.ui.theme.financeColors
 
 @Composable
 fun DailyQuestCard(
@@ -53,7 +53,7 @@ fun DailyQuestCard(
 
     Card(
         modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp),
+        shape = MaterialTheme.shapes.medium,
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
         ),
@@ -62,7 +62,7 @@ fun DailyQuestCard(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
+                .padding(Spacing.md)
         ) {
             // Header
             Row(
@@ -77,34 +77,34 @@ fun DailyQuestCard(
                 )
                 Text(
                     text = "$completedCount/$totalCount",
-                    fontSize = 13.sp,
+                    style = MaterialTheme.typography.labelLarge,
                     fontWeight = FontWeight.SemiBold,
-                    color = if (completedCount == totalCount) Color(0xFF2E7D32)
+                    color = if (completedCount == totalCount) MaterialTheme.colorScheme.financeColors.income
                     else MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(Spacing.sm))
 
             // Overall progress bar
             LinearProgressIndicator(
-                progress = animatedProgress,
+                progress = { animatedProgress },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(6.dp)
                     .clip(RoundedCornerShape(3.dp)),
-                color = if (completedCount == totalCount) Color(0xFF2E7D32)
+                color = if (completedCount == totalCount) MaterialTheme.colorScheme.financeColors.income
                 else MaterialTheme.colorScheme.primary,
                 trackColor = MaterialTheme.colorScheme.surfaceVariant,
                 strokeCap = StrokeCap.Round
             )
 
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(Spacing.smd))
 
             // Individual quest items
             quests.forEach { quest ->
                 QuestItem(quest = quest)
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(Spacing.sm))
             }
         }
     }
@@ -125,45 +125,45 @@ private fun QuestItem(quest: DailyQuest) {
             imageVector = if (quest.isCompleted) Icons.Filled.CheckCircle
             else Icons.Filled.RadioButtonUnchecked,
             contentDescription = if (quest.isCompleted) "Selesai" else "Belum selesai",
-            tint = if (quest.isCompleted) Color(0xFF2E7D32)
+            tint = if (quest.isCompleted) MaterialTheme.colorScheme.financeColors.income
             else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
             modifier = Modifier.size(20.dp)
         )
 
-        Spacer(modifier = Modifier.width(10.dp))
+        Spacer(modifier = Modifier.width(Spacing.smd))
 
         // Quest details
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = quest.name,
-                fontSize = 13.sp,
+                style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.Medium,
                 color = if (quest.isCompleted) MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
                 else MaterialTheme.colorScheme.onSurface
             )
-            Spacer(modifier = Modifier.height(3.dp))
+            Spacer(modifier = Modifier.height(Spacing.xs))
             LinearProgressIndicator(
-                progress = progress.coerceIn(0f, 1f),
+                progress = { progress.coerceIn(0f, 1f) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(4.dp)
                     .clip(RoundedCornerShape(2.dp)),
-                color = if (quest.isCompleted) Color(0xFF2E7D32)
+                color = if (quest.isCompleted) MaterialTheme.colorScheme.financeColors.income
                 else MaterialTheme.colorScheme.primary.copy(alpha = 0.7f),
                 trackColor = MaterialTheme.colorScheme.surfaceVariant,
                 strokeCap = StrokeCap.Round
             )
         }
 
-        Spacer(modifier = Modifier.width(8.dp))
+        Spacer(modifier = Modifier.width(Spacing.sm))
 
         // XP reward
         Text(
             text = "+${quest.xpReward} XP",
-            fontSize = 11.sp,
+            style = MaterialTheme.typography.labelSmall,
             fontWeight = FontWeight.SemiBold,
-            color = if (quest.isCompleted) Color(0xFF2E7D32).copy(alpha = 0.6f)
-            else Color(0xFFFF8F00)
+            color = if (quest.isCompleted) MaterialTheme.colorScheme.financeColors.income.copy(alpha = 0.6f)
+            else MaterialTheme.colorScheme.financeColors.accent
         )
     }
 }

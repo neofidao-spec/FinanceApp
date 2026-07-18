@@ -28,10 +28,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.foundation.layout.defaultMinSize
 
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import com.financeapp.ui.theme.Spacing
 import com.financeapp.data.model.Category
 import com.financeapp.ui.utils.FinanceIcons
 
@@ -45,15 +46,15 @@ fun CategorySelector(
     var showDialog by remember { mutableStateOf(false) }
 
     Column {
-        Text(label, fontWeight = FontWeight.Bold, modifier = Modifier.padding(bottom = 4.dp))
+        Text(label, fontWeight = FontWeight.Bold, modifier = Modifier.padding(bottom = Spacing.xs))
         
         if (selectedCategory != null) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(8.dp))
+                    .background(MaterialTheme.colorScheme.surfaceVariant, MaterialTheme.shapes.extraSmall)
                     .clickable { showDialog = true }
-                    .padding(12.dp),
+                    .padding(Spacing.smd),
                 contentAlignment = Alignment.CenterStart
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -110,18 +111,19 @@ fun CategoryItem(
 ) {
     Box(
         modifier = Modifier
-            .padding(4.dp)
+            .padding(Spacing.xs)
+            .defaultMinSize(minWidth = 48.dp, minHeight = 48.dp)
             .background(
                 color = if (isSelected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant,
-                shape = RoundedCornerShape(8.dp)
+                shape = MaterialTheme.shapes.extraSmall
             )
             .clickable(onClick = onClick)
-            .padding(8.dp),
+            .padding(Spacing.sm),
         contentAlignment = Alignment.Center
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Icon(FinanceIcons.getIcon(category.name), contentDescription = category.name, modifier = Modifier.size(24.dp))
-            Text(category.name, fontSize = 10.sp, maxLines = 1)
+            Text(category.name, style = MaterialTheme.typography.labelSmall, maxLines = 1)
         }
     }
 }

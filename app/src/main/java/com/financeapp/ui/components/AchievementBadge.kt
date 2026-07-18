@@ -37,7 +37,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import com.financeapp.ui.theme.Spacing
+import com.financeapp.ui.theme.financeColors
 import com.financeapp.data.model.Achievement
 
 fun resolveAchievementIcon(iconName: String): ImageVector = when (iconName) {
@@ -68,13 +69,13 @@ fun AchievementBadge(
 
     Card(
         modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(12.dp),
+        shape = MaterialTheme.shapes.small,
         colors = CardDefaults.cardColors(containerColor = cardColor)
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
+                .padding(Spacing.md),
             verticalAlignment = Alignment.CenterVertically
         ) {
             // Icon
@@ -97,14 +98,14 @@ fun AchievementBadge(
                 )
             }
 
-            Spacer(modifier = Modifier.width(12.dp))
+            Spacer(modifier = Modifier.width(Spacing.smd))
 
             // Content
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = achievement.name,
+                    style = MaterialTheme.typography.titleSmall,
                     fontWeight = FontWeight.Bold,
-                    fontSize = 14.sp,
                     color = if (isUnlocked) {
                         MaterialTheme.colorScheme.onPrimaryContainer
                     } else {
@@ -113,14 +114,14 @@ fun AchievementBadge(
                 )
                 Text(
                     text = achievement.description,
-                    fontSize = 12.sp,
+                    style = MaterialTheme.typography.bodySmall,
                     color = if (isUnlocked) {
                         MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f)
                     } else {
                         MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
                     }
                 )
-                Spacer(modifier = Modifier.height(4.dp))
+                Spacer(modifier = Modifier.height(Spacing.xs))
 
                 if (!isUnlocked) {
                     LinearProgressIndicator(
@@ -133,14 +134,14 @@ fun AchievementBadge(
                     )
                     Text(
                         text = "${achievement.currentValue} / ${achievement.targetValue}",
-                        fontSize = 10.sp,
+                        style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 } else {
                     Text(
                         text = "Terbuka",
-                        fontSize = 10.sp,
-                        color = Color(0xFF4CAF50),
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.financeColors.income,
                         fontWeight = FontWeight.Medium
                     )
                 }

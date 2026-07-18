@@ -11,7 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
-import androidx.compose.ui.unit.dp
+import com.financeapp.ui.theme.Spacing
 
 /**
  * Button that triggers haptic feedback on press.
@@ -39,7 +39,7 @@ fun HapticButton(
     ) {
         Text(
             text = if (isLoading) "Menyimpan..." else text,
-            modifier = Modifier.padding(vertical = 8.dp)
+            modifier = Modifier.padding(vertical = Spacing.sm)
         )
     }
 }

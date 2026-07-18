@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.clickable
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
@@ -47,11 +46,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.financeapp.data.model.TransactionType
 import com.financeapp.data.model.TransactionWithCategory
@@ -63,6 +60,7 @@ import com.financeapp.ui.utils.FormatterUtil
 import com.financeapp.ui.viewmodel.TransactionViewModel
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import com.financeapp.ui.theme.Spacing
 
 @OptIn(ExperimentalLayoutApi::class, ExperimentalFoundationApi::class)
 @Composable
@@ -91,22 +89,22 @@ fun TransactionListScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 16.dp)
+                .padding(horizontal = Spacing.md)
         ) {
             // Search Bar
             SearchBar(
                 query = uiState.searchQuery,
                 onSearchChange = { viewModel.updateSearchQuery(it) },
                 onFilterClick = { viewModel.showFilterDialog() },
-                modifier = Modifier.padding(top = 8.dp)
+                modifier = Modifier.padding(top = Spacing.sm)
             )
 
             // Active filter summary chips
             if (uiState.activeFilter != null) {
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(Spacing.sm))
                 FlowRow(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                    horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
+                    verticalArrangement = Arrangement.spacedBy(Spacing.xs)
                 ) {
                     uiState.activeFilter?.type?.let { type ->
                         FilterChip(
@@ -121,7 +119,7 @@ fun TransactionListScreen(
                                 Icon(
                                     imageVector = Icons.Filled.Close,
                                     contentDescription = "Hapus filter",
-                                    modifier = Modifier.size(16.dp)
+                                    modifier = Modifier.size(Spacing.iconT)
                                 )
                             }
                         )
@@ -157,7 +155,7 @@ fun TransactionListScreen(
                 }
             }
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(Spacing.sm))
 
             // Content
             if (uiState.isLoading) {
@@ -176,18 +174,18 @@ fun TransactionListScreen(
                         Icon(
                             imageVector = Icons.Filled.TrendingUp,
                             contentDescription = "Error",
-                            modifier = Modifier.size(64.dp),
+                            modifier = Modifier.size(Spacing.iconXl),
                             tint = MaterialTheme.colorScheme.error
                         )
-                        Spacer(modifier = Modifier.height(16.dp))
+                        Spacer(modifier = Modifier.height(Spacing.md))
                         Text(
                             uiState.errorMessage ?: "",
                             style = MaterialTheme.typography.bodyLarge,
                             textAlign = TextAlign.Center
                         )
-                        Spacer(modifier = Modifier.height(16.dp))
+                        Spacer(modifier = Modifier.height(Spacing.md))
                         Button(onClick = { viewModel.retry() }) {
-                            Icon(Icons.Filled.Refresh, contentDescription = "Coba lagi", modifier = Modifier.padding(end = 8.dp))
+                            Icon(Icons.Filled.Refresh, contentDescription = "Coba lagi", modifier = Modifier.padding(end = Spacing.sm))
                             Text("Coba Lagi")
                         }
                     }
@@ -222,10 +220,10 @@ fun TransactionListScreen(
                                 text = dateLabel,
                                 style = MaterialTheme.typography.titleSmall,
                                 fontWeight = FontWeight.Bold,
-                                color = Color.Gray,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(vertical = 8.dp)
+                                    .padding(vertical = Spacing.sm)
                             )
                         }
                         items(transactions) { txn ->
@@ -239,7 +237,7 @@ fun TransactionListScreen(
                         }
                         item {
                             Divider(
-                                modifier = Modifier.padding(vertical = 4.dp),
+                                modifier = Modifier.padding(vertical = Spacing.xs),
                                 color = MaterialTheme.colorScheme.outlineVariant
                             )
                         }
@@ -250,10 +248,10 @@ fun TransactionListScreen(
                             Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(16.dp),
+                                    .padding(Spacing.md),
                                 contentAlignment = Alignment.Center
                             ) {
-                                CircularProgressIndicator(modifier = Modifier.size(24.dp))
+                                CircularProgressIndicator(modifier = Modifier.size(Spacing.iconXs))
                             }
                         }
                     }
@@ -266,7 +264,7 @@ fun TransactionListScreen(
             hostState = snackbarHostState,
             modifier = Modifier
                 .align(Alignment.BottomCenter)
-                .padding(16.dp)
+                .padding(Spacing.md)
         )
     }
 
@@ -290,7 +288,7 @@ private fun EmptyTransactionState(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(32.dp),
+            .padding(Spacing.xl),
         contentAlignment = Alignment.Center
     ) {
         Column(
@@ -299,22 +297,21 @@ private fun EmptyTransactionState(
             Icon(
                 imageVector = Icons.Default.Search,
                 contentDescription = "Tidak ada transaksi",
-                modifier = Modifier.size(64.dp),
-                tint = Color.Gray
+                modifier = Modifier.size(Spacing.iconXl),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant
             )
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(Spacing.md))
             Text(
                 text = if (isFiltered) "Tidak ada transaksi ditemukan" else "Belum ada transaksi",
-                fontWeight = FontWeight.Bold,
-                fontSize = 16.sp,
+                style = MaterialTheme.typography.titleMedium,
                 textAlign = TextAlign.Center
             )
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(Spacing.sm))
             Text(
                 text = if (isFiltered) "Coba ubah filter atau kata kunci pencarian"
                 else "Mulai dengan menambahkan transaksi baru",
-                fontSize = 12.sp,
-                color = Color.Gray,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center
             )
         }

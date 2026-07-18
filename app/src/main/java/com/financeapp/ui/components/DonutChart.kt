@@ -32,7 +32,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import com.financeapp.ui.theme.Spacing
 import com.financeapp.ui.utils.FormatterUtil
 
 /**
@@ -119,20 +119,18 @@ fun DonutChart(
             if (centerText.isNotEmpty()) {
                 Text(
                     text = centerText,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    textAlign = TextAlign.Center,
-                    fontSize = 14.sp
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                    textAlign = TextAlign.Center
                 )
             }
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(Spacing.md))
 
         // Legend
         Column(
             modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            verticalArrangement = Arrangement.spacedBy(Spacing.sm)
         ) {
             segments.forEach { segment ->
                 val percentage = if (total > 0) {
@@ -142,13 +140,13 @@ fun DonutChart(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp),
+                        .padding(horizontal = Spacing.md),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Canvas(modifier = Modifier.size(12.dp)) {
                         drawCircle(color = segment.color)
                     }
-                    Spacer(modifier = Modifier.width(8.dp))
+                    Spacer(modifier = Modifier.width(Spacing.sm))
                     Text(
                         text = segment.label,
                         style = MaterialTheme.typography.bodyMedium,
@@ -159,7 +157,7 @@ fun DonutChart(
                         style = MaterialTheme.typography.bodyMedium,
                         fontWeight = FontWeight.Bold
                     )
-                    Spacer(modifier = Modifier.width(8.dp))
+                    Spacer(modifier = Modifier.width(Spacing.sm))
                     Text(
                         text = "${String.format("%.1f", percentage)}%",
                         style = MaterialTheme.typography.bodySmall,

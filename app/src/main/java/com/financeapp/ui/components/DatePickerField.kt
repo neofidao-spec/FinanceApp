@@ -28,7 +28,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.unit.dp
+import com.financeapp.ui.theme.Spacing
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -50,20 +50,20 @@ fun DatePickerField(
             text = label,
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(bottom = 4.dp)
+            modifier = Modifier.padding(bottom = Spacing.xs)
         )
 
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(12.dp))
+                .clip(MaterialTheme.shapes.small)
                 .border(
                     width = 1.dp,
                     color = MaterialTheme.colorScheme.outline,
-                    shape = RoundedCornerShape(12.dp)
+                    shape = MaterialTheme.shapes.small
                 )
                 .clickable { showDatePicker = true }
-                .padding(horizontal = 16.dp, vertical = 14.dp)
+                .padding(horizontal = Spacing.md, vertical = 14.dp)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),

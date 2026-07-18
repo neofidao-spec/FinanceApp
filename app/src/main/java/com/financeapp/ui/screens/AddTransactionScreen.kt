@@ -31,7 +31,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -43,6 +42,8 @@ import com.financeapp.ui.components.CategorySelector
 import com.financeapp.ui.components.DatePickerField
 import com.financeapp.ui.components.HapticButton
 import com.financeapp.ui.viewmodel.AddTransactionViewModel
+import com.financeapp.ui.theme.financeColors
+import com.financeapp.ui.theme.Spacing
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -79,23 +80,23 @@ fun AddTransactionScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(innerPadding)
-                .padding(16.dp)
+                .padding(Spacing.md)
                 .verticalScroll(rememberScrollState())
         ) {
             // Transaction type selector
             Text("Tipe Transaksi", fontWeight = FontWeight.Bold)
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(Spacing.sm))
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.spacedBy(Spacing.sm)
             ) {
                 FilterChip(
                     selected = uiState.transactionType == TransactionType.EXPENSE,
                     onClick = { viewModel.switchTransactionType(TransactionType.EXPENSE) },
                     label = { Text("Pengeluaran") },
                     colors = FilterChipDefaults.filterChipColors(
-                        selectedContainerColor = Color(0xFFF44336).copy(alpha = 0.15f),
-                        selectedLabelColor = Color(0xFFF44336)
+                        selectedContainerColor = MaterialTheme.colorScheme.financeColors.expense.copy(alpha = 0.15f),
+                        selectedLabelColor = MaterialTheme.colorScheme.financeColors.expense
                     ),
                     modifier = Modifier.weight(1f)
                 )
@@ -104,14 +105,14 @@ fun AddTransactionScreen(
                     onClick = { viewModel.switchTransactionType(TransactionType.INCOME) },
                     label = { Text("Pemasukan") },
                     colors = FilterChipDefaults.filterChipColors(
-                        selectedContainerColor = Color(0xFF4CAF50).copy(alpha = 0.15f),
-                        selectedLabelColor = Color(0xFF4CAF50)
+                        selectedContainerColor = MaterialTheme.colorScheme.financeColors.income.copy(alpha = 0.15f),
+                        selectedLabelColor = MaterialTheme.colorScheme.financeColors.income
                     ),
                     modifier = Modifier.weight(1f)
                 )
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(Spacing.md))
 
             // Amount input
             AmountInput(
@@ -127,7 +128,7 @@ fun AddTransactionScreen(
                 label = { Text("Deskripsi") },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 8.dp),
+                    .padding(bottom = Spacing.sm),
                 singleLine = true
             )
 
@@ -139,7 +140,7 @@ fun AddTransactionScreen(
                 onCategorySelected = { viewModel.selectCategory(it) }
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(Spacing.sm))
 
             // Date picker
             DatePickerField(
@@ -149,7 +150,7 @@ fun AddTransactionScreen(
 
             // Account selector
             if (uiState.accounts.isNotEmpty()) {
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(Spacing.sm))
                 AccountSelectorRow(
                     accounts = uiState.accounts,
                     selectedAccountId = uiState.selectedAccountId,
@@ -157,11 +158,11 @@ fun AddTransactionScreen(
                 )
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(Spacing.md))
 
             // Error message
             uiState.errorMessage?.let {
-                Text(it, color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(bottom = 8.dp))
+                Text(it, color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(bottom = Spacing.sm))
             }
 
             // Save button

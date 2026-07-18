@@ -46,6 +46,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import com.financeapp.ui.theme.financeColors
+import com.financeapp.ui.theme.Spacing
 
 @HiltViewModel
 class OnboardingViewModel @Inject constructor(
@@ -73,7 +75,7 @@ private val onboardingPages = listOf(
         title = "Kelola Keuanganmu",
         subtitle = "Pantau pemasukan dan pengeluaran dengan mudah. Atur keuanganmu dengan lebih bijak.",
         icon = Icons.Filled.Money,
-        color = Color(0xFF2E7D32)
+        color = MaterialTheme.colorScheme.financeColors.income
     ),
     OnboardingPage(
         title = "Analisa Pengeluaran",
@@ -113,13 +115,13 @@ fun OnboardingScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 24.dp)
+                .padding(horizontal = Spacing.lg)
         ) {
             // Skip button
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 16.dp),
+                    .padding(top = Spacing.md),
                 horizontalArrangement = Arrangement.End
             ) {
                 TextButton(
@@ -147,17 +149,17 @@ fun OnboardingScreen(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 16.dp),
+                    .padding(bottom = Spacing.md),
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 repeat(onboardingPages.size) { index ->
                     Box(
                         modifier = Modifier
-                            .padding(horizontal = 4.dp)
-                            .size(if (pagerState.currentPage == index) 24.dp else 8.dp)
-                            .height(8.dp)
-                            .clip(RoundedCornerShape(4.dp))
+                            .padding(horizontal = Spacing.xs)
+                            .size(if (pagerState.currentPage == index) Spacing.lg else Spacing.sm)
+                            .height(Spacing.sm)
+                            .clip(RoundedCornerShape(Spacing.xs))
                             .background(
                                 if (pagerState.currentPage == index)
                                     MaterialTheme.colorScheme.primary
@@ -168,7 +170,7 @@ fun OnboardingScreen(
                 }
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(Spacing.md))
 
             // Action button
             val isLastPage = pagerState.currentPage == onboardingPages.size - 1
@@ -187,19 +189,18 @@ fun OnboardingScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp),
-                shape = RoundedCornerShape(16.dp),
+                shape = MaterialTheme.shapes.medium,
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.primary
                 )
             ) {
                 Text(
                     text = if (isLastPage) "Mulai" else "Selanjutnya",
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.SemiBold
+                    style = MaterialTheme.typography.titleMedium
                 )
             }
 
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(Spacing.xl))
         }
     }
 }
@@ -224,12 +225,12 @@ private fun OnboardingPageContent(page: OnboardingPage) {
             Icon(
                 imageVector = page.icon,
                 contentDescription = page.title,
-                modifier = Modifier.size(64.dp),
+                modifier = Modifier.size(Spacing.iconXl),
                 tint = page.color
             )
         }
 
-        Spacer(modifier = Modifier.height(32.dp))
+        Spacer(modifier = Modifier.height(Spacing.xl))
 
         // Title
         Text(
@@ -238,7 +239,7 @@ private fun OnboardingPageContent(page: OnboardingPage) {
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center,
             color = MaterialTheme.colorScheme.onBackground,
-            modifier = Modifier.padding(bottom = 12.dp)
+            modifier = Modifier.padding(bottom = Spacing.smd)
         )
 
         // Subtitle
@@ -248,7 +249,7 @@ private fun OnboardingPageContent(page: OnboardingPage) {
             textAlign = TextAlign.Center,
             color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
             lineHeight = 24.sp,
-            modifier = Modifier.padding(horizontal = 16.dp)
+            modifier = Modifier.padding(horizontal = Spacing.md)
         )
     }
 }

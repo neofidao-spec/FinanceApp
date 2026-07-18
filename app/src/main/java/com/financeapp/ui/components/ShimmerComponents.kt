@@ -26,9 +26,11 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.financeapp.ui.theme.Spacing
 
 /**
  * Modifier that applies a shimmer effect — a moving gradient highlight.
+ * Note: Uses RoundedCornerShape(8.dp) directly since this is not a @Composable context.
  */
 fun Modifier.shimmerEffect(): Modifier = composed {
     val transition = rememberInfiniteTransition(label = "shimmer")
@@ -68,28 +70,28 @@ fun ShimmerBalanceCard(modifier: Modifier = Modifier) {
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(16.dp)
+            .padding(Spacing.md)
     ) {
         Box(
             modifier = Modifier
                 .fillMaxWidth(0.5f)
-                .height(16.dp)
+                .height(Spacing.md)
                 .clip(RoundedCornerShape(4.dp))
                 .shimmerEffect()
         )
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(Spacing.sm))
         Box(
             modifier = Modifier
                 .fillMaxWidth(0.7f)
-                .height(28.dp)
+                .height(Spacing.lg)
                 .clip(RoundedCornerShape(4.dp))
                 .shimmerEffect()
         )
-        Spacer(modifier = Modifier.height(4.dp))
+        Spacer(modifier = Modifier.height(Spacing.xs))
         Box(
             modifier = Modifier
                 .fillMaxWidth(0.4f)
-                .height(14.dp)
+                .height(Spacing.smd)
                 .clip(RoundedCornerShape(4.dp))
                 .shimmerEffect()
         )
@@ -104,8 +106,8 @@ fun ShimmerTransactionItem(modifier: Modifier = Modifier) {
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 12.dp),
-        horizontalArrangement = Arrangement.spacedBy(12.dp)
+            .padding(horizontal = Spacing.md, vertical = Spacing.smd),
+        horizontalArrangement = Arrangement.spacedBy(Spacing.smd)
     ) {
         // Icon placeholder
         Box(
@@ -119,15 +121,15 @@ fun ShimmerTransactionItem(modifier: Modifier = Modifier) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth(0.6f)
-                    .height(14.dp)
+                    .height(Spacing.smd)
                     .clip(RoundedCornerShape(4.dp))
                     .shimmerEffect()
             )
-            Spacer(modifier = Modifier.height(6.dp))
+            Spacer(modifier = Modifier.height(Spacing.xs))
             Box(
                 modifier = Modifier
                     .fillMaxWidth(0.4f)
-                    .height(12.dp)
+                    .height(Spacing.smd)
                     .clip(RoundedCornerShape(4.dp))
                     .shimmerEffect()
             )
@@ -136,7 +138,7 @@ fun ShimmerTransactionItem(modifier: Modifier = Modifier) {
         Box(
             modifier = Modifier
                 .width(80.dp)
-                .height(16.dp)
+                .height(Spacing.md)
                 .clip(RoundedCornerShape(4.dp))
                 .shimmerEffect()
         )

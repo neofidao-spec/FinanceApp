@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBalance
 import androidx.compose.material.icons.filled.AccountBalanceWallet
@@ -43,6 +42,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.financeapp.data.model.Account
 import com.financeapp.data.model.AccountType
+import com.financeapp.ui.theme.Spacing
 
 /**
  * Standalone AccountSelector component.
@@ -66,7 +66,7 @@ fun AccountSelector(
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onSurface
         )
-        Spacer(modifier = Modifier.height(4.dp))
+        Spacer(modifier = Modifier.height(Spacing.xs))
         ExposedDropdownMenuBox(
             expanded = expanded,
             onExpandedChange = { expanded = !expanded }
@@ -97,7 +97,7 @@ fun AccountSelector(
                         text = {
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(12.dp)
+                                horizontalArrangement = Arrangement.spacedBy(Spacing.smd)
                             ) {
                                 AccountIcon(
                                     type = account.type,
@@ -154,17 +154,17 @@ fun AccountSelectorRow(
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onSurface
         )
-        Spacer(modifier = Modifier.height(4.dp))
+        Spacer(modifier = Modifier.height(Spacing.xs))
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+            horizontalArrangement = Arrangement.spacedBy(Spacing.sm)
         ) {
             accounts.forEach { account ->
                 val isSelected = account.id == selectedAccountId
                 OutlinedCard(
                     onClick = { onAccountSelected(account.id) },
                     modifier = Modifier.weight(1f),
-                    shape = RoundedCornerShape(12.dp),
+                    shape = MaterialTheme.shapes.small,
                     border = if (isSelected) {
                         androidx.compose.foundation.BorderStroke(
                             2.dp,
@@ -180,7 +180,7 @@ fun AccountSelectorRow(
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(8.dp),
+                            .padding(Spacing.sm),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         AccountIcon(
@@ -188,7 +188,7 @@ fun AccountSelectorRow(
                             color = parseColor(account.color),
                             size = 28
                         )
-                        Spacer(modifier = Modifier.height(4.dp))
+                        Spacer(modifier = Modifier.height(Spacing.xs))
                         Text(
                             text = account.name,
                             style = MaterialTheme.typography.labelSmall,

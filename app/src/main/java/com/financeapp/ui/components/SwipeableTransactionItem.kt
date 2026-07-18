@@ -36,9 +36,10 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.financeapp.data.model.TransactionType
 import com.financeapp.data.model.TransactionWithCategory
+import com.financeapp.ui.theme.Spacing
+import com.financeapp.ui.theme.financeColors
 import com.financeapp.ui.utils.FinanceIcons
 import com.financeapp.ui.utils.FormatterUtil
 import java.time.format.DateTimeFormatter
@@ -79,16 +80,16 @@ fun SwipeableTransactionItem(
             val deleteColor by animateColorAsState(
                 targetValue = when {
                     direction == SwipeToDismissBoxValue.EndToStart &&
-                    dismissState.targetValue == SwipeToDismissBoxValue.EndToStart -> Color(0xFFF44336)
-                    else -> Color(0xFFF44336).copy(alpha = 0.3f)
+                    dismissState.targetValue == SwipeToDismissBoxValue.EndToStart -> MaterialTheme.colorScheme.error
+                    else -> MaterialTheme.colorScheme.error.copy(alpha = 0.3f)
                 },
                 animationSpec = tween(200), label = "deleteColor"
             )
             val editColor by animateColorAsState(
                 targetValue = when {
                     direction == SwipeToDismissBoxValue.StartToEnd &&
-                    dismissState.targetValue == SwipeToDismissBoxValue.StartToEnd -> Color(0xFF1565C0)
-                    else -> Color(0xFF1565C0).copy(alpha = 0.3f)
+                    dismissState.targetValue == SwipeToDismissBoxValue.StartToEnd -> MaterialTheme.colorScheme.primary
+                    else -> MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)
                 },
                 animationSpec = tween(200), label = "editColor"
             )
@@ -102,9 +103,9 @@ fun SwipeableTransactionItem(
                             SwipeToDismissBoxValue.StartToEnd -> editColor
                             else -> Color.Transparent
                         },
-                        shape = RoundedCornerShape(12.dp)
+                        shape = MaterialTheme.shapes.small
                     )
-                    .padding(horizontal = 20.dp),
+                    .padding(horizontal = Spacing.mdLg),
                 contentAlignment = when (direction) {
                     SwipeToDismissBoxValue.EndToStart -> Alignment.CenterEnd
                     SwipeToDismissBoxValue.StartToEnd -> Alignment.CenterStart
@@ -114,16 +115,16 @@ fun SwipeableTransactionItem(
                 when (direction) {
                     SwipeToDismissBoxValue.EndToStart -> {
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text("Hapus", color = Color.White, style = MaterialTheme.typography.labelMedium)
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Icon(Icons.Filled.Delete, "Hapus transaksi", tint = Color.White, modifier = Modifier.size(24.dp))
+                            Text("Hapus", color = MaterialTheme.colorScheme.onPrimary, style = MaterialTheme.typography.labelMedium)
+                            Spacer(modifier = Modifier.width(Spacing.sm))
+                            Icon(Icons.Filled.Delete, "Hapus transaksi", tint = MaterialTheme.colorScheme.onPrimary, modifier = Modifier.size(Spacing.lg))
                         }
                     }
                     SwipeToDismissBoxValue.StartToEnd -> {
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(Icons.Filled.Edit, "Edit transaksi", tint = Color.White, modifier = Modifier.size(24.dp))
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text("Edit", color = Color.White, style = MaterialTheme.typography.labelMedium)
+                            Icon(Icons.Filled.Edit, "Edit transaksi", tint = MaterialTheme.colorScheme.onPrimary, modifier = Modifier.size(Spacing.lg))
+                            Spacer(modifier = Modifier.width(Spacing.sm))
+                            Text("Edit", color = MaterialTheme.colorScheme.onPrimary, style = MaterialTheme.typography.labelMedium)
                         }
                     }
                     else -> { /* empty */ }
@@ -141,14 +142,14 @@ fun SwipeableTransactionItem(
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(12.dp)),
+                .background(MaterialTheme.colorScheme.surface, MaterialTheme.shapes.small),
             elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
             onClick = onClick
         ) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp),
+                    .padding(Spacing.md),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Box(
@@ -156,7 +157,7 @@ fun SwipeableTransactionItem(
                         .size(40.dp)
                         .background(
                             color = iconColor.copy(alpha = 0.15f),
-                            shape = RoundedCornerShape(10.dp)
+                            shape = MaterialTheme.shapes.small
                         ),
                     contentAlignment = Alignment.Center
                 ) {
@@ -164,20 +165,20 @@ fun SwipeableTransactionItem(
                         imageVector = icon,
                         contentDescription = transaction.category.name,
                         tint = iconColor,
-                        modifier = Modifier.size(20.dp)
+                        modifier = Modifier.size(Spacing.mdLg)
                     )
                 }
-                Spacer(modifier = Modifier.width(12.dp))
+                Spacer(modifier = Modifier.width(Spacing.smd))
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
                         text = transaction.category.name,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 14.sp
+                        style = MaterialTheme.typography.titleSmall,
+                        fontWeight = FontWeight.Bold
                     )
                     if (transaction.transaction.description.isNotBlank()) {
                         Text(
                             text = transaction.transaction.description,
-                            fontSize = 12.sp,
+                            style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
@@ -186,13 +187,13 @@ fun SwipeableTransactionItem(
                     val prefix = if (isIncome) "+" else "-"
                     Text(
                         text = "$prefix ${FormatterUtil.formatCurrency(transaction.transaction.amount)}",
+                        style = MaterialTheme.typography.titleSmall,
                         fontWeight = FontWeight.Bold,
-                        fontSize = 14.sp,
-                        color = if (isIncome) Color(0xFF4CAF50) else Color(0xFFFF5722)
+                        color = if (isIncome) MaterialTheme.colorScheme.financeColors.income else MaterialTheme.colorScheme.financeColors.expense
                     )
                     Text(
                         text = transaction.transaction.date.format(DateTimeFormatter.ofPattern("HH:mm")),
-                        fontSize = 12.sp,
+                        style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }

@@ -13,7 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
+
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LocalFireDepartment
 import androidx.compose.material.icons.filled.AcUnit
@@ -33,7 +33,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import com.financeapp.ui.theme.Spacing
+import com.financeapp.ui.theme.financeColors
 
 @Composable
 fun StreakCard(
@@ -45,7 +46,7 @@ fun StreakCard(
 ) {
     val flameColor = when {
         currentStreak >= 30 -> Color(0xFFFF6F00) // Orange — hot streak
-        currentStreak >= 7 -> Color(0xFFFF8F00) // Amber
+        currentStreak >= 7 -> MaterialTheme.colorScheme.financeColors.accent // Amber
         currentStreak >= 3 -> Color(0xFFFFA726) // Light orange
         currentStreak > 0 -> Color(0xFFEF5350) // Red — starting
         else -> Color(0xFFBDBDBD) // Grey — inactive
@@ -58,7 +59,7 @@ fun StreakCard(
 
     Card(
         modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp),
+        shape = MaterialTheme.shapes.medium,
         colors = CardDefaults.cardColors(
             containerColor = flameColor.copy(alpha = 0.08f * animatedAlpha)
         )
@@ -66,7 +67,7 @@ fun StreakCard(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
+                .padding(Spacing.md),
             verticalAlignment = Alignment.CenterVertically
         ) {
             // Flame icon + streak count
@@ -75,34 +76,33 @@ fun StreakCard(
                     imageVector = Icons.Filled.LocalFireDepartment,
                     contentDescription = "Streak",
                     tint = flameColor.copy(alpha = animatedAlpha),
-                    modifier = Modifier.size(36.dp)
+                    modifier = Modifier.size(48.dp)
                 )
                 Spacer(modifier = Modifier.width(6.dp))
                 Column {
                     Text(
                         text = "$currentStreak",
-                        fontSize = 28.sp,
-                        fontWeight = FontWeight.Bold,
+                        style = MaterialTheme.typography.headlineMedium,
                         color = flameColor.copy(alpha = animatedAlpha)
                     )
                     Text(
                         text = "hari berturut-turut",
-                        fontSize = 11.sp,
+                        style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             }
 
-            Spacer(modifier = Modifier.width(16.dp))
+            Spacer(modifier = Modifier.width(Spacing.md))
 
             // Best streak + freeze button
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = "Terbaik: $bestStreak hari",
-                    fontSize = 12.sp,
+                    style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
-                Spacer(modifier = Modifier.height(4.dp))
+                Spacer(modifier = Modifier.height(Spacing.xs))
                 if (streakFreezes > 0) {
                     IconButton(
                         onClick = onUseFreeze,
@@ -128,7 +128,7 @@ fun StreakCard(
                 } else {
                     Text(
                         text = "Freeze streaks: 0",
-                        fontSize = 11.sp,
+                        style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
                     )
                 }

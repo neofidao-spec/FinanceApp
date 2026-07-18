@@ -120,7 +120,7 @@ private fun DashboardContent(
                 Icon(
                     imageVector = Icons.Filled.TrendingDown,
                     contentDescription = "Terjadi kesalahan",
-                    modifier = Modifier.size(64.dp),
+                    modifier = Modifier.size(Spacing.iconXl),
                     tint = MaterialTheme.colorScheme.error
                 )
                 Spacer(modifier = Modifier.height(Spacing.md))
@@ -365,7 +365,7 @@ private fun BalanceCard(
                                 imageVector = Icons.Filled.TrendingUp,
                                 contentDescription = "Pemasukan",
                                 tint = MaterialTheme.colorScheme.financeColors.income,
-                                modifier = Modifier.size(16.dp)
+                                modifier = Modifier.size(Spacing.iconT)
                             )
                             Spacer(modifier = Modifier.width(Spacing.xs))
                             Text(
@@ -387,7 +387,7 @@ private fun BalanceCard(
                                 imageVector = Icons.Filled.TrendingDown,
                                 contentDescription = "Pengeluaran",
                                 tint = MaterialTheme.colorScheme.financeColors.expense,
-                                modifier = Modifier.size(16.dp)
+                                modifier = Modifier.size(Spacing.iconT)
                             )
                             Spacer(modifier = Modifier.width(Spacing.xs))
                             Text(
@@ -432,7 +432,7 @@ private fun IncomeExpenseCard(
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Box(
                     modifier = Modifier
-                        .size(32.dp)
+                        .size(Spacing.iconSm)
                         .background(
                             color = color.copy(alpha = 0.15f),
                             shape = CircleShape
@@ -495,7 +495,7 @@ private fun EmptyTransactionsState() {
             Icon(
                 imageVector = Icons.Filled.Savings,
                 contentDescription = "Belum ada transaksi",
-                modifier = Modifier.size(48.dp),
+                modifier = Modifier.size(Spacing.iconLg),
                 tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
             )
             Spacer(modifier = Modifier.height(Spacing.sm))
@@ -539,7 +539,7 @@ private fun TransactionItem(transaction: TransactionWithCategory) {
             // Category icon
             Box(
                 modifier = Modifier
-                    .size(40.dp)
+                    .size(Spacing.iconMd)
                     .background(
                         color = iconColor.copy(alpha = 0.15f),
                         shape = MaterialTheme.shapes.extraSmall
@@ -550,7 +550,7 @@ private fun TransactionItem(transaction: TransactionWithCategory) {
                     imageVector = icon,
                     contentDescription = transaction.category.name,
                     tint = iconColor,
-                    modifier = Modifier.size(20.dp)
+                    modifier = Modifier.size(Spacing.iconXxs)
                 )
             }
 

@@ -37,23 +37,25 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.financeapp.ui.utils.FinanceIcons
 import com.financeapp.ui.utils.FormatterUtil
 import com.financeapp.ui.viewmodel.ReportViewModel
+import com.financeapp.ui.theme.financeColors
+import com.financeapp.ui.theme.Spacing
+import androidx.compose.material3.CardDefaults
 
 @Composable
 fun ReportScreen(viewModel: ReportViewModel = hiltViewModel()) {
     val uiState by viewModel.uiState.collectAsState()
 
-    LazyColumn(modifier = Modifier.padding(16.dp)) {
+    LazyColumn(modifier = Modifier.padding(Spacing.md)) {
         // Month selector
         item {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 16.dp),
+                    .padding(bottom = Spacing.md),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 IconButton(onClick = { viewModel.previousMonth() }) {
@@ -61,8 +63,7 @@ fun ReportScreen(viewModel: ReportViewModel = hiltViewModel()) {
                 }
                 Text(
                     uiState.currentMonth.format(java.time.format.DateTimeFormatter.ofPattern("MMMM yyyy")),
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 18.sp,
+                    style = MaterialTheme.typography.headlineSmall,
                     modifier = Modifier.weight(1f),
                     textAlign = TextAlign.Center
                 )
@@ -78,7 +79,7 @@ fun ReportScreen(viewModel: ReportViewModel = hiltViewModel()) {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(48.dp),
+                        .padding(Spacing.xxl),
                     contentAlignment = Alignment.Center
                 ) {
                     CircularProgressIndicator()
@@ -93,28 +94,28 @@ fun ReportScreen(viewModel: ReportViewModel = hiltViewModel()) {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(32.dp),
+                        .padding(Spacing.xl),
                     contentAlignment = Alignment.Center
                 ) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Icon(
                             imageVector = Icons.Default.TrendingUp,
                             contentDescription = "Kesalahan",
-                            modifier = Modifier.size(48.dp),
+                            modifier = Modifier.size(Spacing.iconLg),
                             tint = MaterialTheme.colorScheme.error
                         )
-                        Spacer(modifier = Modifier.height(12.dp))
+                        Spacer(modifier = Modifier.height(Spacing.smd))
                         Text(
                             uiState.errorMessage ?: "Terjadi kesalahan",
                             textAlign = TextAlign.Center,
                             color = MaterialTheme.colorScheme.error
                         )
-                        Spacer(modifier = Modifier.height(16.dp))
+                        Spacer(modifier = Modifier.height(Spacing.md))
                         Button(
                             onClick = { viewModel.retry() },
                             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
                         ) {
-                            Icon(Icons.Filled.Refresh, contentDescription = "Muat ulang", modifier = Modifier.padding(end = 8.dp))
+                            Icon(Icons.Filled.Refresh, contentDescription = "Muat ulang", modifier = Modifier.padding(end = Spacing.sm))
                             Text("Coba Lagi")
                         }
                     }
@@ -127,37 +128,36 @@ fun ReportScreen(viewModel: ReportViewModel = hiltViewModel()) {
         item {
             val report = uiState.monthlyReport
             if (report != null) {
-                Card(modifier = Modifier.fillMaxWidth()) {
-                    Column(modifier = Modifier.padding(16.dp)) {
-                        Text("Ringkasan ${report.month}", fontWeight = FontWeight.Bold, fontSize = 16.sp)
-                        Spacer(modifier = Modifier.height(12.dp))
+                Card(modifier = Modifier.fillMaxWidth(), elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)) {
+                    Column(modifier = Modifier.padding(Spacing.md)) {
+                        Text("Ringkasan ${report.month}", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.bodyLarge)
+                        Spacer(modifier = Modifier.height(Spacing.smd))
 
                         Row(modifier = Modifier.fillMaxWidth()) {
                             Column(modifier = Modifier.weight(1f)) {
-                                Text("Pemasukan", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                Text("Pemasukan", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                                 Text(
                                     FormatterUtil.formatCurrency(report.income),
                                     fontWeight = FontWeight.Bold,
-                                    color = Color(0xFF4CAF50)
+                                    color = MaterialTheme.colorScheme.financeColors.income
                                 )
                             }
                             Column(modifier = Modifier.weight(1f)) {
-                                Text("Pengeluaran", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                Text("Pengeluaran", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                                 Text(
                                     FormatterUtil.formatCurrency(report.expense),
                                     fontWeight = FontWeight.Bold,
-                                    color = Color(0xFFF44336)
+                                    color = MaterialTheme.colorScheme.financeColors.expense
                                 )
                             }
                         }
 
-                        Spacer(modifier = Modifier.height(12.dp))
-                        Text("Saldo", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Spacer(modifier = Modifier.height(Spacing.smd))
+                        Text("Saldo", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         Text(
                             FormatterUtil.formatCurrency(report.balance),
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 20.sp,
-                            color = if (report.balance >= 0) Color(0xFF4CAF50) else Color(0xFFF44336)
+                            style = MaterialTheme.typography.titleLarge,
+                            color = if (report.balance >= 0) MaterialTheme.colorScheme.financeColors.income else MaterialTheme.colorScheme.financeColors.expense
                         )
                     }
                 }
@@ -166,26 +166,25 @@ fun ReportScreen(viewModel: ReportViewModel = hiltViewModel()) {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(32.dp),
+                        .padding(Spacing.xl),
                     contentAlignment = Alignment.Center
                 ) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Icon(
                             imageVector = Icons.Default.TrendingUp,
                             contentDescription = "Tidak ada data",
-                            modifier = Modifier.size(64.dp),
+                            modifier = Modifier.size(Spacing.iconXl),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f)
                         )
-                        Spacer(modifier = Modifier.height(16.dp))
+                        Spacer(modifier = Modifier.height(Spacing.md))
                         Text(
                             "Belum Ada Data",
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 16.sp
+                            style = MaterialTheme.typography.titleMedium
                         )
-                        Spacer(modifier = Modifier.height(8.dp))
+                        Spacer(modifier = Modifier.height(Spacing.sm))
                         Text(
                             "Tidak ada transaksi di bulan ini",
-                            fontSize = 14.sp,
+                            style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             textAlign = TextAlign.Center
                         )
@@ -197,9 +196,9 @@ fun ReportScreen(viewModel: ReportViewModel = hiltViewModel()) {
         item {
             val report = uiState.monthlyReport
             if (report != null && report.categoryBreakdown.isNotEmpty()) {
-                Spacer(modifier = Modifier.height(16.dp))
-                Text("Pengeluaran per Kategori", fontWeight = FontWeight.Bold, fontSize = 16.sp)
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(Spacing.md))
+                Text("Pengeluaran per Kategori", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.bodyLarge)
+                Spacer(modifier = Modifier.height(Spacing.sm))
             }
         }
 
@@ -208,25 +207,26 @@ fun ReportScreen(viewModel: ReportViewModel = hiltViewModel()) {
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = 4.dp)
+                        .padding(vertical = Spacing.xs),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                 ) {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(12.dp),
+                            .padding(Spacing.smd),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Icon(
                             imageVector = FinanceIcons.getIcon(summary.category.name),
                             contentDescription = summary.category.name,
-                            modifier = Modifier.size(24.dp),
+                            modifier = Modifier.size(Spacing.iconXs),
                             tint = MaterialTheme.colorScheme.onSurface
                         )
-                        Spacer(modifier = Modifier.width(12.dp))
+                        Spacer(modifier = Modifier.width(Spacing.smd))
 
                         Column(modifier = Modifier.weight(1f)) {
                             Text(summary.category.name, fontWeight = FontWeight.Bold)
-                            Spacer(modifier = Modifier.height(4.dp))
+                            Spacer(modifier = Modifier.height(Spacing.xs))
                             LinearProgressIndicator(
                                 progress = (summary.percentage / 100f).coerceIn(0f, 1f),
                                 modifier = Modifier
@@ -241,7 +241,7 @@ fun ReportScreen(viewModel: ReportViewModel = hiltViewModel()) {
                             )
                         }
 
-                        Spacer(modifier = Modifier.width(12.dp))
+                        Spacer(modifier = Modifier.width(Spacing.smd))
                         Column(horizontalAlignment = Alignment.End) {
                             Text(
                                 FormatterUtil.formatCurrency(summary.total),
@@ -249,7 +249,7 @@ fun ReportScreen(viewModel: ReportViewModel = hiltViewModel()) {
                             )
                             Text(
                                 "${String.format("%.1f", summary.percentage)}%",
-                                fontSize = 12.sp,
+                                style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }

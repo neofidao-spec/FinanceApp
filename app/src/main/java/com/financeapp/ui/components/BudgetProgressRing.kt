@@ -27,7 +27,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import com.financeapp.ui.theme.Spacing
 
 /**
  * A circular progress ring for budget usage visualization.
@@ -73,7 +73,7 @@ fun BudgetProgressRing(
     }
 
     Column(
-        modifier = modifier.padding(8.dp),
+        modifier = modifier.padding(Spacing.sm),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Box(
@@ -112,14 +112,12 @@ fun BudgetProgressRing(
             // Center percentage text
             Text(
                 text = "${(animatedProgress * 100).toInt()}%",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                fontSize = 16.sp,
+                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                 color = ringColor
             )
         }
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(Spacing.sm))
 
         // Label
         Text(
@@ -133,10 +131,9 @@ fun BudgetProgressRing(
         // Amount text
         Text(
             text = amountText,
-            style = MaterialTheme.typography.bodySmall,
+            style = MaterialTheme.typography.labelSmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
-            fontSize = 10.sp,
             maxLines = 1
         )
     }
