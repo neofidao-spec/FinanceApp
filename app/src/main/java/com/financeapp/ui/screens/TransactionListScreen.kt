@@ -232,7 +232,8 @@ fun TransactionListScreen(
                                 transaction = txn,
                                 onSwipeEdit = { onTransactionClick(txn.transaction.id) },
                                 onSwipeDelete = { viewModel.swipeDeleteTransaction(txn) },
-                                onClick = { onTransactionClick(txn.transaction.id) }
+                                onClick = { onTransactionClick(txn.transaction.id) },
+                                modifier = Modifier.animateItemPlacement()
                             )
                         }
                         item {

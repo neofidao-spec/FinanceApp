@@ -47,6 +47,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.financeapp.data.model.TransactionType
 import com.financeapp.data.model.TransactionWithCategory
 import com.financeapp.ui.components.AnimatedNumber
+import com.financeapp.ui.components.ShimmerBalanceCard
+import com.financeapp.ui.components.ShimmerTransactionItem
 import com.financeapp.ui.components.BudgetProgressRing
 import com.financeapp.ui.components.DailyQuestCard
 import com.financeapp.ui.components.DonutChart
@@ -89,15 +91,19 @@ private fun DashboardContent(
     onRetry: () -> Unit,
     onUseFreeze: () -> Unit
 ) {
-    // Loading state
+    // Loading state — shimmer skeleton
     if (uiState.isLoading) {
-        Box(
+        LazyColumn(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(Spacing.xl),
-            contentAlignment = Alignment.Center
+                .fillMaxWidth()
+                .padding(horizontal = Spacing.md),
+            contentPadding = PaddingValues(vertical = Spacing.md),
+            verticalArrangement = Arrangement.spacedBy(Spacing.md)
         ) {
-            CircularProgressIndicator()
+            item { ShimmerBalanceCard() }
+            item { ShimmerTransactionItem() }
+            item { ShimmerTransactionItem() }
+            item { ShimmerTransactionItem() }
         }
         return
     }

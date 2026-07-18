@@ -2,6 +2,7 @@ package com.financeapp.ui.screens
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import com.financeapp.ui.theme.MotionTokens
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -535,7 +536,7 @@ private fun BudgetItem(
             // Progress bar
             val animatedProgress by animateFloatAsState(
                 targetValue = budget.percentage / 100f,
-                animationSpec = tween(durationMillis = 800),
+                animationSpec = tween(durationMillis = MotionTokens.LONG),
                 label = "budget_progress"
             )
             
