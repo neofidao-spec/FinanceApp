@@ -2,7 +2,6 @@ package com.financeapp.ui.components
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -13,8 +12,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.TrendingDown
 import androidx.compose.material.icons.filled.TrendingUp
@@ -28,13 +25,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.financeapp.domain.HealthScore
+import com.financeapp.ui.theme.Spacing
+import com.financeapp.ui.theme.financeColors
 
 @Composable
 fun HealthScoreCard(
@@ -57,6 +53,12 @@ fun HealthScoreCard(
         else -> Icons.Filled.TrendingUp
     }
 
+    val trendColor = when (trend) {
+        HealthScore.Trend.UP -> MaterialTheme.financeColors.income
+        HealthScore.Trend.DOWN -> MaterialTheme.financeColors.expense
+        else -> MaterialTheme.colorScheme.onSurfaceVariant
+    }
+
     // Animated ring progress — spring for natural feel
     val animatedScore by animateFloatAsState(
         targetValue = score / 100f,
@@ -69,7 +71,8 @@ fun HealthScoreCard(
 
     Card(
         modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp),
+        shape = MaterialTheme.shapes.medium,
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         colors = CardDefaults.cardColors(
             containerColor = scoreColor.copy(alpha = 0.1f)
         )
@@ -77,27 +80,24 @@ fun HealthScoreCard(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
+                .padding(Spacing.md),
             verticalAlignment = Alignment.CenterVertically
         ) {
             // Score ring — animated Canvas
+            val ringSize = 60.dp
             Box(
-                modifier = Modifier
-                    .size(60.dp),
+                modifier = Modifier.size(ringSize),
                 contentAlignment = Alignment.Center
             ) {
-                Canvas(modifier = Modifier.size(60.dp)) {
+                val trackColor = scoreColor.copy(alpha = 0.15f)
+                Canvas(modifier = Modifier.size(ringSize)) {
                     val sweepAngle = animatedScore * 360f
                     val strokeWidth = 6.dp.toPx()
                     val radius = (size.minDimension - strokeWidth) / 2
-                    val topLeft = Offset(
-                        (size.width - radius * 2) / 2 - strokeWidth / 2,
-                        (size.height - radius * 2) / 2 - strokeWidth / 2
-                    )
 
                     // Track
                     drawArc(
-                        color = scoreColor.copy(alpha = 0.15f),
+                        color = trackColor,
                         startAngle = -90f,
                         sweepAngle = 360f,
                         useCenter = false,
@@ -124,26 +124,24 @@ fun HealthScoreCard(
                 }
                 Text(
                     text = "$score",
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
+                    style = MaterialTheme.typography.headlineMedium,
                     color = scoreColor
                 )
             }
 
-            Spacer(modifier = Modifier.width(16.dp))
+            Spacer(modifier = Modifier.width(Spacing.md))
 
             Column(modifier = Modifier.weight(1f)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
                         text = "Kesehatan Keuangan",
-                        style = MaterialTheme.typography.titleSmall,
-                        fontWeight = FontWeight.SemiBold
+                        style = MaterialTheme.typography.titleSmall
                     )
-                    Spacer(modifier = Modifier.width(8.dp))
+                    Spacer(modifier = Modifier.width(Spacing.sm))
                     Icon(
                         imageVector = trendIcon,
                         contentDescription = if (trend == HealthScore.Trend.UP) "Meningkat" else "Menurun",
-                        tint = if (trend == HealthScore.Trend.UP) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error,
+                        tint = trendColor,
                         modifier = Modifier.size(16.dp)
                     )
                 }
@@ -156,15 +154,14 @@ fun HealthScoreCard(
 
             Text(
                 text = category,
-                fontSize = 12.sp,
-                fontWeight = FontWeight.Medium,
+                style = MaterialTheme.typography.labelMedium,
                 color = scoreColor,
                 modifier = Modifier
                     .background(
                         color = scoreColor.copy(alpha = 0.15f),
-                        shape = RoundedCornerShape(8.dp)
+                        shape = MaterialTheme.shapes.extraSmall
                     )
-                    .padding(horizontal = 8.dp, vertical = 4.dp)
+                    .padding(horizontal = Spacing.sm, vertical = Spacing.xs)
             )
         }
     }
