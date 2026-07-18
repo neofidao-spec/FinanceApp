@@ -334,34 +334,24 @@ private fun BalanceCard(
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
-        Box(
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(
-                    brush = Brush.linearGradient(
-                        colors = listOf(
-                            MaterialTheme.colorScheme.primary,
-                            MaterialTheme.colorScheme.primary.copy(alpha = 0.85f),
-                            MaterialTheme.colorScheme.primary.copy(alpha = 0.7f)
-                        )
-                    )
-                )
                 .padding(Spacing.lg)
         ) {
-            Column {
-                Text(
-                    text = "Total Saldo",
-                    style = MaterialTheme.typography.labelLarge,
-                    color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f)
-                )
-                Spacer(modifier = Modifier.height(Spacing.sm))
-                AnimatedNumber(
-                    value = balance,
-                    style = MaterialTheme.typography.displayLarge,
-                    color = MaterialTheme.colorScheme.onPrimary,
-                    format = { FormatterUtil.formatCurrency(it) }
-                )
-                Spacer(modifier = Modifier.height(Spacing.lg))
+            Text(
+                text = "Total Saldo",
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Spacer(modifier = Modifier.height(Spacing.xs))
+            AnimatedNumber(
+                value = balance,
+                style = MaterialTheme.typography.displayLarge,
+                color = MaterialTheme.colorScheme.onSurface,
+                format = { FormatterUtil.formatCurrency(it) }
+            )
+            Spacer(modifier = Modifier.height(Spacing.lg))
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -379,7 +369,7 @@ private fun BalanceCard(
                             Text(
                                 text = "Pemasukan",
                                 style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f)
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
                         Text(
@@ -401,7 +391,7 @@ private fun BalanceCard(
                             Text(
                                 text = "Pengeluaran",
                                 style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f)
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
                         Text(
