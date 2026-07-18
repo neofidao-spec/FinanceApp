@@ -23,10 +23,23 @@ jobs:
       run: chmod +x gradlew
 
     - name: Build Debug APK
-      run: ./gradlew assembleDebug --no-daemon
+      run: |
+        ./gradlew assembleDebug --no-daemon 2>&1 | tee build.log
+        if [ ${PIPESTATUS[0]} -ne 0 ]; then
+          echo "=== BUILD FAILED ==="
+          tail -100 build.log
+          exit 1
+        fi
+
+    - name: Upload build log on failure
+      if: failure()
+      uses: actions/upload-artifact@v4
+      with:
+        name: build-log
+        path: build.log
 
     - name: Run unit tests
-      run: ./gradlew testDebugUnitTest --no-daemon 2>&1 | tail -50
+      run: ./gradlew testDebugUnitTest --no-daemon
       continue-on-error: true
 
     - name: Upload Debug APK
