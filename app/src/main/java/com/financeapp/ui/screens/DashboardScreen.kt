@@ -404,7 +404,6 @@ private fun BalanceCard(
             }
         }
     }
-}
 
 @Composable
 private fun IncomeExpenseCard(
