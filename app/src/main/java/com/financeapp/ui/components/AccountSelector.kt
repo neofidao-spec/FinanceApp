@@ -236,6 +236,7 @@ private fun AccountIcon(
     }
 }
 
+@Composable
 private fun parseColor(colorStr: String?): Color {
     if (colorStr == null) return MaterialTheme.colorScheme.primary
     return try {

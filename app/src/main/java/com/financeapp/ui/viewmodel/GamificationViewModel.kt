@@ -2,6 +2,7 @@ package com.financeapp.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.financeapp.data.model.Achievement
 import com.financeapp.data.model.Challenge
 import com.financeapp.data.model.DailyQuest
 import com.financeapp.data.model.UserProgress
