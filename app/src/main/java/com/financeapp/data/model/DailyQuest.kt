@@ -1,10 +1,11 @@
 package com.financeapp.data.model
 
 import androidx.room.Entity
+import androidx.room.Index
 import androidx.room.PrimaryKey
 import java.time.LocalDate
 
-@Entity(tableName = "daily_quests")
+@Entity(tableName = "daily_quests", indices = [Index("questDate")])
 data class DailyQuest(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val name: String,

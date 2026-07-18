@@ -23,11 +23,18 @@ enum class RecurringEndType {
             parentColumns = ["id"],
             childColumns = ["categoryId"],
             onDelete = ForeignKey.CASCADE
+        ),
+        ForeignKey(
+            entity = Account::class,
+            parentColumns = ["id"],
+            childColumns = ["accountId"],
+            onDelete = ForeignKey.SET_DEFAULT
         )
     ],
     indices = [
         Index("categoryId"),
-        Index("nextDueDate")
+        Index("nextDueDate"),
+        Index("accountId")
     ]
 )
 data class RecurringTransaction(

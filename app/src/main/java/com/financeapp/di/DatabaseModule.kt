@@ -49,7 +49,8 @@ object DatabaseModule {
             FinanceDatabase.MIGRATION_6_7,
             FinanceDatabase.MIGRATION_7_8,
             FinanceDatabase.MIGRATION_8_9,
-            FinanceDatabase.MIGRATION_9_10
+            FinanceDatabase.MIGRATION_9_10,
+            FinanceDatabase.MIGRATION_10_11
         )
         .addCallback(object : RoomDatabase.Callback() {
             override fun onCreate(db: SupportSQLiteDatabase) {

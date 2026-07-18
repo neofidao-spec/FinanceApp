@@ -22,7 +22,7 @@ import java.time.LocalDateTime
             onDelete = ForeignKey.SET_DEFAULT
         )
     ],
-    indices = [Index("categoryId"), Index("accountId")]
+    indices = [Index("categoryId"), Index("accountId"), Index("date")]
 )
 data class Transaction(
     @PrimaryKey(autoGenerate = true)
