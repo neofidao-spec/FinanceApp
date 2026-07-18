@@ -24,14 +24,23 @@ jobs:
 
     - name: Build Debug APK
       run: |
+        echo "::group::Gradle Build"
         ./gradlew assembleDebug --no-daemon 2>&1 | tee build.log
-        if [ ${PIPESTATUS[0]} -ne 0 ]; then
-          echo "=== BUILD FAILED ==="
-          grep -E "^e:|error:|FAILURE|Unresolved|cannot find|Type mismatch|Duplicate" build.log | head -30
-          echo "=== LAST 20 LINES ==="
-          tail -20 build.log
+        EXIT_CODE=${PIPESTATUS[0]}
+        if [ $EXIT_CODE -ne 0 ]; then
+          echo "::error::Gradle build FAILED (exit $EXIT_CODE)"
+          echo "=== KOTLIN COMPILE ERRORS ==="
+          grep -E "^e:|error: " build.log | head -20
+          echo "=== DAGGER ERRORS ==="
+          grep -E "Duplicate|Dagger|MissingBinding" build.log | head -10
+          echo "=== WHAT WENT WRONG ==="
+          grep -A3 "What went wrong:" build.log | head -20
+          echo "=== LAST 10 LINES ==="
+          tail -10 build.log
+          echo "::endgroup::"
           exit 1
         fi
+        echo "::endgroup::"
 
     - name: Upload build log on failure
       if: failure()
