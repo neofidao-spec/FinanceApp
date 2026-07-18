@@ -195,7 +195,7 @@ private fun ProfileTab(
                 ) {
                     LevelCard(
                         progress = progress,
-                        modifier = Modifier.weight(1.5f)
+                        modifier = Modifier.weight(1f)
                     )
                     StreakCard(
                         currentStreak = progress.currentStreak,

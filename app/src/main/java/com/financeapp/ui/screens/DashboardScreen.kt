@@ -193,7 +193,7 @@ private fun DashboardContent(
                 ) {
                     LevelCard(
                         progress = gamificationState.userProgress,
-                        modifier = Modifier.weight(1.5f)
+                        modifier = Modifier.weight(1f)
                     )
                     StreakCard(
                         currentStreak = gamificationState.userProgress.currentStreak,

@@ -21,7 +21,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -62,48 +61,52 @@ fun StreakCard(
         shape = MaterialTheme.shapes.medium,
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
-        )
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
-        Row(
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(Spacing.md),
-            verticalAlignment = Alignment.CenterVertically
+                .padding(Spacing.md)
         ) {
-            // Flame icon + streak count
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            // Flame icon + streak count — centered for compactness
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 Icon(
                     imageVector = Icons.Filled.LocalFireDepartment,
                     contentDescription = "Streak",
                     tint = flameColor.copy(alpha = animatedAlpha),
-                    modifier = Modifier.size(48.dp)
+                    modifier = Modifier.size(32.dp)
                 )
-                Spacer(modifier = Modifier.width(6.dp))
-                Column {
-                    Text(
-                        text = "$currentStreak",
-                        style = MaterialTheme.typography.headlineMedium,
-                        color = flameColor.copy(alpha = animatedAlpha)
-                    )
-                    Text(
-                        text = "hari berturut-turut",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
+                Spacer(modifier = Modifier.width(4.dp))
+                Text(
+                    text = "$currentStreak hari",
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontWeight = FontWeight.Bold,
+                    color = flameColor.copy(alpha = animatedAlpha)
+                )
             }
 
-            Spacer(modifier = Modifier.width(Spacing.md))
+            // Best streak — subtle below
+            Text(
+                text = "Terbaik: $bestStreak hari",
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = androidx.compose.ui.text.style.TextAlign.Center
+            )
 
-            // Best streak + freeze button
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = "Terbaik: $bestStreak hari",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
+            // Freeze row — only when has freezes
+            if (streakFreezes > 0) {
                 Spacer(modifier = Modifier.height(Spacing.xs))
-                if (streakFreezes > 0) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     IconButton(
                         onClick = onUseFreeze,
                         modifier = Modifier
@@ -113,23 +116,18 @@ fun StreakCard(
                                 shape = CircleShape
                             )
                     ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Center
-                        ) {
-                            Icon(
-                                imageVector = Icons.Filled.AcUnit,
-                                contentDescription = "Gunakan freeze ($streakFreezes tersisa)",
-                                tint = MaterialTheme.colorScheme.primary,
-                                modifier = Modifier.size(16.dp)
-                            )
-                        }
+                        Icon(
+                            imageVector = Icons.Filled.AcUnit,
+                            contentDescription = "Gunakan freeze ($streakFreezes tersisa)",
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(16.dp)
+                        )
                     }
-                } else {
+                    Spacer(modifier = Modifier.width(Spacing.xs))
                     Text(
-                        text = "Freeze streaks: 0",
+                        text = "$streakFreezes",
                         style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+                        color = MaterialTheme.colorScheme.primary
                     )
                 }
             }

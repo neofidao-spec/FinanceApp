@@ -2,17 +2,14 @@ package com.financeapp.ui.components
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 
 import androidx.compose.material3.Card
@@ -25,10 +22,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.financeapp.ui.theme.Spacing
 import com.financeapp.data.model.UserProgress
@@ -38,12 +35,12 @@ fun LevelCard(
     progress: UserProgress,
     modifier: Modifier = Modifier
 ) {
-    val levelGradient = when {
-        progress.currentLevel >= 9 -> listOf(Color(0xFFFF6F00), Color(0xFFD84315))  // Keep: orange gamification accent
-        progress.currentLevel >= 7 -> listOf(MaterialTheme.colorScheme.tertiary, MaterialTheme.colorScheme.tertiaryContainer)
-        progress.currentLevel >= 5 -> listOf(MaterialTheme.colorScheme.primary, MaterialTheme.colorScheme.primaryContainer)
-        progress.currentLevel >= 3 -> listOf(MaterialTheme.colorScheme.primary, MaterialTheme.colorScheme.primaryContainer)
-        else -> listOf(MaterialTheme.colorScheme.outlineVariant, MaterialTheme.colorScheme.outline)
+    val levelColor = when {
+        progress.currentLevel >= 9 -> Color(0xFFFF6F00) // Orange — master
+        progress.currentLevel >= 7 -> MaterialTheme.colorScheme.tertiary
+        progress.currentLevel >= 5 -> MaterialTheme.colorScheme.primary
+        progress.currentLevel >= 3 -> MaterialTheme.colorScheme.primary
+        else -> MaterialTheme.colorScheme.outlineVariant
     }
 
     val animatedProgress by animateFloatAsState(
@@ -59,55 +56,62 @@ fun LevelCard(
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
-        Row(
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(Spacing.md),
-            verticalAlignment = Alignment.CenterVertically
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Level badge circle
+            // Level badge circle — centered
             Box(
                 modifier = Modifier
-                    .size(Spacing.xxl)
+                    .size(44.dp)
                     .clip(CircleShape)
                     .background(
-                        brush = Brush.linearGradient(levelGradient)
+                        color = levelColor.copy(alpha = 0.15f)
                     ),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
                     text = "${progress.currentLevel}",
-                    color = MaterialTheme.colorScheme.onPrimary,
-                    style = MaterialTheme.typography.titleLarge
-                )
-            }
-
-            Spacer(modifier = Modifier.width(Spacing.smd))
-
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = progress.levelTitle,
-                    style = MaterialTheme.typography.titleSmall,
+                    color = levelColor,
+                    style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 )
-                Spacer(modifier = Modifier.height(Spacing.xs))
-                LinearProgressIndicator(
-                    progress = animatedProgress,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(8.dp)
-                        .clip(MaterialTheme.shapes.extraSmall),
-                    color = levelGradient[0],
-                    trackColor = MaterialTheme.colorScheme.surfaceVariant,
-                    strokeCap = StrokeCap.Round
-                )
-                Spacer(modifier = Modifier.height(Spacing.xs))
-                Text(
-                    text = "${progress.totalXp} / ${progress.xpForNextLevel} XP",
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
             }
+
+            Spacer(modifier = Modifier.height(Spacing.xs))
+
+            // Level title
+            Text(
+                text = progress.levelTitle,
+                style = MaterialTheme.typography.labelMedium,
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center
+            )
+
+            Spacer(modifier = Modifier.height(Spacing.sm))
+
+            // Progress bar
+            LinearProgressIndicator(
+                progress = { animatedProgress.coerceIn(0f, 1f) },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(6.dp)
+                    .clip(MaterialTheme.shapes.extraSmall),
+                color = levelColor,
+                trackColor = MaterialTheme.colorScheme.surfaceVariant,
+                strokeCap = StrokeCap.Round
+            )
+
+            Spacer(modifier = Modifier.height(Spacing.xs))
+
+            // XP text
+            Text(
+                text = "${progress.totalXp} / ${progress.xpForNextLevel} XP",
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
         }
     }
 }
