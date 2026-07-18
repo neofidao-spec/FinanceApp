@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
 import javax.inject.Inject
 
-class GamificationRepository @Inject constructor(
+class GamificationRepository(
     private val userProgressDao: UserProgressDao,
     private val dailyQuestDao: DailyQuestDao,
     private val challengeDao: ChallengeDao,
