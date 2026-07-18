@@ -125,28 +125,28 @@ fun TransactionListScreen(
                     uiState.activeFilter?.startDate?.let {
                         FilterChip(
                             selected = true,
-                            onClick = {},
+                            onClick = { viewModel.clearFilter() },
                             label = { Text("Dari: ${it.toLocalDate()}") }
                         )
                     }
                     uiState.activeFilter?.endDate?.let {
                         FilterChip(
                             selected = true,
-                            onClick = {},
+                            onClick = { viewModel.clearFilter() },
                             label = { Text("Sampai: ${it.toLocalDate()}") }
                         )
                     }
                     uiState.activeFilter?.minAmount?.let {
                         FilterChip(
                             selected = true,
-                            onClick = {},
+                            onClick = { viewModel.clearFilter() },
                             label = { Text("Min: ${FormatterUtil.formatCurrency(it)}") }
                         )
                     }
                     uiState.activeFilter?.maxAmount?.let {
                         FilterChip(
                             selected = true,
-                            onClick = {},
+                            onClick = { viewModel.clearFilter() },
                             label = { Text("Max: ${FormatterUtil.formatCurrency(it)}") }
                         )
                     }

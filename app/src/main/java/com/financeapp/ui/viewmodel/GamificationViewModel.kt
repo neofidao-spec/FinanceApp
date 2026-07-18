@@ -44,29 +44,36 @@ class GamificationViewModel @Inject constructor(
     val uiState: StateFlow<GamificationUiState> = _uiState.asStateFlow()
 
     init {
-        initializeGamification()
-        observeGamificationData()
-    }
-
-    private fun initializeGamification() {
         viewModelScope.launch {
-            try {
-                gamificationUseCase.initializeIfNeeded()
-                // Generate today's quests if not present
-                val today = LocalDate.now()
-                val existingQuests = repository.getDailyQuestsOnce(today)
-                if (existingQuests.isEmpty()) {
-                    repository.saveDailyQuests(DailyQuest.generateForDate(today))
-                }
-            } catch (e: Exception) {
-                _uiState.value = _uiState.value.copy(errorMessage = e.message)
-            }
+            initializeGamification()
+            observeGamificationData()
         }
     }
 
-    private fun observeGamificationData() {
+    /** Retry after error — re-initialize and re-observe */
+    fun retry() {
+        _uiState.value = GamificationUiState(isLoading = true)
         viewModelScope.launch {
-            try {
+            initializeGamification()
+            observeGamificationData()
+        }
+    }
+
+    private suspend fun initializeGamification() {
+        try {
+            gamificationUseCase.initializeIfNeeded()
+            val today = LocalDate.now()
+            val existingQuests = repository.getDailyQuestsOnce(today)
+            if (existingQuests.isEmpty()) {
+                repository.saveDailyQuests(DailyQuest.generateForDate(today))
+            }
+        } catch (e: Exception) {
+            _uiState.value = _uiState.value.copy(errorMessage = e.message)
+        }
+    }
+
+    private suspend fun observeGamificationData() {
+        try {
                 val today = LocalDate.now()
                 val firstThree = combine(
                     repository.getUserProgress(),
@@ -101,7 +108,6 @@ class GamificationViewModel @Inject constructor(
                     isLoading = false
                 )
             }
-        }
     }
 
     // ===================== PUBLIC ACTIONS =====================

@@ -14,9 +14,15 @@ import java.time.LocalDateTime
             parentColumns = ["id"],
             childColumns = ["categoryId"],
             onDelete = ForeignKey.CASCADE
+        ),
+        ForeignKey(
+            entity = Account::class,
+            parentColumns = ["id"],
+            childColumns = ["accountId"],
+            onDelete = ForeignKey.SET_DEFAULT
         )
     ],
-    indices = [Index("categoryId")]
+    indices = [Index("categoryId"), Index("accountId")]
 )
 data class Transaction(
     @PrimaryKey(autoGenerate = true)

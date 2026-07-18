@@ -26,7 +26,6 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import java.util.concurrent.Executors
 import javax.inject.Singleton
 
 @Module
@@ -49,35 +48,34 @@ object DatabaseModule {
             FinanceDatabase.MIGRATION_5_6,
             FinanceDatabase.MIGRATION_6_7,
             FinanceDatabase.MIGRATION_7_8,
-            FinanceDatabase.MIGRATION_8_9
+            FinanceDatabase.MIGRATION_8_9,
+            FinanceDatabase.MIGRATION_9_10
         )
         .addCallback(object : RoomDatabase.Callback() {
             override fun onCreate(db: SupportSQLiteDatabase) {
                 super.onCreate(db)
                 // Insert default categories on first database creation
-                Executors.newSingleThreadExecutor().execute {
-                    val defaults = DefaultCategories.getDefault()
-                    defaults.forEach { category ->
-                        db.execSQL(
-                            "INSERT INTO categories (id, name, icon, iconName, type, color) VALUES (?, ?, ?, ?, ?, ?)",
-                            arrayOf(category.id, category.name, category.icon, category.iconName, category.type.name, category.color)
-                        )
-                    }
-                    // Insert default accounts
-                    db.execSQL("INSERT INTO accounts (name, type, balance, icon, color, isDefault) VALUES (?, ?, ?, ?, ?, ?)",
-                        arrayOf("Cash", "CASH", 0.0, "💵", "#4CAF50", 1))
-                    db.execSQL("INSERT INTO accounts (name, type, balance, icon, color, isDefault) VALUES (?, ?, ?, ?, ?, ?)",
-                        arrayOf("Bank", "BANK", 0.0, "🏦", "#2196F3", 0))
-                    db.execSQL("INSERT INTO accounts (name, type, balance, icon, color, isDefault) VALUES (?, ?, ?, ?, ?, ?)",
-                        arrayOf("E-Wallet", "EWALLET", 0.0, "📱", "#FF9800", 0))
-                    // Insert default achievements
-                    val achievements = DefaultAchievements.getDefault()
-                    achievements.forEach { achievement ->
-                        db.execSQL(
-                            "INSERT INTO achievements (name, description, icon, category, targetValue, currentValue, isUnlocked) VALUES (?, ?, ?, ?, ?, ?, ?)",
-                            arrayOf(achievement.name, achievement.description, achievement.icon, achievement.category, achievement.targetValue, 0, 0)
-                        )
-                    }
+                val defaults = DefaultCategories.getDefault()
+                defaults.forEach { category ->
+                    db.execSQL(
+                        "INSERT INTO categories (id, name, icon, iconName, type, color) VALUES (?, ?, ?, ?, ?, ?)",
+                        arrayOf(category.id, category.name, category.icon, category.iconName, category.type.name, category.color)
+                    )
+                }
+                // Insert default accounts
+                db.execSQL("INSERT INTO accounts (name, type, balance, icon, color, isDefault) VALUES (?, ?, ?, ?, ?, ?)",
+                    arrayOf("Cash", "CASH", 0.0, "attach_money", "#4CAF50", 1))
+                db.execSQL("INSERT INTO accounts (name, type, balance, icon, color, isDefault) VALUES (?, ?, ?, ?, ?, ?)",
+                    arrayOf("Bank", "BANK", 0.0, "account_balance", "#2196F3", 0))
+                db.execSQL("INSERT INTO accounts (name, type, balance, icon, color, isDefault) VALUES (?, ?, ?, ?, ?, ?)",
+                    arrayOf("E-Wallet", "EWALLET", 0.0, "account_balance_wallet", "#FF9800", 0))
+                // Insert default achievements
+                val achievements = DefaultAchievements.getDefault()
+                achievements.forEach { achievement ->
+                    db.execSQL(
+                        "INSERT INTO achievements (name, description, icon, category, targetValue, currentValue, isUnlocked) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                        arrayOf(achievement.name, achievement.description, achievement.icon, achievement.category, achievement.targetValue, 0, 0)
+                    )
                 }
             }
         })

@@ -17,11 +17,8 @@ interface TransactionFtsDao {
      */
     @androidx.room.Transaction
     @Query("""
-        SELECT t.*, c.name as categoryName, c.icon as categoryIcon, c.color as categoryColor,
-               c.type as categoryType
-        FROM transactions t
+        SELECT t.* FROM transactions t
         INNER JOIN transactions_fts fts ON t.id = fts.rowid
-        INNER JOIN categories c ON t.categoryId = c.id
         WHERE transactions_fts MATCH :query
         ORDER BY t.date DESC
     """)

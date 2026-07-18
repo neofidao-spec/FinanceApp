@@ -128,9 +128,8 @@ class DashboardViewModel @Inject constructor(
             isLoading = false
         )
     }
-    private fun loadMonthlyTrend() {
-        viewModelScope.launch {
-            try {
+    private suspend fun loadMonthlyTrend() {
+        try {
                 val monthFormatter = DateTimeFormatter.ofPattern("MMM")
                 val trendData = mutableListOf<MonthlyTrendData>()
                 val currentMonth = YearMonth.now()
@@ -158,12 +157,10 @@ class DashboardViewModel @Inject constructor(
                     errorMessage = "Failed to load trend data: ${e.message}"
                 )
             }
-        }
     }
 
-    private fun loadBudgetSummaries() {
-        viewModelScope.launch {
-            try {
+    private suspend fun loadBudgetSummaries() {
+        try {
                 val summary = budgetRepository.getBudgetSummary(_uiState.value.selectedMonth)
                 _uiState.value = _uiState.value.copy(budgetSummaries = summary.budgets)
             } catch (e: Exception) {
@@ -171,28 +168,26 @@ class DashboardViewModel @Inject constructor(
                     errorMessage = "Failed to load budgets: ${e.message}"
                 )
             }
-        }
     }
 
     fun selectMonth(month: YearMonth) {
         _uiState.value = _uiState.value.copy(selectedMonth = month)
         updateDashboardStats(allTransactions)
-        loadBudgetSummaries()
-
+        viewModelScope.launch { loadBudgetSummaries() }
     }
 
     fun retry() {
         _uiState.value = _uiState.value.copy(isLoading = true, errorMessage = null)
-        updateDashboardStats(allTransactions)
-        loadMonthlyTrend()
-        loadBudgetSummaries()
-
-        loadHealthScore()
+        viewModelScope.launch {
+            updateDashboardStats(allTransactions)
+            loadMonthlyTrend()
+            loadBudgetSummaries()
+            loadHealthScore()
+        }
     }
 
-    private fun loadHealthScore() {
-        viewModelScope.launch {
-            try {
+    private suspend fun loadHealthScore() {
+        try {
                 val score = getHealthScoreUseCase()
                 _uiState.value = _uiState.value.copy(healthScore = score)
             } catch (e: Exception) {
@@ -200,6 +195,5 @@ class DashboardViewModel @Inject constructor(
                     errorMessage = "Failed to calculate health score: ${e.message}"
                 )
             }
-        }
     }
 }

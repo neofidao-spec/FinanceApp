@@ -11,6 +11,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
@@ -37,10 +38,8 @@ class ReportViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             try {
-                // Initial load
                 loadMonthlyReport()
-                // Auto-refresh when transactions change
-                transactionRepository.getAllTransactions().collect {
+                transactionRepository.getAllTransactions().collectLatest {
                     loadMonthlyReport()
                 }
             } catch (e: Exception) {
@@ -52,9 +51,8 @@ class ReportViewModel @Inject constructor(
         }
     }
 
-    fun loadMonthlyReport() {
-        viewModelScope.launch {
-            try {
+    private suspend fun loadMonthlyReport() {
+        try {
                 _uiState.value = _uiState.value.copy(isLoading = true)
 
                 val month = _uiState.value.currentMonth
@@ -86,7 +84,6 @@ class ReportViewModel @Inject constructor(
                     isLoading = false
                 )
             }
-        }
     }
 
     private suspend fun getCategoryBreakdown(
@@ -122,7 +119,7 @@ class ReportViewModel @Inject constructor(
 
     fun selectMonth(month: YearMonth) {
         _uiState.value = _uiState.value.copy(currentMonth = month)
-        loadMonthlyReport()
+        viewModelScope.launch { loadMonthlyReport() }
     }
 
     fun previousMonth() {
