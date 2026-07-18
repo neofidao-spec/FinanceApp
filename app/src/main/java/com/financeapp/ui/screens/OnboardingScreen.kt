@@ -46,6 +46,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import com.financeapp.ui.theme.FinancePalette
 import com.financeapp.ui.theme.financeColors
 import com.financeapp.ui.theme.Spacing
 
@@ -75,19 +76,19 @@ private val onboardingPages = listOf(
         title = "Kelola Keuanganmu",
         subtitle = "Pantau pemasukan dan pengeluaran dengan mudah. Atur keuanganmu dengan lebih bijak.",
         icon = Icons.Filled.Money,
-        color = MaterialTheme.colorScheme.financeColors.income
+        color = FinancePalette.ForestGreen
     ),
     OnboardingPage(
         title = "Analisa Pengeluaran",
         subtitle = "Lihat grafik dan laporan untuk memahami pola pengeluaranmu.",
         icon = Icons.Filled.BarChart,
-        color = Color(0xFF1565C0)
+        color = FinancePalette.Navy
     ),
     OnboardingPage(
         title = "Capai Tujuan Finansial",
         subtitle = "Atur budget dan pantau progress menuju kebebasan finansial.",
         icon = Icons.Filled.Savings,
-        color = Color(0xFFE65100)
+        color = FinancePalette.Copper
     )
 )
 
