@@ -41,6 +41,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -65,9 +68,12 @@ import com.financeapp.ui.components.BudgetProgressRing
 import com.financeapp.ui.components.DailyQuestCard
 import com.financeapp.ui.components.MonthlyData
 import com.financeapp.ui.components.MonthlyTrendChart
+import com.financeapp.ui.components.TierBadge
+import com.financeapp.ui.components.XpSummaryDialog
 import com.financeapp.ui.theme.Spacing
 import com.financeapp.ui.theme.financeColors
 import com.financeapp.ui.utils.FinanceIcons
+import com.financeapp.ui.utils.TierUtils
 import com.financeapp.domain.HealthScore
 import androidx.compose.ui.res.stringResource
 import com.financeapp.R
@@ -523,20 +529,15 @@ private fun BalanceCard(
 private fun GamificationSummaryCard(
     progress: UserProgress
 ) {
+    var showXpDialog by remember { mutableStateOf(false) }
+    val tier = TierUtils.getTierForLevel(progress.currentLevel)
+
     val flameColor = when {
         progress.currentStreak >= 30 -> Color(0xFFFF6F00)
         progress.currentStreak >= 7 -> MaterialTheme.colorScheme.financeColors.accent
         progress.currentStreak >= 3 -> Color(0xFFFFA726)
         progress.currentStreak > 0 -> Color(0xFFEF5350)
         else -> Color(0xFFBDBDBD)
-    }
-
-    val levelColor = when {
-        progress.currentLevel >= 9 -> Color(0xFFFF6F00)
-        progress.currentLevel >= 7 -> Color(0xFF7C4DFF)
-        progress.currentLevel >= 5 -> Color(0xFF1976D2)
-        progress.currentLevel >= 3 -> Color(0xFF43A047)
-        else -> Color(0xFF78909C)
     }
 
     Card(
@@ -554,26 +555,17 @@ private fun GamificationSummaryCard(
             horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Level section
+            // Level section — Tier badge (clickable)
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Box(
-                    modifier = Modifier
-                        .size(36.dp)
-                        .clip(CircleShape)
-                        .background(color = levelColor.copy(alpha = 0.25f)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = "${progress.currentLevel}",
-                        color = levelColor,
-                        style = MaterialTheme.typography.titleSmall,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
+                TierBadge(
+                    tier = tier.tier,
+                    size = 40.dp,
+                    onClick = { showXpDialog = true }
+                )
                 Spacer(modifier = Modifier.width(Spacing.sm))
                 Column {
                     Text(
-                        text = progress.levelTitle,
+                        text = tier.name,
                         style = MaterialTheme.typography.labelMedium,
                         fontWeight = FontWeight.Bold
                     )
@@ -617,6 +609,15 @@ private fun GamificationSummaryCard(
                 }
             }
         }
+    }
+
+    // XP Summary Dialog
+    if (showXpDialog) {
+        XpSummaryDialog(
+            totalXp = progress.totalXp,
+            currentLevel = progress.currentLevel,
+            onDismiss = { showXpDialog = false }
+        )
     }
 }
 
