@@ -2,14 +2,11 @@ package com.financeapp.ui.components
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 
 import androidx.compose.material3.Card
@@ -19,6 +16,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -29,22 +29,20 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.financeapp.ui.theme.Spacing
 import com.financeapp.data.model.UserProgress
+import com.financeapp.ui.utils.TierUtils
 
 @Composable
 fun LevelCard(
     progress: UserProgress,
     modifier: Modifier = Modifier
 ) {
-    val levelColor = when {
-        progress.currentLevel >= 9 -> Color(0xFFFF6F00)
-        progress.currentLevel >= 7 -> Color(0xFF7C4DFF)
-        progress.currentLevel >= 5 -> Color(0xFF1976D2)
-        progress.currentLevel >= 3 -> Color(0xFF43A047)
-        else -> Color(0xFF78909C)
-    }
+    var showXpDialog by remember { mutableStateOf(false) }
+    val tier = TierUtils.getTierForLevel(progress.currentLevel)
+
+    val tierProgress = TierUtils.getTierProgress(progress.totalXp)
 
     val animatedProgress by animateFloatAsState(
-        targetValue = progress.levelProgress,
+        targetValue = tierProgress,
         animationSpec = tween(1000)
     )
 
@@ -62,29 +60,18 @@ fun LevelCard(
                 .padding(Spacing.md),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Row 1: Level badge circle — 44dp, same as StreakCard icon box
-            Box(
-                modifier = Modifier
-                    .size(44.dp)
-                    .clip(CircleShape)
-                    .background(
-                        color = levelColor.copy(alpha = 0.25f)
-                    ),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = "${progress.currentLevel}",
-                    color = levelColor,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
-                )
-            }
+            // Tier badge (clickable)
+            TierBadge(
+                tier = tier.tier,
+                size = 56.dp,
+                onClick = { showXpDialog = true }
+            )
 
             Spacer(modifier = Modifier.height(Spacing.xs))
 
-            // Row 2: Level title (matches StreakCard "X hari" label)
+            // Tier name
             Text(
-                text = progress.levelTitle,
+                text = tier.name,
                 style = MaterialTheme.typography.labelMedium,
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center
@@ -92,25 +79,35 @@ fun LevelCard(
 
             Spacer(modifier = Modifier.height(Spacing.sm))
 
-            // Row 3: Progress bar + XP (matches StreakCard bottom row height)
+            // Progress bar (tier progress)
             LinearProgressIndicator(
                 progress = { animatedProgress.coerceIn(0f, 1f) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(6.dp)
                     .clip(MaterialTheme.shapes.extraSmall),
-                color = levelColor,
+                color = MaterialTheme.colorScheme.primary,
                 trackColor = MaterialTheme.colorScheme.surfaceVariant,
                 strokeCap = StrokeCap.Round
             )
 
             Spacer(modifier = Modifier.height(Spacing.xs))
 
+            // XP text
             Text(
-                text = "${progress.totalXp} / ${progress.xpForNextLevel} XP",
+                text = "${progress.totalXp} XP",
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
+    }
+
+    // XP Summary Dialog
+    if (showXpDialog) {
+        XpSummaryDialog(
+            totalXp = progress.totalXp,
+            currentLevel = progress.currentLevel,
+            onDismiss = { showXpDialog = false }
+        )
     }
 }
