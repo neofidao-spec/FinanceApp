@@ -166,6 +166,28 @@ class EditTransactionViewModel @Inject constructor(
 
                 transactionRepository.updateTransaction(transaction)
 
+                // Update account balance for edited transaction
+                try {
+                    val oldTransaction = transactionRepository.getTransaction(transaction.id)
+                    val account = accountRepository.getAccountById(_uiState.value.selectedAccountId)
+                    account?.let { acc ->
+                        // Revert old transaction effect on balance
+                        val revertedBalance = when (oldTransaction?.type) {
+                            TransactionType.INCOME -> acc.balance - (oldTransaction?.amount ?: 0.0)
+                            TransactionType.EXPENSE -> acc.balance + (oldTransaction?.amount ?: 0.0)
+                            else -> acc.balance
+                        }
+                        // Apply new transaction effect on balance
+                        val newBalance = when (transaction.type) {
+                            TransactionType.INCOME -> revertedBalance + transaction.amount
+                            TransactionType.EXPENSE -> revertedBalance - transaction.amount
+                        }
+                        accountRepository.updateAccount(acc.copy(balance = newBalance))
+                    }
+                } catch (_: Exception) {
+                    // Balance update failure is non-blocking
+                }
+
                 _uiState.value = _uiState.value.copy(
                     successMessage = "Transaksi berhasil diperbarui",
                     isLoading = false

@@ -147,6 +147,20 @@ class AddTransactionViewModel @Inject constructor(
 
                 transactionRepository.addTransaction(transaction)
 
+                // Update account balance
+                try {
+                    val account = accountRepository.getAccountById(_uiState.value.selectedAccountId)
+                    account?.let {
+                        val newBalance = when (transaction.type) {
+                            TransactionType.INCOME -> it.balance + transaction.amount
+                            TransactionType.EXPENSE -> it.balance - transaction.amount
+                        }
+                        accountRepository.updateAccount(it.copy(balance = newBalance))
+                    }
+                } catch (_: Exception) {
+                    // Balance update failure is non-blocking
+                }
+
                 // Gamification: award XP, update streak, update quest progress
                 try {
                     gamificationUseCase.onTransactionRecorded()
