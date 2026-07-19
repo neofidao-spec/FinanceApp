@@ -66,14 +66,12 @@ import com.financeapp.ui.components.BudgetProgressRing
 import com.financeapp.ui.components.DailyQuestCard
 import com.financeapp.ui.components.DonutChart
 import com.financeapp.ui.components.DonutSegment
-import com.financeapp.ui.components.HealthScoreCard
-import com.financeapp.ui.components.LevelCard
 import com.financeapp.ui.components.MonthlyData
 import com.financeapp.ui.components.MonthlyTrendChart
-import com.financeapp.ui.components.StreakCard
 import com.financeapp.ui.theme.Spacing
 import com.financeapp.ui.theme.financeColors
 import com.financeapp.ui.utils.FinanceIcons
+import com.financeapp.domain.HealthScore
 import androidx.compose.ui.res.stringResource
 import com.financeapp.R
 import com.financeapp.ui.utils.FormatterUtil
@@ -207,45 +205,56 @@ private fun DashboardContent(
 
         // 3. Budget Overview + Health Score (combined horizontal row)
         item {
-            Row(
+            Card(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(Spacing.sm)
+                shape = MaterialTheme.shapes.medium,
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surface
+                ),
+                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
             ) {
-                // Budget progress ring(s)
-                if (uiState.budgetSummaries.isNotEmpty()) {
-                    uiState.budgetSummaries.take(2).forEach { budget ->
-                        BudgetProgressRing(
-                            progress = (budget.percentage / 100f).coerceIn(0f, 1f),
-                            label = budget.category.name,
-                            amountText = FormatterUtil.formatCurrency(budget.currentSpent),
-                            ringSize = 72,
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(Spacing.md),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    // Left: Budget total ring (1 ring only)
+                    val totalBudget = uiState.budgetSummaries.sumOf { it.budget.monthlyLimit }
+                    val totalSpent = uiState.budgetSummaries.sumOf { it.currentSpent }
+                    val budgetProgress = if (totalBudget > 0) {
+                        (totalSpent / totalBudget).toFloat().coerceIn(0f, 1f)
+                    } else 0f
+
+                    BudgetProgressRing(
+                        progress = budgetProgress,
+                        label = if (uiState.budgetSummaries.isNotEmpty()) "Budget" else "Belum ada",
+                        amountText = if (uiState.budgetSummaries.isNotEmpty())
+                            "${String.format("%.0f", budgetProgress * 100)}% terpakai"
+                        else "Atur di Budget",
+                        ringSize = 72,
+                        modifier = Modifier.weight(1f)
+                    )
+
+                    // Vertical divider
+                    Box(
+                        modifier = Modifier
+                            .width(1.dp)
+                            .height(72.dp)
+                            .background(MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f))
+                    )
+
+                    // Right: Health score ring with explanation
+                    uiState.healthScore?.let { health ->
+                        HealthScoreRing(
+                            score = health.score,
+                            category = health.category,
+                            description = health.description,
+                            trend = health.trend,
                             modifier = Modifier.weight(1f)
                         )
                     }
-                } else {
-                    // Empty budget state — still show placeholder ring
-                    BudgetProgressRing(
-                        progress = 0f,
-                        label = "Belum ada budget",
-                        amountText = "Tap +",
-                        ringSize = 72,
-                        modifier = Modifier.weight(1f)
-                    )
-                    BudgetProgressRing(
-                        progress = 0f,
-                        label = "Tambah budget",
-                        amountText = "di Budget",
-                        ringSize = 72,
-                        modifier = Modifier.weight(1f)
-                    )
-                }
-
-                // Health score ring (compact)
-                uiState.healthScore?.let { health ->
-                    HealthScoreRing(
-                        score = health.score,
-                        modifier = Modifier.weight(1f)
-                    )
                 }
             }
         }
@@ -257,28 +266,74 @@ private fun DashboardContent(
             }
         }
 
-        // 5. DonutChart - Expense breakdown
-        if (uiState.categoryBreakdown.isNotEmpty()) {
-            item {
-                SectionHeader(title = stringResource(R.string.dashboard_expense_by_category))
-                DonutChart(
-                    segments = uiState.categoryBreakdown.map { summary ->
-                        DonutSegment(
-                            label = summary.category.name,
-                            value = summary.total,
-                            color = FinanceIcons.getColorFromHex(summary.category.color)
+        // 5. DonutChart + Monthly Trend (side by side in card)
+        item {
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = MaterialTheme.shapes.medium,
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surface
+                ),
+                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(Spacing.md)
+                ) {
+                    Text(
+                        text = stringResource(R.string.dashboard_expense_by_category),
+                        style = MaterialTheme.typography.titleSmall,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Spacer(modifier = Modifier.height(Spacing.sm))
+
+                    if (uiState.categoryBreakdown.isNotEmpty()) {
+                        DonutChart(
+                            segments = uiState.categoryBreakdown.map { summary ->
+                                DonutSegment(
+                                    label = summary.category.name,
+                                    value = summary.total,
+                                    color = FinanceIcons.getColorFromHex(summary.category.color)
+                                )
+                            },
+                            centerText = FormatterUtil.formatCurrency(uiState.totalExpense),
+                            modifier = Modifier.padding(bottom = Spacing.sm)
                         )
-                    },
-                    centerText = FormatterUtil.formatCurrency(uiState.totalExpense),
-                    modifier = Modifier.padding(bottom = Spacing.sm)
-                )
+                    } else {
+                        // Empty state
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(Spacing.lg),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.Savings,
+                                contentDescription = "Belum ada data",
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
+                                modifier = Modifier.size(48.dp)
+                            )
+                            Spacer(modifier = Modifier.height(Spacing.sm))
+                            Text(
+                                text = "Belum ada pengeluaran",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            Text(
+                                text = "Data akan muncul setelah Anda mencatat transaksi",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
+                            )
+                        }
+                    }
+                }
             }
         }
 
         // 6. Monthly Trend Chart
         if (uiState.monthlyTrend.isNotEmpty()) {
             item {
-                SectionHeader(title = stringResource(R.string.dashboard_monthly_trend))
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     shape = MaterialTheme.shapes.medium,
@@ -287,16 +342,27 @@ private fun DashboardContent(
                         containerColor = MaterialTheme.colorScheme.surface
                     )
                 ) {
-                    MonthlyTrendChart(
-                        data = uiState.monthlyTrend.map { trend ->
-                            MonthlyData(
-                                month = trend.month,
-                                income = trend.income,
-                                expense = trend.expense
-                            )
-                        },
-                        modifier = Modifier.padding(Spacing.md)
-                    )
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(Spacing.md)
+                    ) {
+                        Text(
+                            text = stringResource(R.string.dashboard_monthly_trend),
+                            style = MaterialTheme.typography.titleSmall,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Spacer(modifier = Modifier.height(Spacing.sm))
+                        MonthlyTrendChart(
+                            data = uiState.monthlyTrend.map { trend ->
+                                MonthlyData(
+                                    month = trend.month,
+                                    income = trend.income,
+                                    expense = trend.expense
+                                )
+                            }
+                        )
+                    }
                 }
             }
         }
@@ -322,6 +388,9 @@ private fun DashboardContent(
 @Composable
 private fun HealthScoreRing(
     score: Int,
+    category: String = "",
+    description: String = "",
+    trend: HealthScore.Trend = HealthScore.Trend.STABLE,
     modifier: Modifier = Modifier
 ) {
     val scoreColor = when {
@@ -331,74 +400,106 @@ private fun HealthScoreRing(
         else -> MaterialTheme.colorScheme.financeColors.expense
     }
 
+    val trendIcon = when (trend) {
+        HealthScore.Trend.UP -> Icons.Filled.TrendingUp
+        HealthScore.Trend.DOWN -> Icons.Filled.TrendingDown
+        else -> Icons.Filled.TrendingUp
+    }
+
+    val trendColor = when (trend) {
+        HealthScore.Trend.UP -> MaterialTheme.colorScheme.financeColors.income
+        HealthScore.Trend.DOWN -> MaterialTheme.colorScheme.financeColors.expense
+        else -> MaterialTheme.colorScheme.onSurfaceVariant
+    }
+
     val animatedScore by animateFloatAsState(
         targetValue = score / 100f,
         animationSpec = spring(dampingRatio = 0.7f, stiffness = 100f),
         label = "healthRing"
     )
 
-    Card(
-        modifier = modifier.fillMaxWidth(),
-        shape = MaterialTheme.shapes.medium,
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
-        ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+    Column(
+        modifier = modifier.padding(Spacing.xs),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(Spacing.sm),
-            horizontalAlignment = Alignment.CenterHorizontally
+        Box(
+            modifier = Modifier.size(56.dp),
+            contentAlignment = Alignment.Center
         ) {
-            Box(
-                modifier = Modifier.size(72.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                val trackColor = scoreColor.copy(alpha = 0.15f)
-                Canvas(modifier = Modifier.size(72.dp)) {
-                    val strokeWidth = 6.dp.toPx()
-                    val radius = (size.minDimension - strokeWidth) / 2
-                    val center = Offset(size.width / 2, size.height / 2)
+            val trackColor = scoreColor.copy(alpha = 0.15f)
+            Canvas(modifier = Modifier.size(56.dp)) {
+                val strokeWidth = 5.dp.toPx()
+                val radius = (size.minDimension - strokeWidth) / 2
 
-                    drawArc(
-                        color = trackColor,
-                        startAngle = -90f,
-                        sweepAngle = 360f,
-                        useCenter = false,
-                        topLeft = Offset(strokeWidth / 2, strokeWidth / 2),
-                        size = androidx.compose.ui.geometry.Size(
-                            size.width - strokeWidth, size.height - strokeWidth
-                        ),
-                        style = Stroke(width = strokeWidth, cap = StrokeCap.Round)
-                    )
-                    drawArc(
-                        color = scoreColor,
-                        startAngle = -90f,
-                        sweepAngle = animatedScore * 360f,
-                        useCenter = false,
-                        topLeft = Offset(strokeWidth / 2, strokeWidth / 2),
-                        size = androidx.compose.ui.geometry.Size(
-                            size.width - strokeWidth, size.height - strokeWidth
-                        ),
-                        style = Stroke(width = strokeWidth, cap = StrokeCap.Round)
-                    )
-                }
+                drawArc(
+                    color = trackColor,
+                    startAngle = -90f,
+                    sweepAngle = 360f,
+                    useCenter = false,
+                    topLeft = Offset(strokeWidth / 2, strokeWidth / 2),
+                    size = androidx.compose.ui.geometry.Size(
+                        size.width - strokeWidth, size.height - strokeWidth
+                    ),
+                    style = Stroke(width = strokeWidth, cap = StrokeCap.Round)
+                )
+                drawArc(
+                    color = scoreColor,
+                    startAngle = -90f,
+                    sweepAngle = animatedScore * 360f,
+                    useCenter = false,
+                    topLeft = Offset(strokeWidth / 2, strokeWidth / 2),
+                    size = androidx.compose.ui.geometry.Size(
+                        size.width - strokeWidth, size.height - strokeWidth
+                    ),
+                    style = Stroke(width = strokeWidth, cap = StrokeCap.Round)
+                )
+            }
+            Text(
+                text = "$score",
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.Bold,
+                color = scoreColor
+            )
+        }
+
+        Spacer(modifier = Modifier.height(Spacing.xs))
+
+        // Category + trend
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            if (category.isNotEmpty()) {
                 Text(
-                    text = "$score",
-                    style = MaterialTheme.typography.titleMedium,
+                    text = category,
+                    style = MaterialTheme.typography.labelSmall,
                     fontWeight = FontWeight.Bold,
                     color = scoreColor
                 )
+                Spacer(modifier = Modifier.width(Spacing.two))
+                Icon(
+                    imageVector = trendIcon,
+                    contentDescription = if (trend == HealthScore.Trend.UP) "Meningkat" else "Menurun",
+                    tint = trendColor,
+                    modifier = Modifier.size(14.dp)
+                )
+            } else {
+                Text(
+                    text = "Kesehatan",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
             }
+        }
 
-            Spacer(modifier = Modifier.height(Spacing.xs))
-
+        // Description (if present)
+        if (description.isNotEmpty()) {
             Text(
-                text = "Kesehatan",
+                text = description,
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
-                textAlign = TextAlign.Center
+                textAlign = TextAlign.Center,
+                maxLines = 2
             )
         }
     }
