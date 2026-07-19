@@ -140,71 +140,77 @@ fun GamificationScreen(
                 text = "Profil & Prestasi",
                 style = MaterialTheme.typography.headlineLarge
             )
-            // Freeze button — larger, closer to settings
-            val progress = state.userProgress
-            if (progress != null && progress.streakFreezes > 0) {
-                var showFreezeDialog by remember { mutableStateOf(false) }
 
-                IconButton(
-                    onClick = { showFreezeDialog = true },
-                    modifier = Modifier.size(44.dp)
-                ) {
-                    BadgedBox(
-                        badge = {
-                            Badge(
-                                containerColor = MaterialTheme.colorScheme.primary,
-                                contentColor = MaterialTheme.colorScheme.onPrimary
-                            ) {
-                                Text(
-                                    text = "${progress.streakFreezes}",
-                                    style = MaterialTheme.typography.labelSmall
-                                )
-                            }
-                        }
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy((-4).dp)
+            ) {
+                // Freeze button
+                val progress = state.userProgress
+                if (progress != null && progress.streakFreezes > 0) {
+                    var showFreezeDialog by remember { mutableStateOf(false) }
+
+                    IconButton(
+                        onClick = { showFreezeDialog = true },
+                        modifier = Modifier.size(44.dp)
                     ) {
-                        Icon(
-                            imageVector = Icons.Filled.AcUnit,
-                            contentDescription = "Streak freeze tersedia",
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.size(24.dp)
-                        )
+                        BadgedBox(
+                            badge = {
+                                Badge(
+                                    containerColor = MaterialTheme.colorScheme.primary,
+                                    contentColor = MaterialTheme.colorScheme.onPrimary
+                                ) {
+                                    Text(
+                                        text = "${progress.streakFreezes}",
+                                        style = MaterialTheme.typography.labelSmall
+                                    )
+                                }
+                            }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.AcUnit,
+                                contentDescription = "Streak freeze tersedia",
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.size(24.dp)
+                            )
+                        }
+                    }
+
+                    if (showFreezeDialog) {
+                       AlertDialog(
+                           onDismissRequest = { showFreezeDialog = false },
+                           title = { Text("Gunakan Streak Freeze?") },
+                           text = {
+                               Text(
+                                   "Streak freeze melindungi streak Anda selama 1 hari " +
+                                   "jika Anda tidak mencatat transaksi. " +
+                                   "Anda memiliki ${progress.streakFreezes} freeze tersisa."
+                               )
+                           },
+                           confirmButton = {
+                               Button(onClick = {
+                                   viewModel.useFreeze()
+                                   showFreezeDialog = false
+                               }) {
+                                   Text("Gunakan")
+                               }
+                           },
+                           dismissButton = {
+                               TextButton(onClick = { showFreezeDialog = false }) {
+                                   Text("Batal")
+                               }
+                           }
+                       )
                     }
                 }
 
-                if (showFreezeDialog) {
-                   AlertDialog(
-                       onDismissRequest = { showFreezeDialog = false },
-                       title = { Text("Gunakan Streak Freeze?") },
-                       text = {
-                           Text(
-                               "Streak freeze melindungi streak Anda selama 1 hari " +
-                               "jika Anda tidak mencatat transaksi. " +
-                               "Anda memiliki ${progress.streakFreezes} freeze tersisa."
-                           )
-                       },
-                       confirmButton = {
-                           Button(onClick = {
-                               viewModel.useFreeze()
-                               showFreezeDialog = false
-                           }) {
-                               Text("Gunakan")
-                           }
-                       },
-                       dismissButton = {
-                           TextButton(onClick = { showFreezeDialog = false }) {
-                               Text("Batal")
-                           }
-                       }
-                   )
+                IconButton(onClick = onSettingsClick) {
+                    Icon(
+                        imageVector = Icons.Filled.Settings,
+                        contentDescription = "Pengaturan",
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                 }
-            }
-
-            IconButton(onClick = onSettingsClick) {
-                Icon(
-                    imageVector = Icons.Filled.Settings,
-                    contentDescription = "Pengaturan",
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant
-                )
             }
         }
 
