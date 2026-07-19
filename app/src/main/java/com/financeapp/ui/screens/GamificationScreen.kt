@@ -170,6 +170,33 @@ fun GamificationScreen(
                         )
                     }
                 }
+
+                if (showFreezeDialog) {
+                   AlertDialog(
+                       onDismissRequest = { showFreezeDialog = false },
+                       title = { Text("Gunakan Streak Freeze?") },
+                       text = {
+                           Text(
+                               "Streak freeze melindungi streak Anda selama 1 hari " +
+                               "jika Anda tidak mencatat transaksi. " +
+                               "Anda memiliki ${progress.streakFreezes} freeze tersisa."
+                           )
+                       },
+                       confirmButton = {
+                           Button(onClick = {
+                               viewModel.useFreeze()
+                               showFreezeDialog = false
+                           }) {
+                               Text("Gunakan")
+                           }
+                       },
+                       dismissButton = {
+                           TextButton(onClick = { showFreezeDialog = false }) {
+                               Text("Batal")
+                           }
+                       }
+                   )
+                }
             }
 
             IconButton(onClick = onSettingsClick) {
@@ -178,34 +205,6 @@ fun GamificationScreen(
                     contentDescription = "Pengaturan",
                     tint = MaterialTheme.colorScheme.onSurfaceVariant
                 )
-            }
-
-                if (showFreezeDialog) {
-                    AlertDialog(
-                        onDismissRequest = { showFreezeDialog = false },
-                        title = { Text("Gunakan Streak Freeze?") },
-                        text = {
-                            Text(
-                                "Streak freeze melindungi streak Anda selama 1 hari " +
-                                "jika Anda tidak mencatat transaksi. " +
-                                "Anda memiliki ${progress.streakFreezes} freeze tersisa."
-                            )
-                        },
-                        confirmButton = {
-                            Button(onClick = {
-                                viewModel.useFreeze()
-                                showFreezeDialog = false
-                            }) {
-                                Text("Gunakan")
-                            }
-                        },
-                        dismissButton = {
-                            TextButton(onClick = { showFreezeDialog = false }) {
-                                Text("Batal")
-                            }
-                        }
-                    )
-                }
             }
         }
 
