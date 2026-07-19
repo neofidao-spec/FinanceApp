@@ -61,6 +61,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.financeapp.data.model.TransactionType
 import com.financeapp.data.model.TransactionWithCategory
 import com.financeapp.data.model.UserProgress
+import com.financeapp.data.repository.QuestWithTemplate
 import com.financeapp.ui.components.AnimatedNumber
 import com.financeapp.ui.components.ShimmerBalanceCard
 import com.financeapp.ui.components.ShimmerTransactionItem
@@ -92,6 +93,11 @@ fun DashboardScreen(
     val uiState by viewModel.uiState.collectAsState()
     val gamificationState by gamificationViewModel.uiState.collectAsState()
 
+    // Extract only what DashboardScreen needs to minimize recomposition
+    val userProgress = gamificationState.userProgress
+    val dailyQuests = gamificationState.dailyQuests
+    val isGamificationLoading = gamificationState.isLoading
+
     // Complete "Cek Dashboard" quest on first visit (once only)
     LaunchedEffect(Unit) {
         gamificationViewModel.autoCompleteQuest("cek_dashboard")
@@ -99,7 +105,9 @@ fun DashboardScreen(
 
     DashboardContent(
         uiState = uiState,
-        gamificationState = gamificationState,
+        userProgress = userProgress,
+        dailyQuests = dailyQuests,
+        isGamificationLoading = isGamificationLoading,
         onRetry = { viewModel.retry() }
     )
 }
@@ -107,7 +115,9 @@ fun DashboardScreen(
 @Composable
 private fun DashboardContent(
     uiState: DashboardUiState,
-    gamificationState: GamificationUiState,
+    userProgress: UserProgress?,
+    dailyQuests: List<QuestWithTemplate>,
+    isGamificationLoading: Boolean,
     onRetry: () -> Unit,
 ) {
     Scaffold(
@@ -190,10 +200,10 @@ private fun DashboardContent(
         }
 
         // 2. Gamification summary — compact single card (Level + Streak in one row)
-        if (gamificationState.userProgress != null && !gamificationState.isLoading) {
+        if (userProgress != null && !isGamificationLoading) {
             item {
                 GamificationSummaryCard(
-                    progress = gamificationState.userProgress
+                    progress = userProgress
                 )
             }
         }
@@ -255,10 +265,10 @@ private fun DashboardContent(
         }
 
         // 4. Daily Quests
-        if (gamificationState.dailyQuests.isNotEmpty() && !gamificationState.isLoading) {
+        if (dailyQuests.isNotEmpty() && !isGamificationLoading) {
             item {
                 DailyQuestCard(
-                    quests = gamificationState.dailyQuests
+                    quests = dailyQuests
                 )
             }
         }
