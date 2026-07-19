@@ -92,8 +92,12 @@ fun DashboardScreen(
     val uiState by viewModel.uiState.collectAsState()
     val gamificationState by gamificationViewModel.uiState.collectAsState()
 
-    // Complete "Cek Dashboard" quest on first visit
-    LaunchedEffect(gamificationState.dailyQuests) {
+    // Complete "Cek Dashboard" quest on first visit (once only, after quests loaded)
+    LaunchedEffect(Unit) {
+        // Wait for quests to be loaded
+        while (gamificationState.dailyQuests.isEmpty() && gamificationState.isLoading) {
+            kotlinx.coroutines.delay(100)
+        }
         val dashboardQuest = gamificationState.dailyQuests.find {
             it.template.id == "cek_dashboard" && !it.assignment.isCompleted
         }

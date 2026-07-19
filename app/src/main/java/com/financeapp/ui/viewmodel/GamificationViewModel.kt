@@ -99,8 +99,9 @@ class GamificationViewModel @Inject constructor(
                     Triple(completed, xpHistory, achievements)
                 }
                 combine(combine, lastThree) { (progress, active), (completed, xpHistory, achievements) ->
-                    // Preserve dailyQuests from the current state (set by initializeGamification)
+                    // Preserve dailyQuests from the current state (set by initializeGamification or completeQuest)
                     val currentQuests = _uiState.value.dailyQuests
+                    val currentIsLoading = _uiState.value.isLoading
                     GamificationUiState(
                         userProgress = progress,
                         dailyQuests = currentQuests,

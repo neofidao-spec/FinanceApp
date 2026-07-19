@@ -59,8 +59,11 @@ fun ReportScreen(
     val uiState by viewModel.uiState.collectAsState()
     val gamificationState by gamificationViewModel.uiState.collectAsState()
 
-    // Complete "Buka Laporan" quest when user opens ReportScreen
-    LaunchedEffect(gamificationState.dailyQuests) {
+    // Complete "Buka Laporan" quest when user opens ReportScreen (once only, after quests loaded)
+    LaunchedEffect(Unit) {
+        while (gamificationState.dailyQuests.isEmpty() && gamificationState.isLoading) {
+            kotlinx.coroutines.delay(100)
+        }
         val reportQuest = gamificationState.dailyQuests.find {
             it.template.id == "buka_laporan" && !it.assignment.isCompleted
         }

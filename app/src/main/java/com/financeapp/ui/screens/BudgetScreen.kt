@@ -94,8 +94,11 @@ fun BudgetScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val focusManager = LocalFocusManager.current
 
-    // Complete "Cek Budget" quest when user opens BudgetScreen
-    LaunchedEffect(gamificationState.dailyQuests) {
+    // Complete "Cek Budget" quest when user opens BudgetScreen (once only, after quests loaded)
+    LaunchedEffect(Unit) {
+        while (gamificationState.dailyQuests.isEmpty() && gamificationState.isLoading) {
+            kotlinx.coroutines.delay(100)
+        }
         val budgetQuest = gamificationState.dailyQuests.find {
             it.template.id == "cek_budget" && !it.assignment.isCompleted
         }
