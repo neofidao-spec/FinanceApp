@@ -1,6 +1,9 @@
 package com.financeapp.ui.screens
 
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -44,7 +47,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -199,15 +205,48 @@ private fun DashboardContent(
             }
         }
 
-        // 3. Health Score Card
-        uiState.healthScore?.let { health ->
-            item {
-                HealthScoreCard(
-                    score = health.score,
-                    category = health.category,
-                    description = health.description,
-                    trend = health.trend
-                )
+        // 3. Budget Overview + Health Score (combined horizontal row)
+        item {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(Spacing.sm)
+            ) {
+                // Budget progress ring(s)
+                if (uiState.budgetSummaries.isNotEmpty()) {
+                    uiState.budgetSummaries.take(2).forEach { budget ->
+                        BudgetProgressRing(
+                            progress = (budget.percentage / 100f).coerceIn(0f, 1f),
+                            label = budget.category.name,
+                            amountText = FormatterUtil.formatCurrency(budget.currentSpent),
+                            ringSize = 72,
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
+                } else {
+                    // Empty budget state — still show placeholder ring
+                    BudgetProgressRing(
+                        progress = 0f,
+                        label = "Belum ada budget",
+                        amountText = "Tap +",
+                        ringSize = 72,
+                        modifier = Modifier.weight(1f)
+                    )
+                    BudgetProgressRing(
+                        progress = 0f,
+                        label = "Tambah budget",
+                        amountText = "di Budget",
+                        ringSize = 72,
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+
+                // Health score ring (compact)
+                uiState.healthScore?.let { health ->
+                    HealthScoreRing(
+                        score = health.score,
+                        modifier = Modifier.weight(1f)
+                    )
+                }
             }
         }
 
@@ -218,9 +257,7 @@ private fun DashboardContent(
             }
         }
 
-        // Income/Expense cards removed — already shown in BalanceCard above
-
-        // 6. DonutChart - Expense breakdown
+        // 5. DonutChart - Expense breakdown
         if (uiState.categoryBreakdown.isNotEmpty()) {
             item {
                 SectionHeader(title = stringResource(R.string.dashboard_expense_by_category))
@@ -238,7 +275,7 @@ private fun DashboardContent(
             }
         }
 
-        // 7. Monthly Trend Chart
+        // 6. Monthly Trend Chart
         if (uiState.monthlyTrend.isNotEmpty()) {
             item {
                 SectionHeader(title = stringResource(R.string.dashboard_monthly_trend))
@@ -264,29 +301,6 @@ private fun DashboardContent(
             }
         }
 
-        // 8. Budget Overview
-        if (uiState.budgetSummaries.isNotEmpty()) {
-            item {
-                SectionHeader(title = stringResource(R.string.dashboard_budget_overview))
-            }
-            item {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(Spacing.sm)
-                ) {
-                    uiState.budgetSummaries.take(3).forEach { budget ->
-                        BudgetProgressRing(
-                            progress = (budget.percentage / 100f).coerceIn(0f, 1f),
-                            label = budget.category.name,
-                            amountText = FormatterUtil.formatCurrency(budget.currentSpent),
-                            ringSize = 80,
-                            modifier = Modifier.weight(1f)
-                        )
-                    }
-                }
-            }
-        }
-
         // 9. Recent Transactions
         item {
             SectionHeader(title = stringResource(R.string.dashboard_recent_transactions))
@@ -302,6 +316,91 @@ private fun DashboardContent(
             }
         }
     }
+    }
+}
+
+@Composable
+private fun HealthScoreRing(
+    score: Int,
+    modifier: Modifier = Modifier
+) {
+    val scoreColor = when {
+        score >= 80 -> MaterialTheme.colorScheme.financeColors.income
+        score >= 60 -> MaterialTheme.colorScheme.primary
+        score >= 40 -> MaterialTheme.colorScheme.financeColors.warning
+        else -> MaterialTheme.colorScheme.financeColors.expense
+    }
+
+    val animatedScore by animateFloatAsState(
+        targetValue = score / 100f,
+        animationSpec = spring(dampingRatio = 0.7f, stiffness = 100f),
+        label = "healthRing"
+    )
+
+    Card(
+        modifier = modifier.fillMaxWidth(),
+        shape = MaterialTheme.shapes.medium,
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(Spacing.sm),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Box(
+                modifier = Modifier.size(72.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                val trackColor = scoreColor.copy(alpha = 0.15f)
+                Canvas(modifier = Modifier.size(72.dp)) {
+                    val strokeWidth = 6.dp.toPx()
+                    val radius = (size.minDimension - strokeWidth) / 2
+                    val center = Offset(size.width / 2, size.height / 2)
+
+                    drawArc(
+                        color = trackColor,
+                        startAngle = -90f,
+                        sweepAngle = 360f,
+                        useCenter = false,
+                        topLeft = Offset(strokeWidth / 2, strokeWidth / 2),
+                        size = androidx.compose.ui.geometry.Size(
+                            size.width - strokeWidth, size.height - strokeWidth
+                        ),
+                        style = Stroke(width = strokeWidth, cap = StrokeCap.Round)
+                    )
+                    drawArc(
+                        color = scoreColor,
+                        startAngle = -90f,
+                        sweepAngle = animatedScore * 360f,
+                        useCenter = false,
+                        topLeft = Offset(strokeWidth / 2, strokeWidth / 2),
+                        size = androidx.compose.ui.geometry.Size(
+                            size.width - strokeWidth, size.height - strokeWidth
+                        ),
+                        style = Stroke(width = strokeWidth, cap = StrokeCap.Round)
+                    )
+                }
+                Text(
+                    text = "$score",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = scoreColor
+                )
+            }
+
+            Spacer(modifier = Modifier.height(Spacing.xs))
+
+            Text(
+                text = "Kesehatan",
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = TextAlign.Center
+            )
+        }
     }
 }
 
