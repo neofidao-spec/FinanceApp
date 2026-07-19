@@ -286,17 +286,23 @@ private fun ProfileTab(
 
         // 3. Active Challenges
         if (state.activeChallenges.isNotEmpty()) {
-            item { SectionTitle("Tantangan Aktif") }
-            state.activeChallenges.forEach { challenge ->
-                item { ChallengeCard(challenge = challenge) }
+            item(key = "active_title") { SectionTitle("Tantangan Aktif") }
+            items(
+                items = state.activeChallenges,
+                key = { it.id }
+            ) { challenge ->
+                ChallengeCard(challenge = challenge)
             }
         }
 
         // 4. Completed Challenges
         if (state.completedChallenges.isNotEmpty()) {
-            item { SectionTitle("Tantangan Terselesaikan") }
-            state.completedChallenges.take(3).forEach { challenge ->
-                item { ChallengeCard(challenge = challenge) }
+            item(key = "completed_title") { SectionTitle("Tantangan Terselesaikan") }
+            items(
+                items = state.completedChallenges.take(3),
+                key = { "completed_${it.id}" }
+            ) { challenge ->
+                ChallengeCard(challenge = challenge)
             }
         }
 
