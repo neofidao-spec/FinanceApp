@@ -28,8 +28,12 @@ import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.AcUnit
 import androidx.compose.material.icons.filled.TrendingUp
 import androidx.compose.material.icons.filled.WorkspacePremium
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -43,10 +47,12 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -141,6 +147,65 @@ fun GamificationScreen(
                     tint = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
+
+            // Freeze button — small, near settings
+            val progress = state.userProgress
+            if (progress != null && progress.streakFreezes > 0) {
+                var showFreezeDialog by remember { mutableStateOf(false) }
+
+                IconButton(
+                    onClick = { showFreezeDialog = true },
+                    modifier = Modifier.size(36.dp)
+                ) {
+                    BadgedBox(
+                        badge = {
+                            Badge(
+                                containerColor = MaterialTheme.colorScheme.primary,
+                                contentColor = MaterialTheme.colorScheme.onPrimary
+                            ) {
+                                Text(
+                                    text = "${progress.streakFreezes}",
+                                    style = MaterialTheme.typography.labelSmall
+                                )
+                            }
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.AcUnit,
+                            contentDescription = "Streak freeze tersedia",
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
+                }
+
+                if (showFreezeDialog) {
+                    AlertDialog(
+                        onDismissRequest = { showFreezeDialog = false },
+                        title = { Text("Gunakan Streak Freeze?") },
+                        text = {
+                            Text(
+                                "Streak freeze melindungi streak Anda selama 1 hari " +
+                                "jika Anda tidak mencatat transaksi. " +
+                                "Anda memiliki ${progress.streakFreezes} freeze tersisa."
+                            )
+                        },
+                        confirmButton = {
+                            Button(onClick = {
+                                viewModel.useFreeze()
+                                showFreezeDialog = false
+                            }) {
+                                Text("Gunakan")
+                            }
+                        },
+                        dismissButton = {
+                            TextButton(onClick = { showFreezeDialog = false }) {
+                                Text("Batal")
+                            }
+                        }
+                    )
+                }
+            }
         }
 
         // Tab bar
@@ -200,8 +265,6 @@ private fun ProfileTab(
                     StreakCard(
                         currentStreak = progress.currentStreak,
                         bestStreak = progress.bestStreak,
-                        streakFreezes = progress.streakFreezes,
-                        onUseFreeze = { viewModel.useFreeze() },
                         modifier = Modifier.weight(1f)
                     )
                 }

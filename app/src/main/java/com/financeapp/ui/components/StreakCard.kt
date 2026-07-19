@@ -3,36 +3,24 @@ package com.financeapp.ui.components
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LocalFireDepartment
-import androidx.compose.material.icons.filled.AcUnit
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -47,12 +35,8 @@ import com.financeapp.ui.theme.financeColors
 fun StreakCard(
     currentStreak: Int,
     bestStreak: Int,
-    streakFreezes: Int,
-    onUseFreeze: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var showFreezeDialog by remember { mutableStateOf(false) }
-
     val flameColor = when {
         currentStreak >= 30 -> Color(0xFFFF6F00)
         currentStreak >= 7 -> MaterialTheme.colorScheme.financeColors.accent
@@ -117,72 +101,6 @@ fun StreakCard(
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
-
-            // Freeze section — only when user has freezes
-            if (streakFreezes > 0) {
-                Spacer(modifier = Modifier.height(Spacing.sm))
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    IconButton(
-                        onClick = { showFreezeDialog = true },
-                        modifier = Modifier
-                            .size(28.dp)
-                            .background(
-                                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f),
-                                shape = CircleShape
-                            )
-                    ) {
-                        Icon(
-                            imageVector = Icons.Filled.AcUnit,
-                            contentDescription = "Gunakan streak freeze",
-                            tint = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.size(16.dp)
-                        )
-                    }
-                    Spacer(modifier = Modifier.width(Spacing.xs))
-                    Text(
-                        text = "Freeze ($streakFreezes)",
-                        style = MaterialTheme.typography.labelSmall,
-                        fontWeight = FontWeight.Medium,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                }
-            }
         }
-    }
-
-    // Freeze confirmation dialog
-    if (showFreezeDialog) {
-        AlertDialog(
-            onDismissRequest = { showFreezeDialog = false },
-            title = { Text("Gunakan Streak Freeze?") },
-            text = {
-                Text(
-                    "Streak freeze melindungi streak Anda selama 1 hari jika Anda " +
-                    "tidak mencatat transaksi. Anda memiliki $streakFreezes freeze tersisa."
-                )
-            },
-            confirmButton = {
-                Button(
-                    onClick = {
-                        onUseFreeze()
-                        showFreezeDialog = false
-                    },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.primary
-                    )
-                ) {
-                    Text("Gunakan")
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { showFreezeDialog = false }) {
-                    Text("Batal")
-                }
-            }
-        )
     }
 }
