@@ -37,10 +37,10 @@ fun LevelCard(
 ) {
     val levelColor = when {
         progress.currentLevel >= 9 -> Color(0xFFFF6F00)
-        progress.currentLevel >= 7 -> MaterialTheme.colorScheme.tertiary
-        progress.currentLevel >= 5 -> MaterialTheme.colorScheme.primary
-        progress.currentLevel >= 3 -> MaterialTheme.colorScheme.primary
-        else -> MaterialTheme.colorScheme.outlineVariant
+        progress.currentLevel >= 7 -> Color(0xFF7C4DFF)
+        progress.currentLevel >= 5 -> Color(0xFF1976D2)
+        progress.currentLevel >= 3 -> Color(0xFF43A047)
+        else -> Color(0xFF78909C)
     }
 
     val animatedProgress by animateFloatAsState(
@@ -68,7 +68,7 @@ fun LevelCard(
                     .size(44.dp)
                     .clip(CircleShape)
                     .background(
-                        color = levelColor.copy(alpha = 0.15f)
+                        color = levelColor.copy(alpha = 0.25f)
                     ),
                 contentAlignment = Alignment.Center
             ) {
