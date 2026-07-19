@@ -476,7 +476,7 @@ private fun HealthScoreRing(
                     fontWeight = FontWeight.Bold,
                     color = scoreColor
                 )
-                Spacer(modifier = Modifier.width(Spacing.two))
+                Spacer(modifier = Modifier.width(Spacing.xs))
                 Icon(
                     imageVector = trendIcon,
                     contentDescription = if (trend == HealthScore.Trend.UP) "Meningkat" else "Menurun",
