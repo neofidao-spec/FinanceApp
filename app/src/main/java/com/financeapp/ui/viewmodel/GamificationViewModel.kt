@@ -171,6 +171,24 @@ class GamificationViewModel @Inject constructor(
         }
     }
 
+    /** Auto-complete a quest by template ID (called from screens once) */
+    fun autoCompleteQuest(templateId: String) {
+        viewModelScope.launch {
+            try {
+                // Wait for quests to be loaded
+                var attempts = 0
+                while (_uiState.value.dailyQuests.isEmpty() && _uiState.value.isLoading && attempts < 50) {
+                    kotlinx.coroutines.delay(100)
+                    attempts++
+                }
+                val quest = _uiState.value.dailyQuests.find {
+                    it.template.id == templateId && !it.assignment.isCompleted
+                }
+                quest?.let { completeQuest(it) }
+            } catch (e: Exception) { Log.w(TAG, "Auto-complete quest failed: $templateId", e) }
+        }
+    }
+
     /** Mark a challenge as completed */
     fun completeChallenge(challenge: Challenge) {
         viewModelScope.launch {

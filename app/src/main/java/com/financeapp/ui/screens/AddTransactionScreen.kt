@@ -60,13 +60,10 @@ fun AddTransactionScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val focusManager = LocalFocusManager.current
 
-    // Complete quest after successful transaction (XP only from quest, no double-count)
+    // Auto-complete transaction quest after successful save
     LaunchedEffect(uiState.successMessage) {
         if (uiState.successMessage != null) {
-            val txQuest = gamificationState.dailyQuests.find {
-                it.template.id == "catat_transaksi" && !it.assignment.isCompleted
-            }
-            txQuest?.let { gamificationViewModel.completeQuest(it) }
+            gamificationViewModel.autoCompleteQuest("catat_transaksi")
         }
     }
 
