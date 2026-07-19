@@ -21,7 +21,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.financeapp.data.model.TransactionType
+import com.financeapp.ui.components.DatePickerField
 import com.financeapp.ui.theme.Spacing
+import java.time.LocalDate
 import java.time.LocalDateTime
 
 data class TransactionFilter(
@@ -40,8 +42,8 @@ fun FilterDialog(
     onDismiss: () -> Unit
 ) {
     var selectedType by remember { mutableStateOf(currentFilter?.type) }
-    var startDateText by remember { mutableStateOf(currentFilter?.startDate?.toLocalDate()?.toString() ?: "") }
-    var endDateText by remember { mutableStateOf(currentFilter?.endDate?.toLocalDate()?.toString() ?: "") }
+    var startDate by remember { mutableStateOf(currentFilter?.startDate?.toLocalDate() ?: LocalDate.now()) }
+    var endDate by remember { mutableStateOf(currentFilter?.endDate?.toLocalDate() ?: LocalDate.now()) }
     var minAmountText by remember { mutableStateOf(currentFilter?.minAmount?.toString() ?: "") }
     var maxAmountText by remember { mutableStateOf(currentFilter?.maxAmount?.toString() ?: "") }
 
@@ -81,21 +83,17 @@ fun FilterDialog(
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(Spacing.sm)
                 ) {
-                    OutlinedTextField(
-                        value = startDateText,
-                        onValueChange = { startDateText = it },
-                        modifier = Modifier.weight(1f),
-                        label = { Text("Dari") },
-                        placeholder = { Text("yyyy-MM-dd") },
-                        singleLine = true
+                    DatePickerField(
+                        value = startDate.atStartOfDay(),
+                        onDateSelected = { startDate = it.toLocalDate() },
+                        label = "Dari",
+                        modifier = Modifier.weight(1f)
                     )
-                    OutlinedTextField(
-                        value = endDateText,
-                        onValueChange = { endDateText = it },
-                        modifier = Modifier.weight(1f),
-                        label = { Text("Sampai") },
-                        placeholder = { Text("yyyy-MM-dd") },
-                        singleLine = true
+                    DatePickerField(
+                        value = endDate.atStartOfDay(),
+                        onDateSelected = { endDate = it.toLocalDate() },
+                        label = "Sampai",
+                        modifier = Modifier.weight(1f)
                     )
                 }
 
@@ -131,12 +129,8 @@ fun FilterDialog(
                 onClick = {
                     val filter = TransactionFilter(
                         type = selectedType,
-                        startDate = startDateText.takeIf { it.isNotBlank() }?.let {
-                            try { LocalDateTime.parse(it + "T00:00:00") } catch (_: Exception) { null }
-                        },
-                        endDate = endDateText.takeIf { it.isNotBlank() }?.let {
-                            try { LocalDateTime.parse(it + "T23:59:59") } catch (_: Exception) { null }
-                        },
+                        startDate = startDate.atStartOfDay(),
+                        endDate = endDate.atTime(23, 59, 59),
                         minAmount = minAmountText.toDoubleOrNull(),
                         maxAmount = maxAmountText.toDoubleOrNull()
                     )

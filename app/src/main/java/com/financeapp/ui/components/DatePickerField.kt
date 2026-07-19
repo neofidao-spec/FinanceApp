@@ -41,12 +41,13 @@ import java.util.Locale
 fun DatePickerField(
     value: LocalDateTime,
     onDateSelected: (LocalDateTime) -> Unit,
-    label: String = "Tanggal"
+    label: String = "Tanggal",
+    modifier: Modifier = Modifier
 ) {
     var showDatePicker by remember { mutableStateOf(false) }
     val dateFormatter = DateTimeFormatter.ofPattern("dd MMMM yyyy", Locale("id"))
 
-    Column {
+    Column(modifier = modifier) {
         Text(
             text = label,
             style = MaterialTheme.typography.bodySmall,
