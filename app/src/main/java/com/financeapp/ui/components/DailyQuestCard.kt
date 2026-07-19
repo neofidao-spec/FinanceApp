@@ -40,7 +40,6 @@ import com.financeapp.ui.theme.financeColors
 @Composable
 fun DailyQuestCard(
     quests: List<QuestWithTemplate>,
-    onQuestClick: ((QuestWithTemplate) -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     if (quests.isEmpty()) return
@@ -106,10 +105,7 @@ fun DailyQuestCard(
 
             // Individual quest items
             quests.forEach { quest ->
-                QuestItem(
-                    quest = quest,
-                    onClick = { onQuestClick?.invoke(quest) }
-                )
+                QuestItem(quest = quest)
                 Spacer(modifier = Modifier.height(Spacing.sm))
             }
         }
@@ -118,18 +114,12 @@ fun DailyQuestCard(
 
 @Composable
 private fun QuestItem(
-    quest: QuestWithTemplate,
-    onClick: (() -> Unit)? = null
+    quest: QuestWithTemplate
 ) {
     val isCompleted = quest.assignment.isCompleted
 
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .then(
-                if (onClick != null && !isCompleted)
-                    Modifier.clickable { onClick() } else Modifier
-            ),
+        modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
     ) {
         // Check icon

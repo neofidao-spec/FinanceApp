@@ -83,7 +83,6 @@ import com.financeapp.ui.viewmodel.DashboardViewModel
 import com.financeapp.ui.viewmodel.GamificationUiState
 import com.financeapp.ui.viewmodel.GamificationViewModel
 import com.financeapp.ui.viewmodel.MonthlyTrendData
-import com.financeapp.data.repository.QuestWithTemplate
 
 @Composable
 fun DashboardScreen(
@@ -104,8 +103,7 @@ fun DashboardScreen(
     DashboardContent(
         uiState = uiState,
         gamificationState = gamificationState,
-        onRetry = { viewModel.retry() },
-        onQuestClick = { quest -> gamificationViewModel.completeQuest(quest) }
+        onRetry = { viewModel.retry() }
     )
 }
 
@@ -114,7 +112,6 @@ private fun DashboardContent(
     uiState: DashboardUiState,
     gamificationState: GamificationUiState,
     onRetry: () -> Unit,
-    onQuestClick: (QuestWithTemplate) -> Unit = {},
 ) {
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background
@@ -264,10 +261,7 @@ private fun DashboardContent(
         if (gamificationState.dailyQuests.isNotEmpty() && !gamificationState.isLoading) {
             item {
                 DailyQuestCard(
-                    quests = gamificationState.dailyQuests,
-                    onQuestClick = { quest ->
-                        onQuestClick(quest)
-                    }
+                    quests = gamificationState.dailyQuests
                 )
             }
         }
