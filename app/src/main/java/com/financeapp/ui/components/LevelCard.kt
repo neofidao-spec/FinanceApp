@@ -36,7 +36,7 @@ fun LevelCard(
     modifier: Modifier = Modifier
 ) {
     val levelColor = when {
-        progress.currentLevel >= 9 -> Color(0xFFFF6F00) // Orange — master
+        progress.currentLevel >= 9 -> Color(0xFFFF6F00)
         progress.currentLevel >= 7 -> MaterialTheme.colorScheme.tertiary
         progress.currentLevel >= 5 -> MaterialTheme.colorScheme.primary
         progress.currentLevel >= 3 -> MaterialTheme.colorScheme.primary
@@ -62,7 +62,7 @@ fun LevelCard(
                 .padding(Spacing.md),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Level badge circle — centered
+            // Row 1: Level badge circle — 44dp, same as StreakCard icon box
             Box(
                 modifier = Modifier
                     .size(44.dp)
@@ -82,7 +82,7 @@ fun LevelCard(
 
             Spacer(modifier = Modifier.height(Spacing.xs))
 
-            // Level title
+            // Row 2: Level title (matches StreakCard "X hari" label)
             Text(
                 text = progress.levelTitle,
                 style = MaterialTheme.typography.labelMedium,
@@ -92,7 +92,7 @@ fun LevelCard(
 
             Spacer(modifier = Modifier.height(Spacing.sm))
 
-            // Progress bar
+            // Row 3: Progress bar + XP (matches StreakCard bottom row height)
             LinearProgressIndicator(
                 progress = { animatedProgress.coerceIn(0f, 1f) },
                 modifier = Modifier
@@ -106,7 +106,6 @@ fun LevelCard(
 
             Spacer(modifier = Modifier.height(Spacing.xs))
 
-            // XP text
             Text(
                 text = "${progress.totalXp} / ${progress.xpForNextLevel} XP",
                 style = MaterialTheme.typography.labelSmall,

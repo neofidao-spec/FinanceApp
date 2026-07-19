@@ -4,6 +4,7 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -29,8 +30,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.financeapp.ui.theme.Spacing
 import com.financeapp.ui.theme.financeColors
@@ -44,11 +45,11 @@ fun StreakCard(
     modifier: Modifier = Modifier
 ) {
     val flameColor = when {
-        currentStreak >= 30 -> Color(0xFFFF6F00) // Orange — hot streak
-        currentStreak >= 7 -> MaterialTheme.colorScheme.financeColors.accent // Amber
-        currentStreak >= 3 -> Color(0xFFFFA726) // Light orange
-        currentStreak > 0 -> Color(0xFFEF5350) // Red — starting
-        else -> Color(0xFFBDBDBD) // Grey — inactive
+        currentStreak >= 30 -> Color(0xFFFF6F00)
+        currentStreak >= 7 -> MaterialTheme.colorScheme.financeColors.accent
+        currentStreak >= 3 -> Color(0xFFFFA726)
+        currentStreak > 0 -> Color(0xFFEF5350)
+        else -> Color(0xFFBDBDBD)
     }
 
     val animatedAlpha by animateFloatAsState(
@@ -67,41 +68,50 @@ fun StreakCard(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(Spacing.md)
+                .padding(Spacing.md),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Flame icon + streak count — centered for compactness
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
+            // Row 1: Icon — same height as LevelCard badge (44dp)
+            Box(
+                modifier = Modifier
+                    .size(44.dp)
+                    .clip(CircleShape)
+                    .background(
+                        color = flameColor.copy(alpha = 0.15f * animatedAlpha)
+                    ),
+                contentAlignment = Alignment.Center
             ) {
                 Icon(
                     imageVector = Icons.Filled.LocalFireDepartment,
                     contentDescription = "Streak",
                     tint = flameColor.copy(alpha = animatedAlpha),
-                    modifier = Modifier.size(32.dp)
-                )
-                Spacer(modifier = Modifier.width(4.dp))
-                Text(
-                    text = "$currentStreak hari",
-                    style = MaterialTheme.typography.bodyLarge,
-                    fontWeight = FontWeight.Bold,
-                    color = flameColor.copy(alpha = animatedAlpha)
+                    modifier = Modifier.size(28.dp)
                 )
             }
 
-            // Best streak — subtle below
+            Spacer(modifier = Modifier.height(Spacing.xs))
+
+            // Row 2: Main number + label (matches LevelCard title row)
             Text(
-                text = "Terbaik: $bestStreak hari",
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.fillMaxWidth(),
-                textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                text = "$currentStreak hari",
+                style = MaterialTheme.typography.labelMedium,
+                fontWeight = FontWeight.Bold,
+                color = flameColor.copy(alpha = animatedAlpha),
+                textAlign = TextAlign.Center
             )
 
-            // Freeze row — only when has freezes
+            Spacer(modifier = Modifier.height(Spacing.sm))
+
+            // Row 3: Bottom info — best streak (matches XP row height in LevelCard)
+            Text(
+                text = "Terbaik: $bestStreak",
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+
+            // Freeze row — only when user has freezes, with label
             if (streakFreezes > 0) {
-                Spacer(modifier = Modifier.height(Spacing.xs))
+                Spacer(modifier = Modifier.height(Spacing.sm))
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.Center,
@@ -118,15 +128,16 @@ fun StreakCard(
                     ) {
                         Icon(
                             imageVector = Icons.Filled.AcUnit,
-                            contentDescription = "Gunakan freeze ($streakFreezes tersisa)",
+                            contentDescription = "Gunakan streak freeze",
                             tint = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.size(16.dp)
                         )
                     }
                     Spacer(modifier = Modifier.width(Spacing.xs))
                     Text(
-                        text = "$streakFreezes",
+                        text = "Freeze ($streakFreezes)",
                         style = MaterialTheme.typography.labelSmall,
+                        fontWeight = FontWeight.Medium,
                         color = MaterialTheme.colorScheme.primary
                     )
                 }
