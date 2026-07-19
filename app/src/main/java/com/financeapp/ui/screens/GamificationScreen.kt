@@ -140,22 +140,14 @@ fun GamificationScreen(
                 text = "Profil & Prestasi",
                 style = MaterialTheme.typography.headlineLarge
             )
-            IconButton(onClick = onSettingsClick) {
-                Icon(
-                    imageVector = Icons.Filled.Settings,
-                    contentDescription = "Pengaturan",
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-
-            // Freeze button — small, near settings
+            // Freeze button — larger, closer to settings
             val progress = state.userProgress
             if (progress != null && progress.streakFreezes > 0) {
                 var showFreezeDialog by remember { mutableStateOf(false) }
 
                 IconButton(
                     onClick = { showFreezeDialog = true },
-                    modifier = Modifier.size(36.dp)
+                    modifier = Modifier.size(44.dp)
                 ) {
                     BadgedBox(
                         badge = {
@@ -174,10 +166,19 @@ fun GamificationScreen(
                             imageVector = Icons.Filled.AcUnit,
                             contentDescription = "Streak freeze tersedia",
                             tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.size(20.dp)
+                            modifier = Modifier.size(24.dp)
                         )
                     }
                 }
+            }
+
+            IconButton(onClick = onSettingsClick) {
+                Icon(
+                    imageVector = Icons.Filled.Settings,
+                    contentDescription = "Pengaturan",
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
 
                 if (showFreezeDialog) {
                     AlertDialog(
