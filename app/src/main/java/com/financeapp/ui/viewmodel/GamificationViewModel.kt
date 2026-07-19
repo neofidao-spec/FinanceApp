@@ -161,9 +161,12 @@ class GamificationViewModel @Inject constructor(
             try {
                 questRepository.completeQuest(quest.assignment.id)
                 gamificationUseCase.onQuestCompleted(quest.template.title, quest.template.xpReward)
-                // Refresh quests
+                // Refresh both quests and XP history for UI sync
                 val quests = questRepository.getTodayQuests(LocalDate.now())
-                _uiState.value = _uiState.value.copy(dailyQuests = quests)
+                _uiState.value = _uiState.value.copy(
+                    dailyQuests = quests,
+                    recentXpHistory = repository.getRecentXpHistoryOnce(20)
+                )
             } catch (e: Exception) { Log.w(TAG, "Quest completion failed", e) }
         }
     }

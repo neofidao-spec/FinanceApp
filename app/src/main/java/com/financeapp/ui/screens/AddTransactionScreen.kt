@@ -60,10 +60,9 @@ fun AddTransactionScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val focusManager = LocalFocusManager.current
 
-    // Update quest progress after successful transaction
+    // Complete quest after successful transaction (XP only from quest, no double-count)
     LaunchedEffect(uiState.successMessage) {
         if (uiState.successMessage != null) {
-            gamificationViewModel.onTransactionRecorded()
             val txQuest = gamificationState.dailyQuests.find {
                 it.template.id == "catat_transaksi" && !it.assignment.isCompleted
             }

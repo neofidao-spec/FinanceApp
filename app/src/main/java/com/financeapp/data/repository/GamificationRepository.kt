@@ -9,6 +9,7 @@ import com.financeapp.data.model.DailyQuest
 import com.financeapp.data.model.UserProgress
 import com.financeapp.data.model.XpHistory
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import java.time.LocalDate
 import javax.inject.Inject
 
@@ -51,6 +52,7 @@ class GamificationRepository(
 
     // XP History
     fun getRecentXpHistory(limit: Int = 20): Flow<List<XpHistory>> = xpHistoryDao.getRecent(limit)
+    suspend fun getRecentXpHistoryOnce(limit: Int = 20): List<XpHistory> = xpHistoryDao.getRecent(limit).first()
     suspend fun addXpEntry(entry: XpHistory) = xpHistoryDao.insert(entry)
     suspend fun totalXp(): Int = xpHistoryDao.totalXp() ?: 0
 }
