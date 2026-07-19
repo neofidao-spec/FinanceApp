@@ -17,6 +17,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AcUnit
+import androidx.compose.material.icons.filled.LocalFireDepartment
 import androidx.compose.material.icons.filled.ArrowDownward
 import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material.icons.filled.Refresh
@@ -40,6 +42,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -48,6 +51,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.financeapp.data.model.TransactionType
 import com.financeapp.data.model.TransactionWithCategory
+import com.financeapp.data.model.UserProgress
 import com.financeapp.ui.components.AnimatedNumber
 import com.financeapp.ui.components.ShimmerBalanceCard
 import com.financeapp.ui.components.ShimmerTransactionItem
@@ -184,25 +188,13 @@ private fun DashboardContent(
             )
         }
 
-        // 2. Gamification Cards (Streak + Level)
+        // 2. Gamification summary — compact single card (Level + Streak in one row)
         if (gamificationState.userProgress != null && !gamificationState.isLoading) {
             item {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(Spacing.sm)
-                ) {
-                    LevelCard(
-                        progress = gamificationState.userProgress,
-                        modifier = Modifier.weight(1f)
-                    )
-                    StreakCard(
-                        currentStreak = gamificationState.userProgress.currentStreak,
-                        bestStreak = gamificationState.userProgress.bestStreak,
-                        streakFreezes = gamificationState.userProgress.streakFreezes,
-                        onUseFreeze = onUseFreeze,
-                        modifier = Modifier.weight(1f)
-                    )
-                }
+                GamificationSummaryCard(
+                    progress = gamificationState.userProgress,
+                    onUseFreeze = onUseFreeze
+                )
             }
         }
 
@@ -225,28 +217,7 @@ private fun DashboardContent(
             }
         }
 
-        // 5. Income/Expense Cards
-        item {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(Spacing.sm)
-            ) {
-                IncomeExpenseCard(
-                    modifier = Modifier.weight(1f),
-                    label = stringResource(R.string.common_income),
-                    amount = uiState.totalIncome,
-                    icon = Icons.Filled.ArrowUpward,
-                    color = MaterialTheme.colorScheme.financeColors.income
-                )
-                IncomeExpenseCard(
-                    modifier = Modifier.weight(1f),
-                    label = stringResource(R.string.common_expense),
-                    amount = uiState.totalExpense,
-                    icon = Icons.Filled.ArrowDownward,
-                    color = MaterialTheme.colorScheme.financeColors.expense
-                )
-            }
-        }
+        // Income/Expense cards removed — already shown in BalanceCard above
 
         // 6. DonutChart - Expense breakdown
         if (uiState.categoryBreakdown.isNotEmpty()) {
@@ -419,61 +390,139 @@ private fun BalanceCard(
     }
 
 @Composable
-private fun IncomeExpenseCard(
-    modifier: Modifier = Modifier,
-    label: String,
-    amount: Double,
-    icon: ImageVector,
-    color: androidx.compose.ui.graphics.Color
+private fun GamificationSummaryCard(
+    progress: UserProgress,
+    onUseFreeze: () -> Unit
 ) {
+    val flameColor = when {
+        progress.currentStreak >= 30 -> Color(0xFFFF6F00)
+        progress.currentStreak >= 7 -> MaterialTheme.colorScheme.financeColors.accent
+        progress.currentStreak >= 3 -> Color(0xFFFFA726)
+        progress.currentStreak > 0 -> Color(0xFFEF5350)
+        else -> Color(0xFFBDBDBD)
+    }
+
+    val levelColor = when {
+        progress.currentLevel >= 9 -> Color(0xFFFF6F00)
+        progress.currentLevel >= 7 -> MaterialTheme.colorScheme.tertiary
+        progress.currentLevel >= 5 -> MaterialTheme.colorScheme.primary
+        progress.currentLevel >= 3 -> MaterialTheme.colorScheme.primary
+        else -> MaterialTheme.colorScheme.outlineVariant
+    }
+
     Card(
-        modifier = modifier,
+        modifier = Modifier.fillMaxWidth(),
         shape = MaterialTheme.shapes.medium,
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
-        )
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
-        Column(
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(Spacing.md)
+                .padding(Spacing.md),
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            verticalAlignment = Alignment.CenterVertically
         ) {
+            // Level section
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Box(
                     modifier = Modifier
-                        .size(Spacing.iconSm)
-                        .background(
-                            color = color.copy(alpha = 0.15f),
-                            shape = CircleShape
-                        ),
+                        .size(36.dp)
+                        .clip(CircleShape)
+                        .background(color = levelColor.copy(alpha = 0.15f)),
                     contentAlignment = Alignment.Center
                 ) {
-                    Icon(
-                        imageVector = icon,
-                        contentDescription = label,
-                        tint = color,
-                        modifier = Modifier.size(18.dp)
+                    Text(
+                        text = "${progress.currentLevel}",
+                        color = levelColor,
+                        style = MaterialTheme.typography.titleSmall,
+                        fontWeight = FontWeight.Bold
                     )
                 }
                 Spacer(modifier = Modifier.width(Spacing.sm))
-                Text(
-                    text = label,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
+                Column {
+                    Text(
+                        text = progress.levelTitle,
+                        style = MaterialTheme.typography.labelMedium,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        text = "${progress.totalXp} XP",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
             }
 
-            Spacer(modifier = Modifier.height(Spacing.sm))
-
-            AnimatedNumber(
-                value = amount,
-                style = MaterialTheme.typography.titleMedium.copy(
-                    fontWeight = FontWeight.Bold
-                ),
-                color = color,
-                format = { FormatterUtil.formatCurrency(it) }
+            // Divider
+            Box(
+                modifier = Modifier
+                    .width(1.dp)
+                    .height(36.dp)
+                    .background(MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f))
             )
+
+            // Streak section
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    imageVector = Icons.Filled.LocalFireDepartment,
+                    contentDescription = "Streak",
+                    tint = flameColor,
+                    modifier = Modifier.size(28.dp)
+                )
+                Spacer(modifier = Modifier.width(Spacing.sm))
+                Column {
+                    Text(
+                        text = "${progress.currentStreak} hari",
+                        style = MaterialTheme.typography.labelMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = flameColor
+                    )
+                    Text(
+                        text = "Terbaik: ${progress.bestStreak}",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
+
+            // Freeze section — only when available
+            if (progress.streakFreezes > 0) {
+                Box(
+                    modifier = Modifier
+                        .width(1.dp)
+                        .height(36.dp)
+                        .background(MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f))
+                )
+
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    IconButton(
+                        onClick = onUseFreeze,
+                        modifier = Modifier
+                            .size(32.dp)
+                            .background(
+                                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f),
+                                shape = CircleShape
+                            )
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.AcUnit,
+                            contentDescription = "Gunakan streak freeze",
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(18.dp)
+                        )
+                    }
+                    Spacer(modifier = Modifier.width(Spacing.xs))
+                    Text(
+                        text = "Freeze (${progress.streakFreezes})",
+                        style = MaterialTheme.typography.labelSmall,
+                        fontWeight = FontWeight.Medium,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+            }
         }
     }
 }
