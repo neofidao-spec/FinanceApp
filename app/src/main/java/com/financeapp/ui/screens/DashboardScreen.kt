@@ -63,8 +63,6 @@ import com.financeapp.ui.components.ShimmerBalanceCard
 import com.financeapp.ui.components.ShimmerTransactionItem
 import com.financeapp.ui.components.BudgetProgressRing
 import com.financeapp.ui.components.DailyQuestCard
-import com.financeapp.ui.components.DonutChart
-import com.financeapp.ui.components.DonutSegment
 import com.financeapp.ui.components.MonthlyData
 import com.financeapp.ui.components.MonthlyTrendChart
 import com.financeapp.ui.theme.Spacing
@@ -262,72 +260,7 @@ private fun DashboardContent(
             }
         }
 
-        // 5. DonutChart + Monthly Trend (side by side in card)
-        item {
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = MaterialTheme.shapes.medium,
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surface
-                ),
-                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(Spacing.md)
-                ) {
-                    Text(
-                        text = stringResource(R.string.dashboard_expense_by_category),
-                        style = MaterialTheme.typography.titleSmall,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Spacer(modifier = Modifier.height(Spacing.sm))
-
-                    if (uiState.categoryBreakdown.isNotEmpty()) {
-                        DonutChart(
-                            segments = uiState.categoryBreakdown.map { summary ->
-                                DonutSegment(
-                                    label = summary.category.name,
-                                    value = summary.total,
-                                    color = FinanceIcons.getColorFromHex(summary.category.color)
-                                )
-                            },
-                            centerText = FormatterUtil.formatCurrency(uiState.totalExpense),
-                            modifier = Modifier.padding(bottom = Spacing.sm)
-                        )
-                    } else {
-                        // Empty state
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(Spacing.lg),
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Icon(
-                                imageVector = Icons.Filled.Savings,
-                                contentDescription = "Belum ada data",
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
-                                modifier = Modifier.size(48.dp)
-                            )
-                            Spacer(modifier = Modifier.height(Spacing.sm))
-                            Text(
-                                text = "Belum ada pengeluaran",
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                            Text(
-                                text = "Data akan muncul setelah Anda mencatat transaksi",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
-                            )
-                        }
-                    }
-                }
-            }
-        }
-
-        // 6. Monthly Trend Chart
+        // 5. Monthly Trend Chart
         if (uiState.monthlyTrend.isNotEmpty()) {
             item {
                 Card(

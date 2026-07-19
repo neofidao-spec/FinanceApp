@@ -121,7 +121,7 @@ class BudgetViewModel @Inject constructor(
                 val budget = Budget(
                     categoryId = state.addCategoryId,
                     monthlyLimit = limit,
-                    alertThreshold = (state.addAlertThreshold.toDoubleOrNull() ?: 80.0) / 100.0,
+                    alertThreshold = state.addAlertThreshold.toDoubleOrNull() ?: 80.0,
                     description = state.addDescription,
                 )
                 budgetRepository.addBudget(budget)
