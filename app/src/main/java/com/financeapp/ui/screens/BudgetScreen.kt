@@ -189,10 +189,17 @@ fun BudgetScreen(
                 )
             }
 
-            // Budget Overview — single compact card
+            // Summary Card
             item {
                 uiState.budgetSummary?.let { summary ->
-                    BudgetOverviewCard(summary = summary)
+                    BudgetSummaryCard(summary = summary)
+                }
+            }
+
+            // Quick Stats
+            item {
+                uiState.budgetSummary?.let { summary ->
+                    QuickStatsRow(summary = summary)
                 }
             }
 
@@ -266,23 +273,7 @@ private fun MonthSelector(
 }
 
 @Composable
-private fun BudgetOverviewCard(summary: com.financeapp.data.model.BudgetSummary) {
-    val progress = if (summary.totalBudget > 0) {
-        (summary.totalSpent / summary.totalBudget).toFloat().coerceIn(0f, 1f)
-    } else 0f
-
-    val healthIcon = when {
-        summary.budgetHealth > 70 -> Icons.Filled.CheckCircle
-        summary.budgetHealth > 40 -> Icons.Filled.Warning
-        else -> Icons.Filled.Error
-    }
-
-    val healthColor = when {
-        summary.budgetHealth > 70 -> MaterialTheme.colorScheme.financeColors.income
-        summary.budgetHealth > 40 -> MaterialTheme.colorScheme.financeColors.warning
-        else -> MaterialTheme.colorScheme.financeColors.expense
-    }
-
+private fun BudgetSummaryCard(summary: com.financeapp.data.model.BudgetSummary) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -293,36 +284,68 @@ private fun BudgetOverviewCard(summary: com.financeapp.data.model.BudgetSummary)
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
-        Row(
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(Spacing.lg),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+                .padding(Spacing.lg)
         ) {
-            // Left: Total budget + progress bar
-            Column(
-                modifier = Modifier.weight(1f),
-                horizontalAlignment = Alignment.Start
-            ) {
+            Column {
                 Text(
                     text = stringResource(R.string.budget_total),
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    style = MaterialTheme.typography.bodySmall
+                    style = MaterialTheme.typography.bodyMedium
                 )
                 Spacer(modifier = Modifier.height(Spacing.xs))
                 Text(
                     text = FormatterUtil.formatCurrency(summary.totalBudget),
                     color = MaterialTheme.colorScheme.onSurface,
-                    style = MaterialTheme.typography.titleLarge,
+                    style = MaterialTheme.typography.displayMedium,
                     fontWeight = FontWeight.Bold
                 )
-                Spacer(modifier = Modifier.height(Spacing.smd))
+                Spacer(modifier = Modifier.height(Spacing.md))
+                
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Column {
+                        Text(
+                            text = stringResource(R.string.budget_used),
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                        Text(
+                            text = FormatterUtil.formatCurrency(summary.totalSpent),
+                            color = MaterialTheme.colorScheme.onSurface,
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                    }
+                    Column(horizontalAlignment = Alignment.End) {
+                        Text(
+                            text = stringResource(R.string.budget_remaining_label),
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                        Text(
+                            text = FormatterUtil.formatCurrency(summary.totalBudget - summary.totalSpent),
+                            color = if (summary.totalBudget - summary.totalSpent >= 0) MaterialTheme.colorScheme.financeColors.income else MaterialTheme.colorScheme.financeColors.expense,
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                    }
+                }
+                
+                Spacer(modifier = Modifier.height(Spacing.md))
+                
+                // Progress bar
+                val progress = if (summary.totalBudget > 0) {
+                    (summary.totalSpent / summary.totalBudget).toFloat().coerceIn(0f, 1f)
+                } else 0f
+                
                 LinearProgressIndicator(
                     progress = { progress },
                     modifier = Modifier
-                        .fillMaxWidth(0.9f)
-                        .height(8.dp)
+                        .fillMaxWidth()
+                        .height(12.dp)
                         .clip(MaterialTheme.shapes.extraSmall),
                     color = when {
                         progress > 0.8f -> MaterialTheme.colorScheme.financeColors.expense
@@ -331,47 +354,13 @@ private fun BudgetOverviewCard(summary: com.financeapp.data.model.BudgetSummary)
                     },
                     trackColor = MaterialTheme.colorScheme.surfaceVariant
                 )
-                Spacer(modifier = Modifier.height(Spacing.xs))
+                
+                Spacer(modifier = Modifier.height(Spacing.sm))
+                
                 Text(
                     text = "${String.format("%.0f", progress * 100)}% terpakai",
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    style = MaterialTheme.typography.labelSmall
-                )
-            }
-
-            // Vertical divider
-            Box(
-                modifier = Modifier
-                    .width(1.dp)
-                    .height(80.dp)
-                    .padding(horizontal = Spacing.md)
-                    .background(MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f))
-            )
-
-            // Right: 3 compact stats (budgets, over budget, health)
-            Column(
-                modifier = Modifier.weight(0.9f),
-                horizontalAlignment = Alignment.End,
-                verticalArrangement = Arrangement.spacedBy(Spacing.smd)
-            ) {
-                BudgetMiniStat(
-                    label = stringResource(R.string.budget_count),
-                    value = "${summary.budgets.size}",
-                    icon = Icons.Filled.Savings
-                )
-                BudgetMiniStat(
-                    label = stringResource(R.string.budget_over_budget),
-                    value = "${summary.exceedingBudgets.size}",
-                    icon = Icons.Filled.Warning,
-                    valueColor = if (summary.exceedingBudgets.isNotEmpty())
-                        MaterialTheme.colorScheme.financeColors.expense
-                    else MaterialTheme.colorScheme.financeColors.income
-                )
-                BudgetMiniStat(
-                    label = stringResource(R.string.budget_health),
-                    value = "${String.format("%.0f", summary.budgetHealth)}%",
-                    icon = healthIcon,
-                    valueColor = healthColor
+                    style = MaterialTheme.typography.bodySmall
                 )
             }
         }
@@ -379,36 +368,89 @@ private fun BudgetOverviewCard(summary: com.financeapp.data.model.BudgetSummary)
 }
 
 @Composable
-private fun BudgetMiniStat(
+private fun QuickStatsRow(summary: com.financeapp.data.model.BudgetSummary) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = Spacing.md),
+        horizontalArrangement = Arrangement.spacedBy(Spacing.smd)
+    ) {
+        // Budget count
+        StatCard(
+            modifier = Modifier.weight(1f),
+            label = stringResource(R.string.budget_count),
+            value = "${summary.budgets.size}",
+            icon = Icons.Filled.Savings,
+            color = MaterialTheme.colorScheme.surface
+        )
+        
+        // Over budget count
+        StatCard(
+            modifier = Modifier.weight(1f),
+            label = stringResource(R.string.budget_over_budget),
+            value = "${summary.exceedingBudgets.size}",
+            icon = Icons.Filled.Warning,
+            color = MaterialTheme.colorScheme.surface
+        )
+        
+        // Health
+        val healthIcon = when {
+            summary.budgetHealth > 70 -> Icons.Filled.CheckCircle
+            summary.budgetHealth > 40 -> Icons.Filled.Warning
+            else -> Icons.Filled.Error
+        }
+        
+        StatCard(
+            modifier = Modifier.weight(1f),
+            label = stringResource(R.string.budget_health),
+            value = "${String.format("%.0f", summary.budgetHealth)}%",
+            icon = healthIcon,
+            color = MaterialTheme.colorScheme.surface
+        )
+    }
+}
+
+@Composable
+private fun StatCard(
+    modifier: Modifier = Modifier,
     label: String,
     value: String,
     icon: ImageVector,
-    valueColor: Color = MaterialTheme.colorScheme.onSurface
+    color: Color
 ) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        Icon(
-            imageVector = icon,
-            contentDescription = label,
-            tint = valueColor.copy(alpha = 0.7f),
-            modifier = Modifier.size(16.dp)
-        )
-        Spacer(modifier = Modifier.width(Spacing.sm))
-        Text(
-            text = label,
-            style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-        Spacer(modifier = Modifier.width(Spacing.sm))
-        Text(
-            text = value,
-            style = MaterialTheme.typography.labelMedium,
-            fontWeight = FontWeight.Bold,
-            color = valueColor
-        )
+    Card(
+        modifier = modifier,
+        shape = MaterialTheme.shapes.small,
+        colors = CardDefaults.cardColors(containerColor = color),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(Spacing.smd),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = stringResource(R.string.budget_category_icon),
+                modifier = Modifier.size(Spacing.iconXs),
+                tint = MaterialTheme.colorScheme.onSurface
+            )
+            Spacer(modifier = Modifier.height(Spacing.xs))
+            Text(
+                text = value,
+                style = MaterialTheme.typography.headlineSmall
+            )
+            Text(
+                text = label,
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
     }
-    }
+}
 
-    @Composable
+@Composable
 private fun BudgetItem(
     budget: BudgetWithCategory,
     onDelete: () -> Unit
