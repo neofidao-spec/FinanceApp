@@ -20,7 +20,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AcUnit
 import androidx.compose.material.icons.filled.LocalFireDepartment
 import androidx.compose.material.icons.filled.ArrowDownward
 import androidx.compose.material.icons.filled.ArrowUpward
@@ -102,8 +101,7 @@ fun DashboardScreen(
     DashboardContent(
         uiState = uiState,
         gamificationState = gamificationState,
-        onRetry = { viewModel.retry() },
-        onUseFreeze = { gamificationViewModel.useFreeze() }
+        onRetry = { viewModel.retry() }
     )
 }
 
@@ -112,7 +110,6 @@ private fun DashboardContent(
     uiState: DashboardUiState,
     gamificationState: GamificationUiState,
     onRetry: () -> Unit,
-    onUseFreeze: () -> Unit
 ) {
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background
@@ -197,8 +194,7 @@ private fun DashboardContent(
         if (gamificationState.userProgress != null && !gamificationState.isLoading) {
             item {
                 GamificationSummaryCard(
-                    progress = gamificationState.userProgress,
-                    onUseFreeze = onUseFreeze
+                    progress = gamificationState.userProgress
                 )
             }
         }
@@ -592,8 +588,7 @@ private fun BalanceCard(
 
 @Composable
 private fun GamificationSummaryCard(
-    progress: UserProgress,
-    onUseFreeze: () -> Unit
+    progress: UserProgress
 ) {
     val flameColor = when {
         progress.currentStreak >= 30 -> Color(0xFFFF6F00)
@@ -685,42 +680,6 @@ private fun GamificationSummaryCard(
                         text = "Terbaik: ${progress.bestStreak}",
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-            }
-
-            // Freeze section — only when available
-            if (progress.streakFreezes > 0) {
-                Box(
-                    modifier = Modifier
-                        .width(1.dp)
-                        .height(36.dp)
-                        .background(MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f))
-                )
-
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    IconButton(
-                        onClick = onUseFreeze,
-                        modifier = Modifier
-                            .size(32.dp)
-                            .background(
-                                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f),
-                                shape = CircleShape
-                            )
-                    ) {
-                        Icon(
-                            imageVector = Icons.Filled.AcUnit,
-                            contentDescription = "Gunakan streak freeze",
-                            tint = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.size(18.dp)
-                        )
-                    }
-                    Spacer(modifier = Modifier.width(Spacing.xs))
-                    Text(
-                        text = "Freeze (${progress.streakFreezes})",
-                        style = MaterialTheme.typography.labelSmall,
-                        fontWeight = FontWeight.Medium,
-                        color = MaterialTheme.colorScheme.primary
                     )
                 }
             }

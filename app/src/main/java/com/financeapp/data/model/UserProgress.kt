@@ -11,7 +11,7 @@ data class UserProgress(
     val currentLevel: Int = 1,
     val bestStreak: Int = 0,
     val currentStreak: Int = 0,
-    val streakFreezes: Int = 1,
+    val streakFreezes: Int = 0,
     val lastActivityDate: LocalDateTime? = null,
     val healthScore: Double = 0.0,
     val updatedAt: LocalDateTime = LocalDateTime.now()
