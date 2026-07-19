@@ -212,7 +212,10 @@ fun BudgetScreen(
                     EmptyBudgetState(onAdd = { viewModel.showAddDialog() })
                 }
             } else {
-                items(budgets) { budget ->
+                items(
+                    items = budgets,
+                    key = { it.budget.id }
+                ) { budget ->
                     BudgetItem(
                         budget = budget,
                         onDelete = { viewModel.deleteBudget(budget) }

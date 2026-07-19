@@ -223,7 +223,7 @@ fun TransactionListScreen(
                     modifier = Modifier.fillMaxSize()
                 ) {
                     groupedTransactions.forEach { (dateLabel, transactions) ->
-                        item {
+                        item(key = "date_$dateLabel") {
                             Text(
                                 text = dateLabel,
                                 style = MaterialTheme.typography.titleSmall,
@@ -234,7 +234,10 @@ fun TransactionListScreen(
                                     .padding(vertical = Spacing.sm)
                             )
                         }
-                        items(transactions) { txn ->
+                        items(
+                            items = transactions,
+                            key = { it.transaction.id }
+                        ) { txn ->
                             SwipeableTransactionItem(
                                 transaction = txn,
                                 onSwipeEdit = { onTransactionClick(txn.transaction.id) },
