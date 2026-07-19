@@ -4,6 +4,7 @@ import androidx.room.TypeConverter
 import com.financeapp.data.model.AccountType
 import com.financeapp.data.model.RecurringEndType
 import com.financeapp.data.model.RecurringInterval
+import com.financeapp.data.model.QuestCategory
 import com.financeapp.data.model.TransactionType
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -75,5 +76,16 @@ class Converters {
     @TypeConverter
     fun toRecurringEndType(value: String): RecurringEndType {
         return RecurringEndType.valueOf(value)
+    }
+
+    // ── QuestCategory (PENCATATAN / BUDGETING / EKSPLORASI / DISIPLIN / REVIEW) ─
+    @TypeConverter
+    fun fromQuestCategory(value: QuestCategory): String {
+        return value.name
+    }
+
+    @TypeConverter
+    fun toQuestCategory(value: String): QuestCategory {
+        return QuestCategory.valueOf(value)
     }
 }

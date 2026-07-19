@@ -17,6 +17,8 @@ import com.financeapp.data.database.ChallengeDao
 import com.financeapp.data.database.XpHistoryDao
 import com.financeapp.data.database.TransactionFtsDao
 import com.financeapp.data.database.RecurringTransactionDao
+import com.financeapp.data.database.QuestTemplateDao
+import com.financeapp.data.database.DailyQuestAssignmentDao
 import com.financeapp.data.model.Category
 import com.financeapp.data.model.DefaultAchievements
 import com.financeapp.data.model.DefaultCategories
@@ -51,7 +53,8 @@ object DatabaseModule {
             FinanceDatabase.MIGRATION_8_9,
             FinanceDatabase.MIGRATION_9_10,
             FinanceDatabase.MIGRATION_10_11,
-            FinanceDatabase.MIGRATION_11_12
+            FinanceDatabase.MIGRATION_11_12,
+            FinanceDatabase.MIGRATION_12_13
         )
         .addCallback(object : RoomDatabase.Callback() {
             override fun onCreate(db: SupportSQLiteDatabase) {
@@ -138,5 +141,15 @@ object DatabaseModule {
     @Provides
     fun provideRecurringTransactionDao(database: FinanceDatabase): RecurringTransactionDao {
         return database.recurringTransactionDao()
+    }
+
+    @Provides
+    fun provideQuestTemplateDao(database: FinanceDatabase): QuestTemplateDao {
+        return database.questTemplateDao()
+    }
+
+    @Provides
+    fun provideDailyQuestAssignmentDao(database: FinanceDatabase): DailyQuestAssignmentDao {
+        return database.dailyQuestAssignmentDao()
     }
 }

@@ -46,6 +46,10 @@ interface TransactionDao {
     @Query("SELECT COUNT(*) FROM transactions")
     suspend fun count(): Int
 
+    @androidx.room.Transaction
+    @Query("SELECT * FROM transactions ORDER BY date DESC")
+    suspend fun getAllTransactionsOnce(): List<TransactionWithCategory>
+
     @Query("SELECT SUM(amount) FROM transactions WHERE type = :type AND categoryId = :categoryId AND date BETWEEN :startDate AND :endDate")
     suspend fun sumByTypeAndCategory(type: TransactionType, categoryId: Long, startDate: LocalDateTime, endDate: LocalDateTime): Double?
 

@@ -17,11 +17,15 @@ import com.financeapp.data.model.Challenge
 import com.financeapp.data.model.XpHistory
 import com.financeapp.data.model.RecurringTransaction
 
+import com.financeapp.data.model.QuestTemplate
+import com.financeapp.data.model.DailyQuestAssignment
+
 @Database(
     entities = [Transaction::class, Category::class, Budget::class, Account::class, Achievement::class,
                UserProgress::class, DailyQuest::class, Challenge::class, XpHistory::class,
-               TransactionFts::class, RecurringTransaction::class],
-    version = 12,
+               TransactionFts::class, RecurringTransaction::class, QuestTemplate::class,
+               DailyQuestAssignment::class],
+    version = 13,
     exportSchema = true
 )
 @TypeConverters(Converters::class)
@@ -37,6 +41,8 @@ abstract class FinanceDatabase : RoomDatabase() {
     abstract fun xpHistoryDao(): XpHistoryDao
     abstract fun transactionFtsDao(): TransactionFtsDao
     abstract fun recurringTransactionDao(): RecurringTransactionDao
+    abstract fun questTemplateDao(): QuestTemplateDao
+    abstract fun dailyQuestAssignmentDao(): DailyQuestAssignmentDao
 
     companion object {
         internal val MIGRATION_1_2 = object : Migration(1, 2) {
@@ -334,6 +340,31 @@ abstract class FinanceDatabase : RoomDatabase() {
                 database.execSQL("CREATE INDEX IF NOT EXISTS index_recurring_transactions_categoryId ON recurring_transactions(categoryId)")
                 database.execSQL("CREATE INDEX IF NOT EXISTS index_recurring_transactions_nextDueDate ON recurring_transactions(nextDueDate)")
                 database.execSQL("CREATE INDEX IF NOT EXISTS index_recurring_transactions_accountId ON recurring_transactions(accountId)")
+            }
+        }
+
+        internal val MIGRATION_12_13 = object : Migration(12, 13) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("""
+                    CREATE TABLE IF NOT EXISTS quest_templates (
+                        id TEXT NOT NULL PRIMARY KEY,
+                        title TEXT NOT NULL,
+                        description TEXT NOT NULL,
+                        category TEXT NOT NULL,
+                        xpReward INTEGER NOT NULL,
+                        weight INTEGER NOT NULL,
+                        requiresCondition TEXT
+                    )
+                """)
+                database.execSQL("""
+                    CREATE TABLE IF NOT EXISTS daily_quest_assignments (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                        questTemplateId TEXT NOT NULL,
+                        assignedDate TEXT NOT NULL,
+                        isCompleted INTEGER NOT NULL DEFAULT 0,
+                        completedAt TEXT
+                    )
+                """)
             }
         }
     }

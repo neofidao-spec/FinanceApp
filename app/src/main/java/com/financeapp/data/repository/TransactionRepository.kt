@@ -40,4 +40,6 @@ class TransactionRepository(
         dao.sumByType(TransactionType.EXPENSE, startDate, endDate) ?: 0.0
 
     suspend fun getTransactionCount(): Int = dao.count()
+
+    suspend fun getAllTransactionsOnce(): List<TransactionWithCategory> = dao.getAllTransactionsOnce()
 }
