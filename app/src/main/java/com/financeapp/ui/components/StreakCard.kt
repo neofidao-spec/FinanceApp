@@ -4,7 +4,6 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -18,14 +17,21 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LocalFireDepartment
 import androidx.compose.material.icons.filled.AcUnit
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -44,6 +50,8 @@ fun StreakCard(
     onUseFreeze: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    var showFreezeDialog by remember { mutableStateOf(false) }
+
     val flameColor = when {
         currentStreak >= 30 -> Color(0xFFFF6F00)
         currentStreak >= 7 -> MaterialTheme.colorScheme.financeColors.accent
@@ -91,7 +99,7 @@ fun StreakCard(
 
             Spacer(modifier = Modifier.height(Spacing.xs))
 
-            // Row 2: Main number + label (matches LevelCard title row)
+            // Row 2: Main number + label
             Text(
                 text = "$currentStreak hari",
                 style = MaterialTheme.typography.labelMedium,
@@ -102,14 +110,14 @@ fun StreakCard(
 
             Spacer(modifier = Modifier.height(Spacing.sm))
 
-            // Row 3: Bottom info — best streak (matches XP row height in LevelCard)
+            // Row 3: Bottom info — best streak
             Text(
                 text = "Terbaik: $bestStreak",
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
 
-            // Freeze row — only when user has freezes, with label
+            // Freeze section — only when user has freezes
             if (streakFreezes > 0) {
                 Spacer(modifier = Modifier.height(Spacing.sm))
                 Row(
@@ -118,7 +126,7 @@ fun StreakCard(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     IconButton(
-                        onClick = onUseFreeze,
+                        onClick = { showFreezeDialog = true },
                         modifier = Modifier
                             .size(28.dp)
                             .background(
@@ -143,5 +151,37 @@ fun StreakCard(
                 }
             }
         }
+    }
+
+    // Freeze confirmation dialog
+    if (showFreezeDialog) {
+        AlertDialog(
+            onDismissRequest = { showFreezeDialog = false },
+            title = { Text("Gunakan Streak Freeze?") },
+            text = {
+                Text(
+                    "Streak freeze melindungi streak Anda selama 1 hari jika Anda " +
+                    "tidak mencatat transaksi. Anda memiliki $streakFreezes freeze tersisa."
+                )
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        onUseFreeze()
+                        showFreezeDialog = false
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary
+                    )
+                ) {
+                    Text("Gunakan")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showFreezeDialog = false }) {
+                    Text("Batal")
+                }
+            }
+        )
     }
 }
