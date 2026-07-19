@@ -31,6 +31,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -44,14 +45,27 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.financeapp.ui.utils.FinanceIcons
 import com.financeapp.ui.utils.FormatterUtil
+import com.financeapp.ui.viewmodel.GamificationViewModel
 import com.financeapp.ui.viewmodel.ReportViewModel
 import com.financeapp.ui.theme.financeColors
 import com.financeapp.ui.theme.Spacing
 import androidx.compose.material3.CardDefaults
 
 @Composable
-fun ReportScreen(viewModel: ReportViewModel = hiltViewModel()) {
+fun ReportScreen(
+    viewModel: ReportViewModel = hiltViewModel(),
+    gamificationViewModel: GamificationViewModel = hiltViewModel()
+) {
     val uiState by viewModel.uiState.collectAsState()
+    val gamificationState by gamificationViewModel.uiState.collectAsState()
+
+    // Complete "Buka Laporan" quest when user opens ReportScreen
+    LaunchedEffect(gamificationState.dailyQuests) {
+        val reportQuest = gamificationState.dailyQuests.find {
+            it.template.id == "buka_laporan" && !it.assignment.isCompleted
+        }
+        reportQuest?.let { gamificationViewModel.completeQuest(it) }
+    }
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background

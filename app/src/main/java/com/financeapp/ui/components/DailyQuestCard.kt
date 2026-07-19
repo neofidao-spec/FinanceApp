@@ -3,6 +3,7 @@ package com.financeapp.ui.components
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -31,18 +32,20 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.financeapp.data.model.DailyQuest
+import com.financeapp.data.model.QuestCategory
+import com.financeapp.data.repository.QuestWithTemplate
 import com.financeapp.ui.theme.Spacing
 import com.financeapp.ui.theme.financeColors
 
 @Composable
 fun DailyQuestCard(
-    quests: List<DailyQuest>,
+    quests: List<QuestWithTemplate>,
+    onQuestClick: ((QuestWithTemplate) -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     if (quests.isEmpty()) return
 
-    val completedCount = quests.count { it.isCompleted }
+    val completedCount = quests.count { it.assignment.isCompleted }
     val totalCount = quests.size
     val overallProgress = if (totalCount > 0) completedCount.toFloat() / totalCount else 0f
 
@@ -103,7 +106,10 @@ fun DailyQuestCard(
 
             // Individual quest items
             quests.forEach { quest ->
-                QuestItem(quest = quest)
+                QuestItem(
+                    quest = quest,
+                    onClick = { onQuestClick?.invoke(quest) }
+                )
                 Spacer(modifier = Modifier.height(Spacing.sm))
             }
         }
@@ -111,21 +117,27 @@ fun DailyQuestCard(
 }
 
 @Composable
-private fun QuestItem(quest: DailyQuest) {
-    val progress = if (quest.targetValue > 0) {
-        quest.currentValue.toFloat() / quest.targetValue
-    } else 0f
+private fun QuestItem(
+    quest: QuestWithTemplate,
+    onClick: (() -> Unit)? = null
+) {
+    val isCompleted = quest.assignment.isCompleted
 
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .then(
+                if (onClick != null && !isCompleted)
+                    Modifier.clickable { onClick() } else Modifier
+            ),
         verticalAlignment = Alignment.CenterVertically
     ) {
         // Check icon
         Icon(
-            imageVector = if (quest.isCompleted) Icons.Filled.CheckCircle
+            imageVector = if (isCompleted) Icons.Filled.CheckCircle
             else Icons.Filled.RadioButtonUnchecked,
-            contentDescription = if (quest.isCompleted) "Selesai" else "Belum selesai",
-            tint = if (quest.isCompleted) MaterialTheme.colorScheme.financeColors.income
+            contentDescription = if (isCompleted) "Selesai" else "Belum selesai",
+            tint = if (isCompleted) MaterialTheme.colorScheme.financeColors.income
             else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
             modifier = Modifier.size(20.dp)
         )
@@ -135,35 +147,36 @@ private fun QuestItem(quest: DailyQuest) {
         // Quest details
         Column(modifier = Modifier.weight(1f)) {
             Text(
-                text = quest.name,
+                text = quest.template.title,
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.Medium,
-                color = if (quest.isCompleted) MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+                color = if (isCompleted) MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
                 else MaterialTheme.colorScheme.onSurface
             )
             Spacer(modifier = Modifier.height(Spacing.xs))
-            LinearProgressIndicator(
-                progress = { progress.coerceIn(0f, 1f) },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(4.dp)
-                    .clip(RoundedCornerShape(Spacing.xs)),
-                color = if (quest.isCompleted) MaterialTheme.colorScheme.financeColors.income
-                else MaterialTheme.colorScheme.primary.copy(alpha = 0.7f),
-                trackColor = MaterialTheme.colorScheme.surfaceVariant,
-                strokeCap = StrokeCap.Round
+            Text(
+                text = quest.template.description,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
 
         Spacer(modifier = Modifier.width(Spacing.sm))
 
-        // XP reward
+        // Category-colored XP reward
+        val categoryColor = when (quest.template.category) {
+            QuestCategory.PENCATATAN -> MaterialTheme.colorScheme.primary
+            QuestCategory.BUDGETING -> MaterialTheme.colorScheme.financeColors.income
+            QuestCategory.EKSPLORASI -> MaterialTheme.colorScheme.financeColors.accent
+            QuestCategory.DISIPLIN -> MaterialTheme.colorScheme.financeColors.expense
+            QuestCategory.REVIEW -> MaterialTheme.colorScheme.tertiary
+        }
         Text(
-            text = "+${quest.xpReward} XP",
+            text = "+${quest.template.xpReward} XP",
             style = MaterialTheme.typography.labelSmall,
             fontWeight = FontWeight.SemiBold,
-            color = if (quest.isCompleted) MaterialTheme.colorScheme.financeColors.income.copy(alpha = 0.6f)
-            else MaterialTheme.colorScheme.financeColors.accent
+            color = if (isCompleted) MaterialTheme.colorScheme.financeColors.income.copy(alpha = 0.6f)
+            else categoryColor
         )
     }
 }

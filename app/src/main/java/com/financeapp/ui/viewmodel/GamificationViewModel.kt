@@ -5,12 +5,15 @@ import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.financeapp.data.model.Achievement
 import com.financeapp.data.model.Challenge
-import com.financeapp.data.model.DailyQuest
 import com.financeapp.data.model.UserProgress
 import com.financeapp.data.model.XpHistory
 import com.financeapp.data.model.XpSource
 import com.financeapp.data.repository.AchievementRepository
 import com.financeapp.data.repository.GamificationRepository
+import com.financeapp.data.repository.QuestRepository
+import com.financeapp.data.repository.QuestWithTemplate
+import com.financeapp.data.seed.QuestSeeder
+import com.financeapp.domain.DailyQuestGenerator
 import com.financeapp.domain.GamificationUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -25,7 +28,7 @@ import javax.inject.Inject
 
 data class GamificationUiState(
     val userProgress: UserProgress? = null,
-    val dailyQuests: List<DailyQuest> = emptyList(),
+    val dailyQuests: List<QuestWithTemplate> = emptyList(),
     val activeChallenges: List<Challenge> = emptyList(),
     val completedChallenges: List<Challenge> = emptyList(),
     val achievements: List<com.financeapp.data.model.Achievement> = emptyList(),
@@ -38,7 +41,10 @@ data class GamificationUiState(
 class GamificationViewModel @Inject constructor(
     private val repository: GamificationRepository,
     private val gamificationUseCase: GamificationUseCase,
-    private val achievementRepository: AchievementRepository
+    private val achievementRepository: AchievementRepository,
+    private val dailyQuestGenerator: DailyQuestGenerator,
+    private val questRepository: QuestRepository,
+    private val questSeeder: QuestSeeder
     ) : ViewModel() {
     companion object {
         private const val TAG = "GamificationVM"
@@ -66,11 +72,11 @@ class GamificationViewModel @Inject constructor(
     private suspend fun initializeGamification() {
         try {
             gamificationUseCase.initializeIfNeeded()
-            val today = LocalDate.now()
-            val existingQuests = repository.getDailyQuestsOnce(today)
-            if (existingQuests.isEmpty()) {
-                repository.saveDailyQuests(DailyQuest.generateForDate(today))
-            }
+            questSeeder.seedIfNeeded()
+            dailyQuestGenerator.generateForToday(LocalDate.now())
+            // Fetch today's quests with templates
+            val quests = questRepository.getTodayQuests(LocalDate.now())
+            _uiState.value = _uiState.value.copy(dailyQuests = quests)
         } catch (e: Exception) {
             Log.e(TAG, "Failed to initialize gamification", e)
             _uiState.value = _uiState.value.copy(errorMessage = "Gagal memuat data gamifikasi. Silakan coba lagi.")
@@ -79,13 +85,11 @@ class GamificationViewModel @Inject constructor(
 
     private suspend fun observeGamificationData() {
         try {
-                val today = LocalDate.now()
-                val firstThree = combine(
+                val combine = combine(
                     repository.getUserProgress(),
-                    repository.getDailyQuests(today),
                     repository.getActiveChallenges()
-                ) { progress, quests, active ->
-                    Triple(progress, quests, active)
+                ) { progress, active ->
+                    Pair(progress, active)
                 }
                 val lastThree = combine(
                     repository.getCompletedChallenges(),
@@ -94,10 +98,12 @@ class GamificationViewModel @Inject constructor(
                 ) { completed, xpHistory, achievements ->
                     Triple(completed, xpHistory, achievements)
                 }
-                combine(firstThree, lastThree) { (progress, quests, active), (completed, xpHistory, achievements) ->
+                combine(combine, lastThree) { (progress, active), (completed, xpHistory, achievements) ->
+                    // Preserve dailyQuests from the current state (set by initializeGamification)
+                    val currentQuests = _uiState.value.dailyQuests
                     GamificationUiState(
                         userProgress = progress,
-                        dailyQuests = quests,
+                        dailyQuests = currentQuests,
                         activeChallenges = active,
                         completedChallenges = completed,
                         recentXpHistory = xpHistory,
@@ -148,13 +154,16 @@ class GamificationViewModel @Inject constructor(
         }
     }
 
-    /** Mark a quest as completed */
-    fun completeQuest(quest: DailyQuest) {
+    /** Mark a quest as completed using the new dynamic quest system */
+    fun completeQuest(quest: QuestWithTemplate) {
         viewModelScope.launch {
             try {
-                repository.updateQuestProgress(quest.id, quest.targetValue, true)
-                gamificationUseCase.onQuestCompleted(quest.name, quest.xpReward)
-            } catch (e: Exception) { Log.w("GamificationVM", "Action failed", e) }
+                questRepository.completeQuest(quest.assignment.id)
+                gamificationUseCase.onQuestCompleted(quest.template.title, quest.template.xpReward)
+                // Refresh quests
+                val quests = questRepository.getTodayQuests(LocalDate.now())
+                _uiState.value = _uiState.value.copy(dailyQuests = quests)
+            } catch (e: Exception) { Log.w(TAG, "Quest completion failed", e) }
         }
     }
 

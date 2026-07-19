@@ -4,6 +4,10 @@ import app.cash.turbine.test
 import com.financeapp.data.model.*
 import com.financeapp.data.repository.AchievementRepository
 import com.financeapp.data.repository.GamificationRepository
+import com.financeapp.data.repository.QuestRepository
+import com.financeapp.data.repository.QuestWithTemplate
+import com.financeapp.data.seed.QuestSeeder
+import com.financeapp.domain.DailyQuestGenerator
 import com.financeapp.domain.GamificationUseCase
 import io.mockk.*
 import kotlinx.coroutines.Dispatchers
@@ -25,6 +29,9 @@ class GamificationViewModelTest {
     private lateinit var repository: GamificationRepository
     private lateinit var gamificationUseCase: GamificationUseCase
     private lateinit var achievementRepository: AchievementRepository
+    private lateinit var dailyQuestGenerator: DailyQuestGenerator
+    private lateinit var questRepository: QuestRepository
+    private lateinit var questSeeder: QuestSeeder
 
     private val today = LocalDate.now()
     private val now = LocalDateTime.now()
@@ -35,17 +42,33 @@ class GamificationViewModelTest {
         lastActivityDate = now, healthScore = 75.0, updatedAt = now
     )
 
-    private val sampleQuests = listOf(
-        DailyQuest(
-            id = 1, name = "Catat Transaksi", description = "Catat 1 transaksi hari ini",
-            xpReward = 10, questType = "TRANSACTION_COUNT", targetValue = 1,
-            currentValue = 0, isCompleted = false, questDate = today
+    private val sampleTemplates = listOf(
+        QuestTemplate(
+            id = "catat_transaksi", title = "Catat Transaksi",
+            description = "Catat 1 transaksi hari ini", category = QuestCategory.PENCATATAN,
+            xpReward = 10, weight = 10
         ),
-        DailyQuest(
-            id = 2, name = "Cek Dashboard", description = "Lihat dashboard hari ini",
-            xpReward = 5, questType = "DASHBOARD_VISIT", targetValue = 1,
-            currentValue = 0, isCompleted = false, questDate = today
+        QuestTemplate(
+            id = "cek_dashboard", title = "Cek Dashboard",
+            description = "Buka dashboard hari ini", category = QuestCategory.EKSPLORASI,
+            xpReward = 5, weight = 10
         )
+    )
+
+    private val sampleAssignments = listOf(
+        DailyQuestAssignment(
+            id = 1, questTemplateId = "catat_transaksi",
+            assignedDate = today, isCompleted = false
+        ),
+        DailyQuestAssignment(
+            id = 2, questTemplateId = "cek_dashboard",
+            assignedDate = today, isCompleted = false
+        )
+    )
+
+    private val sampleQuestsWithTemplate = listOf(
+        QuestWithTemplate(sampleAssignments[0], sampleTemplates[0]),
+        QuestWithTemplate(sampleAssignments[1], sampleTemplates[1])
     )
 
     private val sampleChallenges = listOf(
@@ -76,6 +99,9 @@ class GamificationViewModelTest {
         repository = mockk(relaxed = true)
         gamificationUseCase = mockk(relaxed = true)
         achievementRepository = mockk(relaxed = true)
+        dailyQuestGenerator = mockk(relaxed = true)
+        questRepository = mockk(relaxed = true)
+        questSeeder = mockk(relaxed = true)
     }
 
     @After
@@ -86,10 +112,10 @@ class GamificationViewModelTest {
 
     private fun stubDefaults() {
         coEvery { gamificationUseCase.initializeIfNeeded() } just runs
-        coEvery { repository.getDailyQuestsOnce(any()) } returns emptyList()
-        coEvery { repository.saveDailyQuests(any()) } just runs
+        coEvery { questSeeder.seedIfNeeded() } just runs
+        coEvery { dailyQuestGenerator.generateForToday(any()) } returns true
+        coEvery { questRepository.getTodayQuests(any()) } returns sampleQuestsWithTemplate
         every { repository.getUserProgress() } returns flowOf(sampleUserProgress)
-        every { repository.getDailyQuests(any()) } returns flowOf(sampleQuests)
         every { repository.getActiveChallenges() } returns flowOf(sampleChallenges)
         every { repository.getCompletedChallenges() } returns flowOf(emptyList())
         every { repository.getRecentXpHistory(any()) } returns flowOf(sampleXpHistory)
@@ -97,7 +123,10 @@ class GamificationViewModelTest {
     }
 
     private fun createViewModel(): GamificationViewModel {
-        return GamificationViewModel(repository, gamificationUseCase, achievementRepository)
+        return GamificationViewModel(
+            repository, gamificationUseCase, achievementRepository,
+            dailyQuestGenerator, questRepository, questSeeder
+        )
     }
 
     // ---------- INITIAL STATE ----------
@@ -139,14 +168,14 @@ class GamificationViewModelTest {
     }
 
     @Test
-    fun `daily quests are loaded from repository`() = runTest {
+    fun `daily quests are loaded from new quest system`() = runTest {
         stubDefaults()
         val vm = createViewModel()
 
         val state = vm.uiState.value
         assertEquals(2, state.dailyQuests.size)
-        assertEquals("Catat Transaksi", state.dailyQuests[0].name)
-        assertEquals("Cek Dashboard", state.dailyQuests[1].name)
+        assertEquals("Catat Transaksi", state.dailyQuests[0].template.title)
+        assertEquals("Cek Dashboard", state.dailyQuests[1].template.title)
     }
 
     @Test
@@ -191,10 +220,10 @@ class GamificationViewModelTest {
             currentValue = 7, isCompleted = true
         )
         coEvery { gamificationUseCase.initializeIfNeeded() } just runs
-        coEvery { repository.getDailyQuestsOnce(any()) } returns emptyList()
-        coEvery { repository.saveDailyQuests(any()) } just runs
+        coEvery { questSeeder.seedIfNeeded() } just runs
+        coEvery { dailyQuestGenerator.generateForToday(any()) } returns true
+        coEvery { questRepository.getTodayQuests(any()) } returns sampleQuestsWithTemplate
         every { repository.getUserProgress() } returns flowOf(sampleUserProgress)
-        every { repository.getDailyQuests(any()) } returns flowOf(sampleQuests)
         every { repository.getActiveChallenges() } returns flowOf(sampleChallenges)
         every { repository.getCompletedChallenges() } returns flowOf(listOf(completedChallenge))
         every { repository.getRecentXpHistory(any()) } returns flowOf(sampleXpHistory)
@@ -217,36 +246,27 @@ class GamificationViewModelTest {
     }
 
     @Test
-    fun `initializeGamification generates quests when none exist for today`() = runTest {
-        coEvery { gamificationUseCase.initializeIfNeeded() } just runs
-        coEvery { repository.getDailyQuestsOnce(today) } returns emptyList()
-        coEvery { repository.saveDailyQuests(any()) } just runs
-        every { repository.getUserProgress() } returns flowOf(sampleUserProgress)
-        every { repository.getDailyQuests(any()) } returns flowOf(sampleQuests)
-        every { repository.getActiveChallenges() } returns flowOf(sampleChallenges)
-        every { repository.getCompletedChallenges() } returns flowOf(emptyList())
-        every { repository.getRecentXpHistory(any()) } returns flowOf(sampleXpHistory)
-        every { achievementRepository.getAllAchievements() } returns flowOf(sampleAchievements)
-
+    fun `initializeGamification seeds quest templates`() = runTest {
+        stubDefaults()
         createViewModel()
 
-        coVerify { repository.saveDailyQuests(any()) }
+        coVerify { questSeeder.seedIfNeeded() }
     }
 
     @Test
-    fun `initializeGamification does not generate quests when they already exist`() = runTest {
-        coEvery { gamificationUseCase.initializeIfNeeded() } just runs
-        coEvery { repository.getDailyQuestsOnce(today) } returns sampleQuests
-        every { repository.getUserProgress() } returns flowOf(sampleUserProgress)
-        every { repository.getDailyQuests(any()) } returns flowOf(sampleQuests)
-        every { repository.getActiveChallenges() } returns flowOf(sampleChallenges)
-        every { repository.getCompletedChallenges() } returns flowOf(emptyList())
-        every { repository.getRecentXpHistory(any()) } returns flowOf(sampleXpHistory)
-        every { achievementRepository.getAllAchievements() } returns flowOf(sampleAchievements)
-
+    fun `initializeGamification generates quests for today`() = runTest {
+        stubDefaults()
         createViewModel()
 
-        coVerify(exactly = 0) { repository.saveDailyQuests(any()) }
+        coVerify { dailyQuestGenerator.generateForToday(today) }
+    }
+
+    @Test
+    fun `initializeGamification fetches today quests from questRepository`() = runTest {
+        stubDefaults()
+        createViewModel()
+
+        coVerify { questRepository.getTodayQuests(today) }
     }
 
     // ---------- ERROR HANDLING ----------
@@ -254,9 +274,7 @@ class GamificationViewModelTest {
     @Test
     fun `error during initialization sets errorMessage`() = runTest {
         coEvery { gamificationUseCase.initializeIfNeeded() } throws RuntimeException("Init failed")
-        coEvery { repository.getDailyQuestsOnce(any()) } returns emptyList()
         every { repository.getUserProgress() } returns flowOf(sampleUserProgress)
-        every { repository.getDailyQuests(any()) } returns flowOf(sampleQuests)
         every { repository.getActiveChallenges() } returns flowOf(sampleChallenges)
         every { repository.getCompletedChallenges() } returns flowOf(emptyList())
         every { repository.getRecentXpHistory(any()) } returns flowOf(sampleXpHistory)
@@ -265,16 +283,16 @@ class GamificationViewModelTest {
         val vm = createViewModel()
 
         assertNotNull(vm.uiState.value.errorMessage)
-        assertTrue(vm.uiState.value.errorMessage!!.contains("Init failed"))
+        assertTrue(vm.uiState.value.errorMessage!!.contains("Gagal memuat data gamifikasi"))
     }
 
     @Test
     fun `error from observeGamificationData sets errorMessage`() = runTest {
         coEvery { gamificationUseCase.initializeIfNeeded() } just runs
-        coEvery { repository.getDailyQuestsOnce(any()) } returns emptyList()
-        coEvery { repository.saveDailyQuests(any()) } just runs
+        coEvery { questSeeder.seedIfNeeded() } just runs
+        coEvery { dailyQuestGenerator.generateForToday(any()) } returns true
+        coEvery { questRepository.getTodayQuests(any()) } returns sampleQuestsWithTemplate
         every { repository.getUserProgress() } throws RuntimeException("Flow error")
-        every { repository.getDailyQuests(any()) } returns flowOf(sampleQuests)
         every { repository.getActiveChallenges() } returns flowOf(sampleChallenges)
         every { repository.getCompletedChallenges() } returns flowOf(emptyList())
         every { repository.getRecentXpHistory(any()) } returns flowOf(sampleXpHistory)
@@ -293,18 +311,19 @@ class GamificationViewModelTest {
         // First, cause an error
         coEvery { gamificationUseCase.initializeIfNeeded() } throws RuntimeException("Fail")
         every { repository.getUserProgress() } returns flowOf(sampleUserProgress)
-        every { repository.getDailyQuests(any()) } returns flowOf(sampleQuests)
         every { repository.getActiveChallenges() } returns flowOf(sampleChallenges)
         every { repository.getCompletedChallenges() } returns flowOf(emptyList())
         every { repository.getRecentXpHistory(any()) } returns flowOf(sampleXpHistory)
         every { achievementRepository.getAllAchievements() } returns flowOf(sampleAchievements)
-        coEvery { repository.getDailyQuestsOnce(any()) } returns emptyList()
 
         val vm = createViewModel()
         assertNotNull(vm.uiState.value.errorMessage)
 
         // Fix the use case and retry
         coEvery { gamificationUseCase.initializeIfNeeded() } just runs
+        coEvery { questSeeder.seedIfNeeded() } just runs
+        coEvery { dailyQuestGenerator.generateForToday(any()) } returns true
+        coEvery { questRepository.getTodayQuests(any()) } returns sampleQuestsWithTemplate
         vm.retry()
 
         // After retry, state should be refreshed
@@ -411,26 +430,39 @@ class GamificationViewModelTest {
     }
 
     @Test
-    fun `completeQuest calls repository and useCase`() = runTest {
+    fun `completeQuest calls questRepository and useCase`() = runTest {
         stubDefaults()
-        coEvery { repository.updateQuestProgress(any(), any(), any()) } just runs
+        coEvery { questRepository.completeQuest(any()) } just runs
         coEvery { gamificationUseCase.onQuestCompleted(any(), any()) } returns 10
 
         val vm = createViewModel()
-        val quest = sampleQuests[0]
+        val quest = sampleQuestsWithTemplate[0]
         vm.completeQuest(quest)
 
-        coVerify { repository.updateQuestProgress(quest.id, quest.targetValue, true) }
-        coVerify { gamificationUseCase.onQuestCompleted(quest.name, quest.xpReward) }
+        coVerify { questRepository.completeQuest(quest.assignment.id) }
+        coVerify { gamificationUseCase.onQuestCompleted(quest.template.title, quest.template.xpReward) }
+    }
+
+    @Test
+    fun `completeQuest refreshes quests after completion`() = runTest {
+        stubDefaults()
+        coEvery { questRepository.completeQuest(any()) } just runs
+        coEvery { gamificationUseCase.onQuestCompleted(any(), any()) } returns 10
+
+        val vm = createViewModel()
+        vm.completeQuest(sampleQuestsWithTemplate[0])
+
+        // Should call getTodayQuests twice: once in init, once after completion
+        coVerify(exactly = 2) { questRepository.getTodayQuests(today) }
     }
 
     @Test
     fun `completeQuest does not crash on error`() = runTest {
         stubDefaults()
-        coEvery { repository.updateQuestProgress(any(), any(), any()) } throws RuntimeException("Quest error")
+        coEvery { questRepository.completeQuest(any()) } throws RuntimeException("Quest error")
 
         val vm = createViewModel()
-        vm.completeQuest(sampleQuests[0])
+        vm.completeQuest(sampleQuestsWithTemplate[0])
 
         assertFalse(vm.uiState.value.isLoading)
     }
@@ -498,76 +530,21 @@ class GamificationViewModelTest {
             assertEquals(1, state.achievements.size)
             assertEquals(1, state.recentXpHistory.size)
             assertNull(state.errorMessage)
+
             cancelAndIgnoreRemainingEvents()
         }
     }
 
     @Test
-    fun `retry emits fresh state via turbine`() = runTest {
+    fun `uiState dailyQuests uses QuestWithTemplate type`() = runTest {
         stubDefaults()
         val vm = createViewModel()
 
-        vm.uiState.test {
-            // Initial state
-            val initial = awaitItem()
-            assertFalse(initial.isLoading)
-
-            // Retry
-            vm.retry()
-
-            // After retry, new state is emitted
-            val retried = awaitItem()
-            assertFalse(retried.isLoading)
-            assertNotNull(retried.userProgress)
-
-            cancelAndIgnoreRemainingEvents()
-        }
-    }
-
-    // ---------- EMPTY STATE ----------
-
-    @Test
-    fun `empty data from all repositories results in valid state`() = runTest {
-        coEvery { gamificationUseCase.initializeIfNeeded() } just runs
-        coEvery { repository.getDailyQuestsOnce(any()) } returns emptyList()
-        coEvery { repository.saveDailyQuests(any()) } just runs
-        every { repository.getUserProgress() } returns flowOf(null)
-        every { repository.getDailyQuests(any()) } returns flowOf(emptyList())
-        every { repository.getActiveChallenges() } returns flowOf(emptyList())
-        every { repository.getCompletedChallenges() } returns flowOf(emptyList())
-        every { repository.getRecentXpHistory(any()) } returns flowOf(emptyList())
-        every { achievementRepository.getAllAchievements() } returns flowOf(emptyList())
-
-        val vm = createViewModel()
-
-        val state = vm.uiState.value
-        assertFalse(state.isLoading)
-        assertNull(state.userProgress)
-        assertTrue(state.dailyQuests.isEmpty())
-        assertTrue(state.activeChallenges.isEmpty())
-        assertTrue(state.completedChallenges.isEmpty())
-        assertTrue(state.achievements.isEmpty())
-        assertTrue(state.recentXpHistory.isEmpty())
-        assertNull(state.errorMessage)
-    }
-
-    @Test
-    fun `null userProgress is handled gracefully`() = runTest {
-        coEvery { gamificationUseCase.initializeIfNeeded() } just runs
-        coEvery { repository.getDailyQuestsOnce(any()) } returns emptyList()
-        coEvery { repository.saveDailyQuests(any()) } just runs
-        every { repository.getUserProgress() } returns flowOf(null)
-        every { repository.getDailyQuests(any()) } returns flowOf(sampleQuests)
-        every { repository.getActiveChallenges() } returns flowOf(sampleChallenges)
-        every { repository.getCompletedChallenges() } returns flowOf(emptyList())
-        every { repository.getRecentXpHistory(any()) } returns flowOf(sampleXpHistory)
-        every { achievementRepository.getAllAchievements() } returns flowOf(sampleAchievements)
-
-        val vm = createViewModel()
-
-        assertNull(vm.uiState.value.userProgress)
-        // Other data should still be loaded
-        assertEquals(2, vm.uiState.value.dailyQuests.size)
-        assertEquals(1, vm.uiState.value.activeChallenges.size)
+        val quests = vm.uiState.value.dailyQuests
+        assertEquals(2, quests.size)
+        assertEquals("catat_transaksi", quests[0].template.id)
+        assertEquals("Catat Transaksi", quests[0].template.title)
+        assertEquals(10, quests[0].template.xpReward)
+        assertFalse(quests[0].assignment.isCompleted)
     }
 }

@@ -94,17 +94,12 @@ fun BudgetScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val focusManager = LocalFocusManager.current
 
-    // Complete "Budget Check" quest when all budgets are healthy
-    LaunchedEffect(uiState.budgetSummary, gamificationState.dailyQuests) {
-        val summary = uiState.budgetSummary
-        if (summary != null && summary.exceedingBudgets.isEmpty() && summary.budgets.isNotEmpty()) {
-            val budgetQuest = gamificationState.dailyQuests.find {
-                it.questType == "BUDGET_CHECK" && !it.isCompleted
-            }
-            if (budgetQuest != null) {
-                gamificationViewModel.completeQuest(budgetQuest)
-            }
+    // Complete "Cek Budget" quest when user opens BudgetScreen
+    LaunchedEffect(gamificationState.dailyQuests) {
+        val budgetQuest = gamificationState.dailyQuests.find {
+            it.template.id == "cek_budget" && !it.assignment.isCompleted
         }
+        budgetQuest?.let { gamificationViewModel.completeQuest(it) }
     }
 
     LaunchedEffect(uiState.successMessage, uiState.errorMessage) {

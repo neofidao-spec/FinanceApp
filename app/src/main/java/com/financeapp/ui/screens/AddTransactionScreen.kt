@@ -65,11 +65,9 @@ fun AddTransactionScreen(
         if (uiState.successMessage != null) {
             gamificationViewModel.onTransactionRecorded()
             val txQuest = gamificationState.dailyQuests.find {
-                it.questType == "TRANSACTION_COUNT" && !it.isCompleted
+                it.template.id == "catat_transaksi" && !it.assignment.isCompleted
             }
-            if (txQuest != null) {
-                gamificationViewModel.completeQuest(txQuest)
-            }
+            txQuest?.let { gamificationViewModel.completeQuest(it) }
         }
     }
 

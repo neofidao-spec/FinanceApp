@@ -95,11 +95,9 @@ fun DashboardScreen(
     // Complete "Cek Dashboard" quest on first visit
     LaunchedEffect(gamificationState.dailyQuests) {
         val dashboardQuest = gamificationState.dailyQuests.find {
-            it.questType == "DASHBOARD_VISIT" && !it.isCompleted
+            it.template.id == "cek_dashboard" && !it.assignment.isCompleted
         }
-        if (dashboardQuest != null) {
-            gamificationViewModel.completeQuest(dashboardQuest)
-        }
+        dashboardQuest?.let { gamificationViewModel.completeQuest(it) }
     }
 
     DashboardContent(
@@ -262,7 +260,12 @@ private fun DashboardContent(
         // 4. Daily Quests
         if (gamificationState.dailyQuests.isNotEmpty() && !gamificationState.isLoading) {
             item {
-                DailyQuestCard(quests = gamificationState.dailyQuests)
+                DailyQuestCard(
+                    quests = gamificationState.dailyQuests,
+                    onQuestClick = { quest ->
+                        gamificationViewModel.completeQuest(quest)
+                    }
+                )
             }
         }
 
