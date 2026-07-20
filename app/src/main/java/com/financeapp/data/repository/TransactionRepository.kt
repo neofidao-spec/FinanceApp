@@ -20,9 +20,7 @@ class TransactionRepository(
     /** FTS4 full-text search on transaction descriptions. Falls back to LIKE if FTS unavailable. */
     fun searchTransactions(query: String): Flow<List<TransactionWithCategory>> {
         val ftsQuery = "$query*"
-        return ftsDao?.search(ftsQuery) ?: dao.searchByDescription(query).let { results ->
-            kotlinx.coroutines.flow.flowOf(results)
-        }
+        return ftsDao?.search(ftsQuery) ?: dao.searchByDescriptionFlow(query)
     }
 
     suspend fun addTransaction(transaction: Transaction): Long = dao.insert(transaction)

@@ -170,7 +170,8 @@ fun SettingsScreen(
                         onClick = {
                             viewModel.exportTransactions { intent ->
                                 if (intent != null) {
-                                    context.startActivity(Intent.createChooser(intent, stringResource(R.string.settings_share_csv)))
+                                    val shareLabel = context.getString(R.string.settings_share_csv)
+                                    context.startActivity(Intent.createChooser(intent, shareLabel))
                                 }
                             }
                         }
