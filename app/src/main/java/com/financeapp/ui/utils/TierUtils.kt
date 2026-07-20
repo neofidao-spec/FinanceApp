@@ -40,6 +40,7 @@ object TierUtils {
      * Get tier info based on total XP
      */
     fun getTierForXp(totalXp: Int): TierInfo {
+        if (totalXp < 0) return tiers.first()
         return tiers.last { totalXp >= it.xpMin }
     }
 

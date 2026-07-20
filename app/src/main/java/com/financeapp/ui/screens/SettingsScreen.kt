@@ -18,7 +18,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
@@ -129,7 +129,7 @@ fun SettingsScreen(
                     }
                 }
                 Spacer(modifier = Modifier.height(Spacing.sm))
-                Divider()
+                HorizontalDivider()
                 Spacer(modifier = Modifier.height(Spacing.sm))
                 Text("Kelola Akun", fontWeight = FontWeight.Medium)
                 Text("Atur akun Cash, Bank, E-Wallet", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
@@ -154,7 +154,7 @@ fun SettingsScreen(
                     }
                 }
                 Spacer(modifier = Modifier.height(Spacing.sm))
-                Divider()
+                HorizontalDivider()
                 Spacer(modifier = Modifier.height(Spacing.sm))
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -177,12 +177,12 @@ fun SettingsScreen(
                     }
                 }
                 Spacer(modifier = Modifier.height(Spacing.sm))
-                Divider()
+                HorizontalDivider()
                 Spacer(modifier = Modifier.height(Spacing.sm))
                 Text("Database", fontWeight = FontWeight.Medium)
                 Text("Room Database v5 - Offline storage", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 Spacer(modifier = Modifier.height(Spacing.sm))
-                Divider()
+                HorizontalDivider()
                 Spacer(modifier = Modifier.height(Spacing.sm))
                 Text("Format Mata Uang", fontWeight = FontWeight.Medium)
                 Text("Rp (Rupiah Indonesia)", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)

@@ -48,7 +48,7 @@ fun Modifier.shimmerEffect(): Modifier = composed {
     val shimmerBrush = Brush.linearGradient(
         colors = listOf(
             Color.Transparent,
-            Color.White.copy(alpha = 0.4f),
+            MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f),
             Color.Transparent
         ),
         start = Offset(translateX, 0f),

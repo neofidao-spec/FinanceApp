@@ -154,8 +154,13 @@ class EditTransactionViewModel @Inject constructor(
             try {
                 _uiState.value = _uiState.value.copy(isLoading = true)
 
+                val transactionId = _uiState.value.transactionId
+
+                // Read old transaction BEFORE updating, for correct balance revert
+                val oldTransaction = transactionRepository.getTransaction(transactionId)
+
                 val transaction = Transaction(
-                    id = _uiState.value.transactionId,
+                    id = transactionId,
                     amount = _uiState.value.amount.toDouble(),
                     type = _uiState.value.transactionType,
                     categoryId = selectedCategory.id,
@@ -168,7 +173,6 @@ class EditTransactionViewModel @Inject constructor(
 
                 // Update account balance for edited transaction
                 try {
-                    val oldTransaction = transactionRepository.getTransaction(transaction.id)
                     val account = accountRepository.getAccountById(_uiState.value.selectedAccountId)
                     account?.let { acc ->
                         // Revert old transaction effect on balance

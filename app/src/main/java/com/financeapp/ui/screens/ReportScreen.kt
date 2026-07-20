@@ -268,7 +268,7 @@ fun ReportScreen(
                                 horizontalArrangement = Arrangement.spacedBy(Spacing.sm)
                             ) {
                                 LinearProgressIndicator(
-                                    progress = (summary.percentage / 100f).coerceIn(0f, 1f),
+                                    progress = { (summary.percentage / 100f).coerceIn(0f, 1f) },
                                     modifier = Modifier
                                         .weight(1f)
                                         .height(12.dp)

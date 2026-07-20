@@ -42,7 +42,11 @@ class Converters {
 
     @TypeConverter
     fun toTransactionType(value: String): TransactionType {
-        return TransactionType.valueOf(value)
+        return try {
+            TransactionType.valueOf(value)
+        } catch (e: IllegalArgumentException) {
+            TransactionType.EXPENSE
+        }
     }
 
     // ── AccountType (Cash / Bank / EWallet / Credit / Investment) ─
@@ -53,7 +57,11 @@ class Converters {
 
     @TypeConverter
     fun toAccountType(value: String): AccountType {
-        return AccountType.valueOf(value)
+        return try {
+            AccountType.valueOf(value)
+        } catch (e: IllegalArgumentException) {
+            AccountType.CASH
+        }
     }
 
     // ── RecurringInterval (Daily / Weekly / Monthly / Yearly) ──
@@ -64,7 +72,11 @@ class Converters {
 
     @TypeConverter
     fun toRecurringInterval(value: String): RecurringInterval {
-        return RecurringInterval.valueOf(value)
+        return try {
+            RecurringInterval.valueOf(value)
+        } catch (e: IllegalArgumentException) {
+            RecurringInterval.MONTHLY
+        }
     }
 
     // ── RecurringEndType (Never / AfterOccurrences / OnDate) ──
@@ -75,7 +87,11 @@ class Converters {
 
     @TypeConverter
     fun toRecurringEndType(value: String): RecurringEndType {
-        return RecurringEndType.valueOf(value)
+        return try {
+            RecurringEndType.valueOf(value)
+        } catch (e: IllegalArgumentException) {
+            RecurringEndType.NEVER
+        }
     }
 
     // ── QuestCategory (PENCATATAN / BUDGETING / EKSPLORASI / DISIPLIN / REVIEW) ─
@@ -86,6 +102,10 @@ class Converters {
 
     @TypeConverter
     fun toQuestCategory(value: String): QuestCategory {
-        return QuestCategory.valueOf(value)
+        return try {
+            QuestCategory.valueOf(value)
+        } catch (e: IllegalArgumentException) {
+            QuestCategory.PENCATATAN
+        }
     }
 }
