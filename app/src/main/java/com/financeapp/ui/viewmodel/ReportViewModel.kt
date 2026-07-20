@@ -102,8 +102,8 @@ class ReportViewModel @Inject constructor(
 
             val filtered = allTransactions.filter {
                 it.transaction.type == TransactionType.EXPENSE &&
-                it.transaction.date.isAfter(startDate) &&
-                it.transaction.date.isBefore(endDate)
+                !it.transaction.date.isBefore(startDate) &&
+                !it.transaction.date.isAfter(endDate)
             }
 
             val totalExpense = filtered.sumOf { it.transaction.amount }
