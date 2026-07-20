@@ -161,10 +161,21 @@ class GamificationViewModel @Inject constructor(
             try {
                 questRepository.completeQuest(quest.assignment.id)
                 gamificationUseCase.onQuestCompleted(quest.template.title, quest.template.xpReward)
-                // Refresh both quests and XP history for UI sync
+                // Refresh quests
                 val quests = questRepository.getTodayQuests(LocalDate.now())
+
+                // If all quests are completed, generate a new batch (max 2 batches per day = 6 quests)
+                if (quests.isNotEmpty() && quests.all { it.assignment.isCompleted }) {
+                    val todayQuests = assignmentDao.getForDate(LocalDate.now())
+                    if (todayQuests.size <= 3) {
+                        // First batch completed — generate second batch
+                        dailyQuestGenerator.generateForToday(LocalDate.now())
+                    }
+                }
+
+                val refreshedQuests = questRepository.getTodayQuests(LocalDate.now())
                 _uiState.value = _uiState.value.copy(
-                    dailyQuests = quests,
+                    dailyQuests = refreshedQuests,
                     recentXpHistory = repository.getRecentXpHistoryOnce(20)
                 )
             } catch (e: Exception) { Log.w(TAG, "Quest completion failed", e) }

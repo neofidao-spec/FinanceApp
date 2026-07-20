@@ -14,7 +14,9 @@ class DailyQuestGenerator @Inject constructor(
 ) {
     suspend fun generateForToday(today: LocalDate): Boolean {
         val existing = assignmentDao.getForDate(today)
-        if (existing.isNotEmpty()) return false // already generated
+        // Allow regeneration if all existing quests are completed (max 6 quests per day = 2 batches)
+        if (existing.isNotEmpty() && existing.any { !it.isCompleted }) return false
+        if (existing.size >= 6) return false // max 2 batches per day
 
         val recentIds = assignmentDao.getQuestIdsSince(today.minusDays(2))
         val allTemplates = questTemplateDao.getAll()
