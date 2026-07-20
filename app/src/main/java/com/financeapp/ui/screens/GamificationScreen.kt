@@ -559,7 +559,10 @@ private fun XpHistoryRow(xp: XpHistory, dateFormatter: DateTimeFormatter) {
         "STREAK" -> "Streak Bonus"
         "BUDGET_ADHERENCE" -> "Patuh Budget"
         "ACHIEVEMENT" -> "Bonus Menabung"
-        "QUEST" -> "Quest Selesai"
+        "QUEST" -> {
+            // Extract quest name from description: "Selesaikan quest: Catat Transaksi"
+            xp.description.removePrefix("Selesaikan quest: ").ifEmpty { "Quest Selesai" }
+        }
         "CHALLENGE" -> "Tantangan Selesai"
         "DAILY_LOGIN" -> "Login Harian"
         else -> xp.source

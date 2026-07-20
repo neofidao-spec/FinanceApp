@@ -161,9 +161,8 @@ class AddTransactionViewModel @Inject constructor(
                     // Balance update failure is non-blocking
                 }
 
-                // Gamification: award XP, update streak, update quest progress
+                // Gamification: update streak only (XP comes from quest completion, not here)
                 try {
-                    gamificationUseCase.onTransactionRecorded()
                     gamificationUseCase.updateStreak()
                 } catch (_: Exception) {
                     // Gamification failure is non-blocking
