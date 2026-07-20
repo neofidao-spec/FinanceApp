@@ -61,6 +61,7 @@ class RecurringTransactionWorker @AssistedInject constructor(
                 Result.success()  // No due transactions — not an error
             }
         } catch (e: Exception) {
+            if (e is kotlinx.coroutines.CancellationException) throw e
             Result.retry()
         }
     }

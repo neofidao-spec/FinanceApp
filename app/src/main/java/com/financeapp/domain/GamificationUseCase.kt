@@ -71,7 +71,7 @@ class GamificationUseCase @Inject constructor(
 
     // ===================== STREAK =====================
 
-    suspend fun updateStreak(): Pair<Int, Int> {
+    suspend fun updateStreak(): Pair<Int, Int> = xpMutex.withLock {
         val progress = repository.getUserProgressOnce()
             ?: UserProgress().also { repository.saveUserProgress(it) }
 
@@ -105,16 +105,19 @@ class GamificationUseCase @Inject constructor(
                     // Use freeze (skip 1 day)
                     newStreak = progress.currentStreak + 1
                     bestStreak = maxOf(progress.bestStreak, newStreak)
+                    // After consuming a freeze, check if new streak hits milestone
+                    val freezeGain = if (newStreak > 0 && newStreak % 7 == 0) 1 else 0
+                    val totalFreezes = minOf(progress.streakFreezes - 1 + freezeGain, 3)
                     repository.saveUserProgress(
                         progress.copy(
                             currentStreak = newStreak,
                             bestStreak = bestStreak,
                             lastActivityDate = now,
-                            streakFreezes = progress.streakFreezes - 1,
+                            streakFreezes = totalFreezes,
                             updatedAt = now
                         )
                     )
-                    return Pair(newStreak, bestStreak)
+                    return@withLock Pair(newStreak, bestStreak)
                 } else {
                     // Streak broken
                     newStreak = 1
@@ -137,7 +140,7 @@ class GamificationUseCase @Inject constructor(
             )
         )
 
-        return Pair(newStreak, bestStreak)
+        Pair(newStreak, bestStreak)
     }
 
     /** Use a freeze to protect streak (manual action) */

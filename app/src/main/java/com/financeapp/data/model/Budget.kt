@@ -38,7 +38,7 @@ data class BudgetWithCategory(
     val percentage: Float = 0f
 ) {
     fun isExceeded(): Boolean = currentSpent > budget.monthlyLimit
-    fun isAlertThreshold(): Boolean = (currentSpent / budget.monthlyLimit * 100) >= budget.alertThreshold
+    fun isAlertThreshold(): Boolean = budget.monthlyLimit > 0 && (currentSpent / budget.monthlyLimit * 100) >= budget.alertThreshold
 }
 
 data class BudgetSummary(

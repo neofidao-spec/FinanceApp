@@ -27,8 +27,9 @@ class DailyQuestGenerator @Inject constructor(
 
         val pool = if (eligible.size < 3) {
             allTemplates.filter {
-                it.requiresCondition == null ||
-                    conditionEvaluator.evaluate(it.requiresCondition)
+                (it.requiresCondition == null ||
+                    conditionEvaluator.evaluate(it.requiresCondition)) &&
+                    it.id !in recentIds
             }
         } else eligible
 

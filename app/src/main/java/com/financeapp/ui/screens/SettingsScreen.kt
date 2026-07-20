@@ -36,6 +36,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.financeapp.ui.viewmodel.SettingsViewModel
 import com.financeapp.ui.theme.Spacing
 import androidx.compose.material3.CardDefaults
+import androidx.compose.ui.res.stringResource
+import com.financeapp.R
 
 @Composable
 fun SettingsScreen(
@@ -83,14 +85,14 @@ fun SettingsScreen(
     ) {
         Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
             IconButton(onClick = onBack) {
-                Icon(Icons.Filled.ArrowBack, contentDescription = "Kembali")
+                Icon(Icons.Filled.ArrowBack, contentDescription = stringResource(R.string.common_back))
             }
-            Text("Pengaturan", style = MaterialTheme.typography.headlineSmall)
+            Text(stringResource(R.string.settings_title), style = MaterialTheme.typography.headlineSmall)
         }
         Spacer(modifier = Modifier.height(Spacing.lg))
 
         // Section 1: Tampilan
-        Text("Tampilan", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text(stringResource(R.string.settings_section_appearance), style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
         Spacer(modifier = Modifier.height(Spacing.sm))
 
         Card(modifier = Modifier.fillMaxWidth(), elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)) {
@@ -100,8 +102,8 @@ fun SettingsScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Column(modifier = Modifier.weight(1f)) {
-                        Text("Mode Gelap", fontWeight = FontWeight.Medium)
-                        Text("Gunakan tema gelap", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text(stringResource(R.string.settings_dark_mode), fontWeight = FontWeight.Medium)
+                        Text(stringResource(R.string.settings_dark_mode_desc), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                     Switch(
                         checked = uiState.isDarkMode,
@@ -114,7 +116,7 @@ fun SettingsScreen(
         Spacer(modifier = Modifier.height(Spacing.lg))
 
         // Section 2: Akun
-        Text("Akun", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text(stringResource(R.string.settings_section_account), style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
         Spacer(modifier = Modifier.height(Spacing.sm))
 
         Card(modifier = Modifier.fillMaxWidth(), elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)) {
@@ -124,22 +126,22 @@ fun SettingsScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Column(modifier = Modifier.weight(1f)) {
-                        Text("Jumlah Akun", fontWeight = FontWeight.Medium)
-                        Text("${uiState.accountCount} akun terdaftar", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text(stringResource(R.string.settings_account_count), fontWeight = FontWeight.Medium)
+                        Text(stringResource(R.string.settings_account_count_desc, uiState.accountCount), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                 }
                 Spacer(modifier = Modifier.height(Spacing.sm))
                 HorizontalDivider()
                 Spacer(modifier = Modifier.height(Spacing.sm))
-                Text("Kelola Akun", fontWeight = FontWeight.Medium)
-                Text("Atur akun Cash, Bank, E-Wallet", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(stringResource(R.string.settings_manage_accounts), fontWeight = FontWeight.Medium)
+                Text(stringResource(R.string.settings_manage_accounts_desc), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         }
 
         Spacer(modifier = Modifier.height(Spacing.lg))
 
         // Section 3: Data
-        Text("Data", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text(stringResource(R.string.settings_section_data), style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
         Spacer(modifier = Modifier.height(Spacing.sm))
 
         Card(modifier = Modifier.fillMaxWidth(), elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)) {
@@ -149,8 +151,8 @@ fun SettingsScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Column(modifier = Modifier.weight(1f)) {
-                        Text("Total Transaksi", fontWeight = FontWeight.Medium)
-                        Text("${uiState.transactionCount} transaksi tersimpan", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text(stringResource(R.string.settings_total_transactions), fontWeight = FontWeight.Medium)
+                        Text(stringResource(R.string.settings_total_transactions_desc, uiState.transactionCount), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                 }
                 Spacer(modifier = Modifier.height(Spacing.sm))
@@ -161,47 +163,47 @@ fun SettingsScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Column(modifier = Modifier.weight(1f)) {
-                        Text("Export CSV", fontWeight = FontWeight.Medium)
-                        Text("Unduh data transaksi dalam format CSV", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text(stringResource(R.string.settings_export_csv), fontWeight = FontWeight.Medium)
+                        Text(stringResource(R.string.settings_export_csv_desc), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                     androidx.compose.material3.TextButton(
                         onClick = {
                             viewModel.exportTransactions { intent ->
                                 if (intent != null) {
-                                    context.startActivity(Intent.createChooser(intent, "Bagikan CSV"))
+                                    context.startActivity(Intent.createChooser(intent, stringResource(R.string.settings_share_csv)))
                                 }
                             }
                         }
                     ) {
-                        Text("Export")
+                        Text(stringResource(R.string.settings_export_button))
                     }
                 }
                 Spacer(modifier = Modifier.height(Spacing.sm))
                 HorizontalDivider()
                 Spacer(modifier = Modifier.height(Spacing.sm))
-                Text("Database", fontWeight = FontWeight.Medium)
-                Text("Room Database v5 - Offline storage", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(stringResource(R.string.settings_database), fontWeight = FontWeight.Medium)
+                Text(stringResource(R.string.settings_database_desc), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 Spacer(modifier = Modifier.height(Spacing.sm))
                 HorizontalDivider()
                 Spacer(modifier = Modifier.height(Spacing.sm))
-                Text("Format Mata Uang", fontWeight = FontWeight.Medium)
-                Text("Rp (Rupiah Indonesia)", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(stringResource(R.string.settings_currency_format), fontWeight = FontWeight.Medium)
+                Text(stringResource(R.string.settings_currency_desc), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         }
 
         Spacer(modifier = Modifier.height(Spacing.lg))
 
         // Section 4: Tentang
-        Text("Tentang", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text(stringResource(R.string.settings_section_about), style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
         Spacer(modifier = Modifier.height(Spacing.sm))
 
         Card(modifier = Modifier.fillMaxWidth(), elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)) {
             Column(modifier = Modifier.padding(Spacing.md)) {
-                Text("Finance App", fontWeight = FontWeight.Medium)
-                Text("Versi 1.0.0", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(stringResource(R.string.settings_app_name), fontWeight = FontWeight.Medium)
+                Text(stringResource(R.string.settings_version), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 Spacer(modifier = Modifier.height(Spacing.xs))
                 Text(
-                    "Aplikasi manajemen keuangan pribadi",
+                    stringResource(R.string.settings_app_desc),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -218,15 +220,15 @@ fun SettingsScreen(
 
         Card(modifier = Modifier.fillMaxWidth(), elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)) {
             Column(modifier = Modifier.padding(Spacing.md)) {
-                Text("Tech Stack", fontWeight = FontWeight.Medium, style = MaterialTheme.typography.bodyMedium)
+                Text(stringResource(R.string.settings_tech_stack), fontWeight = FontWeight.Medium, style = MaterialTheme.typography.bodyMedium)
                 Spacer(modifier = Modifier.height(Spacing.sm))
-                TechItem("Kotlin", "1.9.22")
-                TechItem("Jetpack Compose", "BOM 2024.02")
+                TechItem("Kotlin", "1.9.25")
+                TechItem("Jetpack Compose", "BOM 2024.06.00")
                 TechItem("Material 3", "1.1.2")
                 TechItem("Room Database", "2.6.1")
                 TechItem("Navigation Compose", "2.7.5")
                 TechItem("Lifecycle ViewModel", "2.6.2")
-                TechItem("Hilt", "2.48.1")
+                TechItem("Hilt", "2.51.1")
                 TechItem("DataStore", "1.0.0")
             }
         }

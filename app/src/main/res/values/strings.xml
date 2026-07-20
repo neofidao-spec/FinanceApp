@@ -19,7 +19,7 @@
     <string name="dashboard_total_balance">Total Saldo</string>
     <string name="dashboard_expense_by_category">Pengeluaran per Kategori</string>
     <string name="dashboard_monthly_trend">Tren Bulanan</string>
-    <string name="dashboard_budget_overview">Budget Overview</string>
+    <string name="dashboard_budget_overview">Ringkasan Budget</string>
     <string name="dashboard_recent_transactions">Transaksi Terbaru</string>
     <string name="dashboard_no_transactions">Belum ada transaksi</string>
     <string name="dashboard_no_transactions_hint">Mulai tambahkan transaksi pertamamu!</string>
@@ -69,4 +69,32 @@
     <string name="budget_next_month">Bulan Berikutnya</string>
     <string name="budget_category_icon">Ikon kategori</string>
     <string name="budget_no_budget_cd">Belum ada budget</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Pengaturan</string>
+    <string name="settings_section_appearance">Tampilan</string>
+    <string name="settings_dark_mode">Mode Gelap</string>
+    <string name="settings_dark_mode_desc">Gunakan tema gelap</string>
+    <string name="settings_section_account">Akun</string>
+    <string name="settings_account_count">Jumlah Akun</string>
+    <string name="settings_account_count_desc">%1$d akun terdaftar</string>
+    <string name="settings_manage_accounts">Kelola Akun</string>
+    <string name="settings_manage_accounts_desc">Atur akun Cash, Bank, E-Wallet</string>
+    <string name="settings_section_data">Data</string>
+    <string name="settings_total_transactions">Total Transaksi</string>
+    <string name="settings_total_transactions_desc">%1$d transaksi tersimpan</string>
+    <string name="settings_export_csv">Export CSV</string>
+    <string name="settings_export_csv_desc">Unduh data transaksi dalam format CSV</string>
+    <string name="settings_export_button">Export</string>
+    <string name="settings_share_csv">Bagikan CSV</string>
+    <string name="settings_database">Database</string>
+    <string name="settings_database_desc">Room Database v13 - Offline storage</string>
+    <string name="settings_currency_format">Format Mata Uang</string>
+    <string name="settings_currency_desc">Rp (Rupiah Indonesia)</string>
+    <string name="settings_section_about">Tentang</string>
+    <string name="settings_app_name">Finance App</string>
+    <string name="settings_version">Versi 1.0.1</string>
+    <string name="settings_app_desc">Aplikasi manajemen keuangan pribadi</string>
+    <string name="settings_tech_stack">Tech Stack</string>
+
 </resources>

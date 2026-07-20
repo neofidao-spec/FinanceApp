@@ -50,6 +50,10 @@ interface TransactionDao {
     @Query("SELECT * FROM transactions ORDER BY date DESC")
     suspend fun getAllTransactionsOnce(): List<TransactionWithCategory>
 
+    @androidx.room.Transaction
+    @Query("SELECT * FROM transactions WHERE description LIKE '%' || :query || '%' ORDER BY date DESC")
+    suspend fun searchByDescription(query: String): List<TransactionWithCategory>
+
     @Query("SELECT SUM(amount) FROM transactions WHERE type = :type AND categoryId = :categoryId AND date BETWEEN :startDate AND :endDate")
     suspend fun sumByTypeAndCategory(type: TransactionType, categoryId: Long, startDate: LocalDateTime, endDate: LocalDateTime): Double?
 

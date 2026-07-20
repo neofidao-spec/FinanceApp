@@ -22,6 +22,6 @@ object FormatterUtil {
     }
 
     fun parseAmount(amount: String): Double? {
-        return amount.toDoubleOrNull()
+        return amount.replace(Regex("[^0-9.\\-]"), "").toDoubleOrNull()
     }
 }
