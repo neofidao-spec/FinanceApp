@@ -237,7 +237,7 @@ fun ReportScreen(
         }
 
         if (uiState.monthlyReport?.categoryBreakdown?.isNotEmpty() == true) {
-            items(uiState.monthlyReport!!.categoryBreakdown) { summary ->
+            uiState.monthlyReport?.categoryBreakdown?.forEach { summary ->
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()

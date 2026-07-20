@@ -25,11 +25,11 @@ val FinanceShapes = Shapes(
     /** 18.dp — standard cards, list items */
     medium = RoundedCornerShape(18.dp),
 
-    /** 24.dp — hero cards, summary cards, bottom sheets */
-    large = RoundedCornerShape(24.dp),
-
     /** 16.dp — compact cards, mini stat cards */
-    extraLarge = RoundedCornerShape(16.dp)
+    large = RoundedCornerShape(16.dp),
+
+    /** 24.dp — hero cards, summary cards, bottom sheets */
+    extraLarge = RoundedCornerShape(24.dp)
 )
 
 /** FAB shape — perfect circle */

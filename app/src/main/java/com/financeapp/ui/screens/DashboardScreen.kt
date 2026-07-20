@@ -540,11 +540,11 @@ private fun GamificationSummaryCard(
     val tier = TierUtils.getTierForLevel(progress.currentLevel)
 
     val flameColor = when {
-        progress.currentStreak >= 30 -> Color(0xFFFF6F00)
+        progress.currentStreak >= 30 -> Color(0xFFFF6F00).copy(alpha = if (isSystemInDarkTheme()) 0.85f else 1f)
         progress.currentStreak >= 7 -> MaterialTheme.colorScheme.financeColors.accent
-        progress.currentStreak >= 3 -> Color(0xFFFFA726)
-        progress.currentStreak > 0 -> Color(0xFFEF5350)
-        else -> Color(0xFFBDBDBD)
+        progress.currentStreak >= 3 -> Color(0xFFFFA726).copy(alpha = if (isSystemInDarkTheme()) 0.85f else 1f)
+        progress.currentStreak > 0 -> Color(0xFFEF5350).copy(alpha = if (isSystemInDarkTheme()) 0.85f else 1f)
+        else -> MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f)
     }
 
     Card(

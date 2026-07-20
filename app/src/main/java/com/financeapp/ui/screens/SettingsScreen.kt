@@ -68,6 +68,12 @@ fun SettingsScreen(
                     style = MaterialTheme.typography.bodyLarge,
                     textAlign = TextAlign.Center
                 )
+                Spacer(modifier = Modifier.height(Spacing.md))
+                androidx.compose.material3.TextButton(
+                    onClick = { viewModel.loadSettings() }
+                ) {
+                    Text(stringResource(R.string.common_retry))
+                }
             }
         }
         return

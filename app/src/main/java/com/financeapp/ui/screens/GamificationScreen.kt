@@ -309,22 +309,11 @@ private fun ProfileTab(
         // 5. XP History
         if (state.recentXpHistory.isNotEmpty()) {
             item { SectionTitle("Riwayat XP") }
-            item {
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = MaterialTheme.shapes.medium,
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-                ) {
-                    Column(modifier = Modifier.padding(Spacing.md)) {
-                        state.recentXpHistory.forEach { xp ->
-                            XpHistoryRow(xp = xp, dateFormatter = dateFormatter)
-                            if (xp != state.recentXpHistory.last()) {
-                                Spacer(modifier = Modifier.height(10.dp))
-                            }
-                        }
-                    }
-                }
+            items(
+                items = state.recentXpHistory,
+                key = { it.id }
+            ) { xp ->
+                XpHistoryRow(xp = xp, dateFormatter = dateFormatter)
             }
         }
     }

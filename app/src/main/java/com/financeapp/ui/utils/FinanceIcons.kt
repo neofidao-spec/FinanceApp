@@ -7,6 +7,7 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.AttachMoney
 import androidx.compose.material.icons.filled.CardGiftcard
+import androidx.compose.material.icons.filled.CreditCard
 import androidx.compose.material.icons.filled.Category
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.CheckCircle
@@ -66,7 +67,7 @@ object FinanceIcons {
         "Cash" to Icons.Filled.Payments,
         "Bank" to Icons.Filled.AccountBalance,
         "E-Wallet" to Icons.Filled.AccountBalanceWallet,
-        "Credit Card" to Icons.Filled.CardGiftcard,
+        "Credit Card" to Icons.Filled.CreditCard,
         
         // General
         "Default" to Icons.Filled.Category

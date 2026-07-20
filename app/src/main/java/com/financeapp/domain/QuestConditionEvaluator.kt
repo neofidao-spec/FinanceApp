@@ -1,5 +1,6 @@
 package com.financeapp.domain
 
+import android.util.Log
 import com.financeapp.data.repository.BudgetRepository
 import com.financeapp.data.repository.TransactionRepository
 import java.time.LocalDateTime
@@ -49,7 +50,10 @@ class QuestConditionEvaluator @Inject constructor(
                 val transactions = transactionRepository.getAllTransactionsOnce()
                 transactions.any { !it.transaction.date.isBefore(start) && !it.transaction.date.isAfter(end) }
             }
-            else -> true
+            else -> {
+                Log.w("QuestConditionEvaluator", "Unknown condition: $condition")
+                false
+            }
         }
     }
 }

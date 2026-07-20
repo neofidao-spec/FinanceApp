@@ -40,7 +40,7 @@ class GetHealthScoreUseCase @Inject constructor(
 
         // Calculate score: (income - expense) / income * 100
         val score = if (currentIncome > 0) {
-            ((currentIncome - currentExpense) / currentIncome * 100).toInt().coerceIn(0, 100)
+            ((currentIncome - currentExpense) / currentIncome * 100).roundToInt().coerceIn(0, 100)
         } else if (currentExpense == 0.0) {
             100 // No transactions = neutral good
         } else {

@@ -11,6 +11,7 @@ import com.financeapp.data.repository.BudgetRepository
 import com.financeapp.data.repository.CategoryRepository
 import com.financeapp.data.repository.TransactionRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -43,6 +44,8 @@ class BudgetViewModel @Inject constructor(
     companion object {
         private const val TAG = "BudgetVM"
     }
+
+    private var clearMessagesJob: Job? = null
 
     private val _uiState = MutableStateFlow(BudgetUiState())
     val uiState: StateFlow<BudgetUiState> = _uiState.asStateFlow()
@@ -186,7 +189,8 @@ class BudgetViewModel @Inject constructor(
     }
 
     fun clearMessages() {
-        viewModelScope.launch {
+        clearMessagesJob?.cancel()
+        clearMessagesJob = viewModelScope.launch {
             kotlinx.coroutines.delay(2000)
             _uiState.value = _uiState.value.copy(
                 successMessage = null,

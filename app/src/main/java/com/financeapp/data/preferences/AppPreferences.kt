@@ -22,6 +22,7 @@ class AppPreferences @Inject constructor(
     companion object {
         private val ONBOARDING_COMPLETED = booleanPreferencesKey("onboarding_completed")
         private val DARK_MODE = booleanPreferencesKey("dark_mode")
+        // CURRENCY — reserved for future use (currency selector)
         private val CURRENCY = stringPreferencesKey("currency")
     }
 
