@@ -70,6 +70,34 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
+    fun loadSettings() {
+        _uiState.value = _uiState.value.copy(isLoading = true, errorMessage = null)
+        viewModelScope.launch {
+            try {
+                combine(
+                    appPreferences.isDarkMode,
+                    transactionRepository.getAllTransactions(),
+                    accountRepository.getAllAccounts()
+                ) { dark, transactions, accounts ->
+                    SettingsUiState(
+                        isDarkMode = dark,
+                        transactionCount = transactions.size,
+                        accountCount = accounts.size,
+                        isLoading = false
+                    )
+                }.collect { state ->
+                    _uiState.value = state
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to load settings", e)
+                _uiState.value = _uiState.value.copy(
+                    errorMessage = "Gagal memuat pengaturan. Silakan coba lagi.",
+                    isLoading = false
+                )
+            }
+        }
+    }
+
     fun toggleDarkMode(enabled: Boolean) {
         viewModelScope.launch {
             try {

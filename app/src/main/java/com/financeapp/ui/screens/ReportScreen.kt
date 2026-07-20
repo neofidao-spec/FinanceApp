@@ -237,7 +237,12 @@ fun ReportScreen(
         }
 
         if (uiState.monthlyReport?.categoryBreakdown?.isNotEmpty() == true) {
-            uiState.monthlyReport?.categoryBreakdown?.forEach { summary ->
+            val report = uiState.monthlyReport ?: return@LazyColumn
+            val breakdown = report.categoryBreakdown
+            items(
+                items = breakdown,
+                key = { it.category.name }
+            ) { summary ->
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
