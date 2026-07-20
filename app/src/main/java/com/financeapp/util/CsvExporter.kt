@@ -18,7 +18,7 @@ object CsvExporter {
             val type = if (twc.transaction.type == TransactionType.INCOME) "Pemasukan" else "Pengeluaran"
             val category = twc.category.name
             val description = twc.transaction.description
-                .replace('\n', ' ').replace('\r', '')
+                .replace("\n", " ").replace("\r", "")
                 .replace(";", ",")
             val amount = String.format(Locale.US, "%.0f", twc.transaction.amount)
 
