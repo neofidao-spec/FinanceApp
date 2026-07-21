@@ -200,16 +200,6 @@ class GamificationViewModel @Inject constructor(
         }
     }
 
-    /** Mark a challenge as completed */
-    fun completeChallenge(challenge: Challenge) {
-        viewModelScope.launch {
-            try {
-                repository.updateChallengeProgress(challenge.id, challenge.targetValue, true)
-                gamificationUseCase.onChallengeCompleted(challenge.name, challenge.xpReward)
-            } catch (e: Exception) { Log.w("GamificationVM", "Action failed", e) }
-        }
-    }
-
     /** Use a streak freeze */
     fun useFreeze() {
         viewModelScope.launch {

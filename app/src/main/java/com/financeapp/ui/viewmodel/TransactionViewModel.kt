@@ -25,12 +25,10 @@ data class TransactionUiState(
     val transactions: List<TransactionWithCategory> = emptyList(),
     val filteredTransactions: List<TransactionWithCategory> = emptyList(),
     val categories: List<Category> = emptyList(),
-    val selectedTransaction: Transaction? = null,
     val isLoading: Boolean = true,
     val isLoadingMore: Boolean = false,
     val successMessage: String? = null,
     val errorMessage: String? = null,
-    val selectedFilter: TransactionType? = null,
     val searchQuery: String = "",
     val showFilterDialog: Boolean = false,
     val activeFilter: TransactionFilter? = null,
@@ -115,7 +113,7 @@ class TransactionViewModel @Inject constructor(
     }
 
     fun updateSearchQuery(query: String) {
-        _uiState.value = _uiState.value.copy(searchQuery = query, selectedFilter = null)
+        _uiState.value = _uiState.value.copy(searchQuery = query)
         _searchFlow.value = query
     }
 
@@ -130,8 +128,7 @@ class TransactionViewModel @Inject constructor(
 
     fun clearFilter() {
         _uiState.value = _uiState.value.copy(
-            activeFilter = null,
-            selectedFilter = null
+            activeFilter = null
         )
         applyFilters()
     }
@@ -255,8 +252,7 @@ class TransactionViewModel @Inject constructor(
             try {
                 transactionRepository.updateTransaction(transaction)
                 _uiState.value = _uiState.value.copy(
-                    successMessage = "Transaksi berhasil diperbarui",
-                    selectedTransaction = null
+                    successMessage = "Transaksi berhasil diperbarui"
                 )
                 clearMessages()
             } catch (e: Exception) {
@@ -327,38 +323,6 @@ class TransactionViewModel @Inject constructor(
                 _uiState.value = _uiState.value.copy(errorMessage = "Gagal memulihkan transaksi. Silakan coba lagi.")
             }
         }
-    }
-
-    fun filterByType(type: TransactionType?) {
-        filterJob?.cancel()
-        filterJob = viewModelScope.launch {
-            try {
-                val filtered = if (type != null) {
-                    transactionRepository.getTransactionsByType(type)
-                } else {
-                    transactionRepository.getAllTransactions()
-                }
-
-                filtered.collectLatest { transactions ->
-                    _uiState.value = _uiState.value.copy(
-                        transactions = transactions,
-                        selectedFilter = type
-                    )
-                    applyFilters()
-                }
-            } catch (e: Exception) {
-                Log.e(TAG, "Failed to filter transactions by type", e)
-                _uiState.value = _uiState.value.copy(errorMessage = "Gagal memuat transaksi. Silakan coba lagi.")
-            }
-        }
-    }
-
-    fun selectTransaction(transaction: Transaction) {
-        _uiState.value = _uiState.value.copy(selectedTransaction = transaction)
-    }
-
-    fun clearSelection() {
-        _uiState.value = _uiState.value.copy(selectedTransaction = null)
     }
 
     fun retry() {

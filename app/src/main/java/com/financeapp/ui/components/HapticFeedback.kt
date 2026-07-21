@@ -1,6 +1,5 @@
 package com.financeapp.ui.components
 
-import android.view.HapticFeedbackConstants
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
@@ -41,27 +40,5 @@ fun HapticButton(
             text = if (isLoading) "Menyimpan..." else text,
             modifier = Modifier.padding(vertical = Spacing.sm)
         )
-    }
-}
-
-/**
- * Small icon button with haptic.
- */
-@Composable
-fun HapticIconButton(
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-    content: @Composable () -> Unit
-) {
-    val haptic = LocalHapticFeedback.current
-
-    androidx.compose.material3.IconButton(
-        onClick = {
-            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-            onClick()
-        },
-        modifier = modifier
-    ) {
-        content()
     }
 }

@@ -178,12 +178,6 @@ class DashboardViewModel @Inject constructor(
             }
     }
 
-    fun selectMonth(month: YearMonth) {
-        _uiState.value = _uiState.value.copy(selectedMonth = month)
-        updateDashboardStats(allTransactions)
-        viewModelScope.launch { loadBudgetSummaries() }
-    }
-
     fun retry() {
         _uiState.value = _uiState.value.copy(isLoading = true, errorMessage = null)
         viewModelScope.launch {
