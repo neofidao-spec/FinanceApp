@@ -424,7 +424,7 @@ private fun HealthScoreRing(
                     imageVector = trendIcon,
                     contentDescription = if (trend == HealthScore.Trend.UP) "Meningkat" else "Menurun",
                     tint = trendColor,
-                    modifier = Modifier.size(14.dp)
+                    modifier = Modifier.size(Spacing.iconT)
                 )
             } else {
                 Text(
@@ -599,7 +599,7 @@ private fun GamificationSummaryCard(
                     imageVector = Icons.Filled.LocalFireDepartment,
                     contentDescription = "Streak",
                     tint = flameColor,
-                    modifier = Modifier.size(28.dp)
+                    modifier = Modifier.size(Spacing.iconXs)
                 )
                 Spacer(modifier = Modifier.width(Spacing.sm))
                 Column {

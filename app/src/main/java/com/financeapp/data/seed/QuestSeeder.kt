@@ -1,5 +1,6 @@
 package com.financeapp.data.seed
 
+import android.util.Log
 import com.financeapp.data.database.QuestTemplateDao
 import com.financeapp.data.model.QuestCategory
 import com.financeapp.data.model.QuestTemplate
@@ -9,8 +10,12 @@ class QuestSeeder @Inject constructor(
     private val dao: QuestTemplateDao
 ) {
     suspend fun seedIfNeeded() {
-        if (dao.count() > 0) return
-        dao.insertAll(templates)
+        try {
+            if (dao.count() > 0) return
+            dao.insertAll(templates)
+        } catch (e: Exception) {
+            Log.e("QuestSeeder", "Failed to seed quest templates", e)
+        }
     }
 
     companion object {

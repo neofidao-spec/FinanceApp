@@ -456,7 +456,7 @@ private fun BudgetItem(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = Spacing.md, vertical = 6.dp),
+            .padding(horizontal = Spacing.md, vertical = Spacing.sm),
         shape = MaterialTheme.shapes.medium,
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
@@ -596,7 +596,7 @@ private fun BudgetItem(
                             budget.isAlertThreshold() -> stringResource(R.string.budget_approaching_limit)
                             else -> stringResource(R.string.budget_safe)
                         },
-                        modifier = Modifier.size(14.dp),
+                        modifier = Modifier.size(Spacing.iconT),
                         tint = when {
                             budget.isExceeded() -> MaterialTheme.colorScheme.financeColors.expense
                             budget.isAlertThreshold() -> MaterialTheme.colorScheme.financeColors.warning

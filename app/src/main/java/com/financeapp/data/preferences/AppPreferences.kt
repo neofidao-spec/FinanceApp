@@ -7,6 +7,7 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import android.util.Log
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -23,6 +24,8 @@ class AppPreferences @Inject constructor(
         private val ONBOARDING_COMPLETED = booleanPreferencesKey("onboarding_completed")
         private val DARK_MODE = booleanPreferencesKey("dark_mode")
         // CURRENCY — reserved for future use (currency selector)
+        // TODO: Wire currency selector to SettingsScreen UI
+        //  Currently accepts IDR/USD/SGD input but not connected to transactions
         private val CURRENCY = stringPreferencesKey("currency")
     }
 
@@ -39,20 +42,32 @@ class AppPreferences @Inject constructor(
     }
 
     suspend fun setOnboardingCompleted() {
-        context.dataStore.edit { prefs ->
-            prefs[ONBOARDING_COMPLETED] = true
+        try {
+            context.dataStore.edit { prefs ->
+                prefs[ONBOARDING_COMPLETED] = true
+            }
+        } catch (e: Exception) {
+            Log.e("AppPrefs", "Failed to set onboarding completed", e)
         }
     }
 
     suspend fun setDarkMode(enabled: Boolean) {
-        context.dataStore.edit { prefs ->
-            prefs[DARK_MODE] = enabled
+        try {
+            context.dataStore.edit { prefs ->
+                prefs[DARK_MODE] = enabled
+            }
+        } catch (e: Exception) {
+            Log.e("AppPrefs", "Failed to set dark mode", e)
         }
     }
 
     suspend fun setCurrency(value: String) {
-        context.dataStore.edit { prefs ->
-            prefs[CURRENCY] = value
+        try {
+            context.dataStore.edit { prefs ->
+                prefs[CURRENCY] = value
+            }
+        } catch (e: Exception) {
+            Log.e("AppPrefs", "Failed to set currency", e)
         }
     }
 }

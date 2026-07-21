@@ -1,5 +1,6 @@
 package com.financeapp.domain
 
+import android.util.Log
 import com.financeapp.data.model.UserProgress
 import com.financeapp.data.model.XpHistory
 import com.financeapp.data.model.XpSource
@@ -72,118 +73,132 @@ class GamificationUseCase @Inject constructor(
     // ===================== STREAK =====================
 
     suspend fun updateStreak(): Pair<Int, Int> = xpMutex.withLock {
-        val progress = repository.getUserProgressOnce()
-            ?: UserProgress().also { repository.saveUserProgress(it) }
+        try {
+            val progress = repository.getUserProgressOnce()
+                ?: UserProgress().also { repository.saveUserProgress(it) }
 
-        val today = LocalDate.now()
-        val lastActivity = progress.lastActivityDate?.toLocalDate()
-        val now = LocalDateTime.now()
+            val today = LocalDate.now()
+            val lastActivity = progress.lastActivityDate?.toLocalDate()
+            val now = LocalDateTime.now()
 
-        val newStreak: Int
-        val bestStreak: Int
+            val newStreak: Int
+            val bestStreak: Int
 
-        when {
-            lastActivity == null -> {
-                // First activity ever
-                newStreak = 1
-                bestStreak = maxOf(progress.bestStreak, 1)
-            }
-            lastActivity == today -> {
-                // Already active today — no change
-                newStreak = progress.currentStreak
-                bestStreak = progress.bestStreak
-            }
-            lastActivity == today.minusDays(1) -> {
-                // Consecutive day
-                newStreak = progress.currentStreak + 1
-                bestStreak = maxOf(progress.bestStreak, newStreak)
-            }
-            else -> {
-                // Streak broken — check for freeze
-                val daysSince = Duration.between(lastActivity.atStartOfDay(), today.atStartOfDay()).toDays()
-                if (daysSince == 2L && progress.streakFreezes > 0) {
-                    // Use freeze (skip 1 day)
-                    newStreak = progress.currentStreak + 1
-                    bestStreak = maxOf(progress.bestStreak, newStreak)
-                    // After consuming a freeze, check if new streak hits milestone
-                    val freezeGain = if (newStreak > 0 && newStreak % 7 == 0) 1 else 0
-                    val totalFreezes = minOf(progress.streakFreezes - 1 + freezeGain, 3)
-                    repository.saveUserProgress(
-                        progress.copy(
-                            currentStreak = newStreak,
-                            bestStreak = bestStreak,
-                            lastActivityDate = now,
-                            streakFreezes = totalFreezes,
-                            updatedAt = now
-                        )
-                    )
-                    return@withLock Pair(newStreak, bestStreak)
-                } else {
-                    // Streak broken
+            when {
+                lastActivity == null -> {
+                    // First activity ever
                     newStreak = 1
+                    bestStreak = maxOf(progress.bestStreak, 1)
+                }
+                lastActivity == today -> {
+                    // Already active today — no change
+                    newStreak = progress.currentStreak
                     bestStreak = progress.bestStreak
                 }
+                lastActivity == today.minusDays(1) -> {
+                    // Consecutive day
+                    newStreak = progress.currentStreak + 1
+                    bestStreak = maxOf(progress.bestStreak, newStreak)
+                }
+                else -> {
+                    // Streak broken — check for freeze
+                    val daysSince = Duration.between(lastActivity.atStartOfDay(), today.atStartOfDay()).toDays()
+                    if (daysSince == 2L && progress.streakFreezes > 0) {
+                        // Use freeze (skip 1 day)
+                        newStreak = progress.currentStreak + 1
+                        bestStreak = maxOf(progress.bestStreak, newStreak)
+                        // After consuming a freeze, check if new streak hits milestone
+                        val freezeGain = if (newStreak > 0 && newStreak % 7 == 0) 1 else 0
+                        val totalFreezes = minOf(progress.streakFreezes - 1 + freezeGain, 3)
+                        repository.saveUserProgress(
+                            progress.copy(
+                                currentStreak = newStreak,
+                                bestStreak = bestStreak,
+                                lastActivityDate = now,
+                                streakFreezes = totalFreezes,
+                                updatedAt = now
+                            )
+                        )
+                        return@withLock Pair(newStreak, bestStreak)
+                    } else {
+                        // Streak broken
+                        newStreak = 1
+                        bestStreak = progress.bestStreak
+                    }
+                }
             }
-        }
 
-        // Earn a freeze every 7 days of streak
-        val freezesGained = if (newStreak > 0 && newStreak % 7 == 0) 1 else 0
-        val totalFreezes = minOf(progress.streakFreezes + freezesGained, 3) // max 3 freezes
+            // Earn a freeze every 7 days of streak
+            val freezesGained = if (newStreak > 0 && newStreak % 7 == 0) 1 else 0
+            val totalFreezes = minOf(progress.streakFreezes + freezesGained, 3) // max 3 freezes
 
-        repository.saveUserProgress(
-            progress.copy(
-                currentStreak = newStreak,
-                bestStreak = bestStreak,
-                lastActivityDate = now,
-                streakFreezes = totalFreezes,
-                updatedAt = now
+            repository.saveUserProgress(
+                progress.copy(
+                    currentStreak = newStreak,
+                    bestStreak = bestStreak,
+                    lastActivityDate = now,
+                    streakFreezes = totalFreezes,
+                    updatedAt = now
+                )
             )
-        )
 
-        Pair(newStreak, bestStreak)
+            Pair(newStreak, bestStreak)
+        } catch (e: Exception) {
+            Log.e("GamificationUC", "Failed to update streak", e)
+            Pair(0, 0)
+        }
     }
 
     /** Use a freeze to protect streak (manual action) */
-    suspend fun useFreeze(): Boolean {
-        val progress = repository.getUserProgressOnce() ?: return false
-        if (progress.streakFreezes <= 0) return false
+    suspend fun useFreeze(): Boolean = xpMutex.withLock {
+        try {
+            val progress = repository.getUserProgressOnce() ?: return@withLock false
+            if (progress.streakFreezes <= 0) return@withLock false
 
-        repository.saveUserProgress(
-            progress.copy(
-                streakFreezes = progress.streakFreezes - 1,
-                updatedAt = LocalDateTime.now()
+            repository.saveUserProgress(
+                progress.copy(
+                    streakFreezes = progress.streakFreezes - 1,
+                    updatedAt = LocalDateTime.now()
+                )
             )
-        )
-        return true
+            true
+        } catch (e: Exception) {
+            Log.e("GamificationUC", "Failed to use freeze", e)
+            false
+        }
     }
 
     // ===================== LEVEL PROGRESSION =====================
 
     private suspend fun addXp(amount: Int, source: XpSource, description: String) = xpMutex.withLock {
-        // Record XP entry
-        repository.addXpEntry(
-            XpHistory(
-                amount = amount,
-                source = source.name,
-                description = description,
-                createdAt = LocalDateTime.now()
+        try {
+            // Record XP entry
+            repository.addXpEntry(
+                XpHistory(
+                    amount = amount,
+                    source = source.name,
+                    description = description,
+                    createdAt = LocalDateTime.now()
+                )
             )
-        )
 
-        // Update user progress (atomic read-modify-write)
-        val progress = repository.getUserProgressOnce()
-            ?: UserProgress().also { repository.saveUserProgress(it) }
+            // Update user progress (atomic read-modify-write)
+            val progress = repository.getUserProgressOnce()
+                ?: UserProgress().also { repository.saveUserProgress(it) }
 
-        val newTotal = progress.totalXp + amount
-        val newLevel = calculateLevel(newTotal)
+            val newTotal = progress.totalXp + amount
+            val newLevel = calculateLevel(newTotal)
 
-        repository.saveUserProgress(
-            progress.copy(
-                totalXp = newTotal,
-                currentLevel = newLevel,
-                updatedAt = LocalDateTime.now()
+            repository.saveUserProgress(
+                progress.copy(
+                    totalXp = newTotal,
+                    currentLevel = newLevel,
+                    updatedAt = LocalDateTime.now()
+                )
             )
-        )
+        } catch (e: Exception) {
+            Log.e("GamificationUC", "Failed to add XP: $amount from ${source.name}", e)
+        }
     }
 
     /** Calculate level from total XP using GAMIFICATION_CONCEPT.md thresholds */

@@ -1,5 +1,6 @@
 package com.financeapp.data.repository
 
+import android.util.Log
 import com.financeapp.data.database.AccountDao
 import com.financeapp.data.model.Account
 import com.financeapp.data.model.AccountType
@@ -26,29 +27,33 @@ class AccountRepository @Inject constructor(
     suspend fun getAccountCount(): Int = accountDao.count()
 
     suspend fun initializeDefaultAccounts() {
-        if (accountDao.count() == 0) {
-            val defaults = listOf(
-                Account(
-                    name = "Cash",
-                    type = AccountType.CASH,
-                    icon = "ic_cash",
-                    color = "#4CAF50",
-                    isDefault = true
-                ),
-                Account(
-                    name = "Bank Account",
-                    type = AccountType.BANK,
-                    icon = "ic_bank",
-                    color = "#2196F3"
-                ),
-                Account(
-                    name = "E-Wallet",
-                    type = AccountType.EWALLET,
-                    icon = "ic_ewallet",
-                    color = "#FF9800"
+        try {
+            if (accountDao.count() == 0) {
+                val defaults = listOf(
+                    Account(
+                        name = "Cash",
+                        type = AccountType.CASH,
+                        icon = "ic_cash",
+                        color = "#4CAF50",
+                        isDefault = true
+                    ),
+                    Account(
+                        name = "Bank Account",
+                        type = AccountType.BANK,
+                        icon = "ic_bank",
+                        color = "#2196F3"
+                    ),
+                    Account(
+                        name = "E-Wallet",
+                        type = AccountType.EWALLET,
+                        icon = "ic_ewallet",
+                        color = "#FF9800"
+                    )
                 )
-            )
-            defaults.forEach { accountDao.insert(it) }
+                defaults.forEach { accountDao.insert(it) }
+            }
+        } catch (e: Exception) {
+            Log.e("AccountRepo", "Failed to initialize default accounts", e)
         }
     }
 

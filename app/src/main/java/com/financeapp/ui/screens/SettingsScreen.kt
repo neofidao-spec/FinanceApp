@@ -195,6 +195,8 @@ fun SettingsScreen(
                 Spacer(modifier = Modifier.height(Spacing.sm))
                 Text(stringResource(R.string.settings_currency_format), fontWeight = FontWeight.Medium)
                 Text(stringResource(R.string.settings_currency_desc), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                // TODO: Replace static label with currency selector (dropdown/modal).
+                //  DataStore-backed, values: IDR, USD, SGD. Affects all number formatting.
             }
         }
 

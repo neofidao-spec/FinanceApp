@@ -43,6 +43,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.financeapp.data.preferences.AppPreferences
+import android.util.Log
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
@@ -55,12 +56,19 @@ import com.financeapp.ui.theme.Spacing
 class OnboardingViewModel @Inject constructor(
     private val appPreferences: AppPreferences
 ) : ViewModel() {
+    companion object {
+        private const val TAG = "OnboardingVM"
+    }
 
     val isOnboardingCompleted: Flow<Boolean> = appPreferences.isOnboardingCompleted
 
     fun completeOnboarding() {
         viewModelScope.launch {
-            appPreferences.setOnboardingCompleted()
+            try {
+                appPreferences.setOnboardingCompleted()
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to save onboarding completion", e)
+            }
         }
     }
 }

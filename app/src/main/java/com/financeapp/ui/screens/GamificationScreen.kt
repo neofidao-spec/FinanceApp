@@ -460,13 +460,13 @@ private fun StatItem(icon: ImageVector, value: String, label: String, color: Col
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Box(
             modifier = Modifier
-                .size(36.dp)
+                .size(Spacing.iconMd)
                 .background(color.copy(alpha = 0.15f), CircleShape),
             contentAlignment = Alignment.Center
         ) {
-            Icon(icon, contentDescription = "Statistik", tint = color, modifier = Modifier.size(18.dp))
+            Icon(icon, contentDescription = "Statistik", tint = color, modifier = Modifier.size(Spacing.iconXxs))
         }
-        Spacer(modifier = Modifier.height(6.dp))
+        Spacer(modifier = Modifier.height(Spacing.xs))
         Text(text = value, style = MaterialTheme.typography.titleMedium)
         Text(text = label, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
@@ -490,7 +490,7 @@ private fun ChallengeCard(challenge: Challenge) {
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
-        Column(modifier = Modifier.padding(14.dp)) {
+        Column(modifier = Modifier.padding(Spacing.md)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     text = challenge.challengeType,
@@ -499,7 +499,7 @@ private fun ChallengeCard(challenge: Challenge) {
                     color = typeColor,
                     modifier = Modifier
                         .background(typeColor.copy(alpha = 0.12f), MaterialTheme.shapes.extraSmall)
-                        .padding(horizontal = 6.dp, vertical = 2.dp)
+                        .padding(horizontal = Spacing.xs, vertical = Spacing.xs)
                 )
                 Spacer(modifier = Modifier.width(Spacing.sm))
                 if (challenge.isCompleted) {
@@ -513,12 +513,12 @@ private fun ChallengeCard(challenge: Challenge) {
             }
             Spacer(modifier = Modifier.height(Spacing.sm))
             Text(text = challenge.name, style = MaterialTheme.typography.titleSmall)
-            Spacer(modifier = Modifier.height(6.dp))
+            Spacer(modifier = Modifier.height(Spacing.xs))
             LinearProgressIndicator(
                 progress = progress,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(6.dp)
+                    .height(Spacing.xs)
                     .clip(RoundedCornerShape(Spacing.xs)),
                 color = if (challenge.isCompleted) MaterialTheme.colorScheme.financeColors.income else typeColor,
                 trackColor = MaterialTheme.colorScheme.surfaceVariant,
@@ -589,7 +589,7 @@ private fun XpHistoryRow(xp: XpHistory, dateFormatter: DateTimeFormatter) {
             tint = MaterialTheme.colorScheme.primary,
             modifier = Modifier.size(Spacing.iconXxs)
         )
-        Spacer(modifier = Modifier.width(10.dp))
+        Spacer(modifier = Modifier.width(Spacing.sm))
         Column(modifier = Modifier.weight(1f)) {
             Text(text = sourceLabel, style = MaterialTheme.typography.titleSmall)
             Text(
